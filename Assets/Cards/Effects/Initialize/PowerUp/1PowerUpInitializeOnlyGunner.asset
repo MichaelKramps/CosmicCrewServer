@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 391b8a036187d42b68bbfd9f976f0dd4, type: 3}
+  m_Name: 1PowerUpInitializeOnlyGunner
+  m_EditorClassIdentifier: 
+  cardTiming: 1
+  typeOfEffect: 1
+  effectTarget: 5
+  effectCondition: 1
+  effectAmplitudeA: 1
+  effectAmplitudeB: 0
+  contidionAmplitudeA: 1
+  contidionAmplitudeb: 0
