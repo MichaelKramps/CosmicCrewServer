@@ -16,7 +16,7 @@ MonoBehaviour:
   cardName: Stout Mechathingy
   cardText: 
   image: {fileID: 0}
-  powerCost: 0
+  cardLevel: 1
   baseOffense: 2
   currentOffense: 2
   baseDefense: 3

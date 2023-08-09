@@ -11,7 +11,7 @@ public class CrewCardScript : MonoBehaviour
 
     public TMPro.TextMeshPro cardName;
     public TMPro.TextMeshPro customText;
-    public TMPro.TextMeshPro powerCost;
+    public TMPro.TextMeshPro cardLevel;
 
     public TMPro.TextMeshPro offense;
     public TMPro.TextMeshPro defense;
@@ -22,7 +22,7 @@ public class CrewCardScript : MonoBehaviour
     {
         cardName.text = crewCard.cardName;
         customText.text = crewCard.cardText;
-        powerCost.text = crewCard.powerCost.ToString();
+        cardLevel.text = crewCard.cardLevel.ToString();
 
         if (crewCard.crewCardType == CrewCardType.Gunner)
         {

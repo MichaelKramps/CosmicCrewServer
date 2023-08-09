@@ -9,23 +9,56 @@ public class DogfightScript : MonoBehaviour
     public List<CrewCard> deck1;
     public List<CrewCard> deck2;
 
+    public int drawCounter1;
+    public int drawCounter2;
+
+    private DogfightStage currentStage = DogfightStage.Preparation;
 
 
     // Start is called before the first frame update
     void Start()
     {
-        Debug.Log("starting dogfight");
-        for (int index = 0; index < deck1.Count; index++)
-        {
-            crewCardPrefab.GetComponent<CrewCardScript>().crewCard = deck1[index];
 
-            Instantiate(crewCardPrefab, new Vector3(transform.position.x + (3 * index) - 6, transform.position.y, transform.position.z), transform.rotation);
+        HandleDogfightStageChange();
+
+    }
+
+    void HandleDogfightStageChange()
+    {
+        switch(currentStage)
+        {
+            case DogfightStage.Preparation:
+                // do any pre-fight animations and stuff
+                currentStage = DogfightStage.Draw;
+                HandleDogfightStageChange();
+                break;
+            case DogfightStage.Draw:
+                DrawCards();
+                break;
+            default:
+                Debug.Log("this stage is not handled yet!");
+                break;
         }
     }
 
-    // Update is called once per frame
-    void Update()
+    void DrawCards()
     {
-        
+        // draw and show deck 1 card
+        crewCardPrefab.GetComponent<CrewCardScript>().crewCard = deck1[0];
+        GameObject card1 = Instantiate(
+            crewCardPrefab,
+            new Vector3(transform.position.x, transform.position.y - 2.5f, transform.position.z),
+            transform.rotation);
+
+        crewCardPrefab.GetComponent<CrewCardScript>().crewCard = deck2[0];
+        GameObject card2 = Instantiate(
+            crewCardPrefab,
+            new Vector3(transform.position.x, transform.position.y + 2.5f, transform.position.z),
+            transform.rotation);
+
+        //make the cards get bigger
+        // check out Animator
+        card1.transform.localScale = new Vector3(1.5f, 1.5f);
+        card2.transform.localScale = new Vector3(1.5f, 1.5f);
     }
 }

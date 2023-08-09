@@ -12,7 +12,7 @@ public class CrewCard : ScriptableObject
 
     public Sprite image;
 
-    public int powerCost;
+    public int cardLevel;
     public int baseOffense;
     public int currentOffense;
     public int baseDefense;

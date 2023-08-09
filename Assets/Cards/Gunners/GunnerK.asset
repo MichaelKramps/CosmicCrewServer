@@ -16,7 +16,7 @@ MonoBehaviour:
   cardName: Gunner K
   cardText: 'Initialize: if this is your only Gunner, gain 1 power card'
   image: {fileID: 0}
-  powerCost: 1
+  cardLevel: 1
   baseOffense: 1
   currentOffense: 1
   baseDefense: 2

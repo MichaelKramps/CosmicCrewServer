@@ -16,7 +16,7 @@ MonoBehaviour:
   cardName: 
   cardText: 
   image: {fileID: 0}
-  powerCost: 1
+  cardLevel: 1
   baseOffense: 3
   currentOffense: 3
   baseDefense: 2

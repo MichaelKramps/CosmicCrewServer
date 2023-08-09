@@ -26,7 +26,7 @@ Transform:
   m_GameObject: {fileID: 149756485850803977}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1.94, y: -0.87, z: 8.501999}
+  m_LocalPosition: {x: 0, y: 0.9, z: 8.501999}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -118,7 +118,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 1.93, y: -1.61}
+  m_AnchoredPosition: {x: 0, y: 0.15}
   m_SizeDelta: {x: 20, y: 5}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!23 &3727372106728989203
@@ -289,7 +289,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 1.93, y: -2.06}
+  m_AnchoredPosition: {x: 0, y: -0.28}
   m_SizeDelta: {x: 20, y: 5}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!23 &3085284739621606457
@@ -454,7 +454,7 @@ Transform:
   m_GameObject: {fileID: 2694786773960049017}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.66, y: 2.7, z: -8.501999}
+  m_LocalPosition: {x: 0, y: 0, z: -8.501999}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -481,11 +481,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 33fbb1a4425cd47d3af86057b33ca315, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  crewCard: {fileID: 0}
+  crewCard: {fileID: 11400000, guid: c0c402c8c860b41e3bc9344d8facc2aa, type: 2}
   gunnerSlot: {fileID: 7320407526005369008}
   cardName: {fileID: 6396086848173892632}
   customText: {fileID: 7767003301509846208}
-  powerCost: {fileID: 8183152705373051681}
+  cardLevel: {fileID: 8183152705373051681}
   offense: {fileID: 4303749573311660440}
   defense: {fileID: 2220031943486608806}
   civilizationType: {fileID: 5003536609945188090}
@@ -515,7 +515,7 @@ Transform:
   m_GameObject: {fileID: 2797429435941280527}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1.96, y: -1.78, z: 8.501999}
+  m_LocalPosition: {x: 0, y: 0, z: 8.501999}
   m_LocalScale: {x: 2, y: 3, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -607,7 +607,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 1.957, y: -3.129}
+  m_AnchoredPosition: {x: 0, y: -1.35}
   m_SizeDelta: {x: 20, y: 5}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!23 &7027967424564360047
@@ -778,7 +778,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 1.923, y: -3.128}
+  m_AnchoredPosition: {x: 0, y: -1.35}
   m_SizeDelta: {x: 20, y: 5}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!23 &2695053059971267970
@@ -941,7 +941,7 @@ Transform:
   m_GameObject: {fileID: 8271357218131782812}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2.729, y: -0.521, z: 8.501999}
+  m_LocalPosition: {x: 0.77, y: 1.25, z: 8.501999}
   m_LocalScale: {x: 0.078891784, y: 0.078891784, z: 0.078891784}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1011,7 +1011,7 @@ GameObject:
   - component: {fileID: 5857775452583424425}
   - component: {fileID: 8183152705373051681}
   m_Layer: 14
-  m_Name: PowerCost
+  m_Name: CardLevel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1033,7 +1033,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 1.922, y: -0.545}
+  m_AnchoredPosition: {x: 0, y: 1.25}
   m_SizeDelta: {x: 20, y: 5}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!23 &5857775452583424425
@@ -1204,7 +1204,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 1.924, y: -3.228}
+  m_AnchoredPosition: {x: 0, y: -1.45}
   m_SizeDelta: {x: 20, y: 5}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!23 &5706046676811531563
