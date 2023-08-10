@@ -26,14 +26,12 @@ public class CrewCardScript : MonoBehaviour
 
         if (crewCard.crewCardType == CrewCardType.Gunner)
         {
-            Debug.Log("gunner here");
             offense.text = crewCard.baseOffense.ToString();
             defense.text = crewCard.baseDefense.ToString();
 
             switch(crewCard.gunnerSlot)
             {
                 case GunnerSlot.Triangle:
-                    Debug.Log("triangle here");
                     gunnerSlot.sprite = Resources.Load<Sprite>("black-triangle");
                     break;
                 case GunnerSlot.Square:

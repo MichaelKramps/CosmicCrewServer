@@ -454,7 +454,7 @@ Transform:
   m_GameObject: {fileID: 2694786773960049017}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -8.501999}
+  m_LocalPosition: {x: 0, y: 0, z: -8.5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -481,7 +481,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 33fbb1a4425cd47d3af86057b33ca315, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  crewCard: {fileID: 11400000, guid: c0c402c8c860b41e3bc9344d8facc2aa, type: 2}
+  crewCard: {fileID: 11400000, guid: a1f78525f53524045bb64ae6667bbead, type: 2}
   gunnerSlot: {fileID: 7320407526005369008}
   cardName: {fileID: 6396086848173892632}
   customText: {fileID: 7767003301509846208}
