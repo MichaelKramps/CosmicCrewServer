@@ -48,13 +48,13 @@ public class CrewCardScript : MonoBehaviour
         switch(crewCard.civilizationType)
         {
             case CivilizationType.Athyr:
-                civilizationType.text += "Athyr";
+                civilizationType.text = "Athyr";
                 break;
             case CivilizationType.Leanor:
-                civilizationType.text += "Leanor";
+                civilizationType.text = "Leanor";
                 break;
             case CivilizationType.Rance:
-                civilizationType.text += "Rance";
+                civilizationType.text = "Rance";
                 break;
             default:
                 // no type
