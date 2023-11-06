@@ -10,17 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b0d07254119af48e5bfee0ec3a85e5e4, type: 3}
-  m_Name: Kate
+  m_Name: BabyGunner
   m_EditorClassIdentifier: 
-  crewCardType: 0
-  cardName: Kate
+  cardName: Baby Gunner
   cardText: 
-  image: {fileID: 0}
-  cardLevel: 1
-  baseOffense: 4
-  currentOffense: 4
-  baseDefense: 2
-  currentDefense: 2
-  gunnerSlot: 2
-  civilizationType: 1
+  cardArt: {fileID: 21300000, guid: 29626238067ff4455bbe4d788fe184ec, type: 3}
+  power: 1
+  powerCounters: 0
+  cardId: 0
+  civilizationType: 0
   cardEffects: []

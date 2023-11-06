@@ -7,43 +7,19 @@ public class CrewCardScript : MonoBehaviour
 {
     public CrewCard crewCard;
 
-    public SpriteRenderer gunnerSlot;
-
     public TMPro.TextMeshPro cardName;
     public TMPro.TextMeshPro customText;
-    public TMPro.TextMeshPro cardLevel;
-
-    public TMPro.TextMeshPro offense;
-    public TMPro.TextMeshPro defense;
+    public TMPro.TextMeshPro power;
     public TMPro.TextMeshPro civilizationType;
+    public SpriteRenderer cardArt;
 
     // Start is called before the first frame update
     void Start()
     {
         cardName.text = crewCard.cardName;
         customText.text = crewCard.cardText;
-        cardLevel.text = crewCard.cardLevel.ToString();
-
-        if (crewCard.crewCardType == CrewCardType.Gunner)
-        {
-            offense.text = crewCard.baseOffense.ToString();
-            defense.text = crewCard.baseDefense.ToString();
-
-            switch(crewCard.gunnerSlot)
-            {
-                case GunnerSlot.Triangle:
-                    gunnerSlot.sprite = Resources.Load<Sprite>("black-triangle");
-                    break;
-                case GunnerSlot.Square:
-                    gunnerSlot.sprite = Resources.Load<Sprite>("black-square");
-                    break;
-                case GunnerSlot.Circle:
-                    gunnerSlot.sprite = Resources.Load<Sprite>("black-circle");
-                    break;
-                default:
-                    break;
-            }
-        }
+        power.text = crewCard.power.ToString();
+        cardArt.sprite = crewCard.cardArt;
 
         switch(crewCard.civilizationType)
         {

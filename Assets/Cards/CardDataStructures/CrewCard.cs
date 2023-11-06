@@ -6,18 +6,14 @@ using UnityEngine.UI;
 [CreateAssetMenu(fileName = "CrewCard", menuName = "Cards/CrewCard")]
 public class CrewCard : ScriptableObject
 {
-    public CrewCardType crewCardType;
     public string cardName;
     public string cardText;
 
-    public Sprite image;
+    public Sprite cardArt;
 
-    public int cardLevel;
-    public int baseOffense;
-    public int currentOffense;
-    public int baseDefense;
-    public int currentDefense;
-    public GunnerSlot gunnerSlot;
+    public int power;
+    public int powerCounters;
+    public int cardId;
     public CivilizationType civilizationType;
 
     public List<CardEffect> cardEffects;

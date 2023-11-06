@@ -3,6 +3,8 @@ using UnityEngine;
 
 public class AnimationHelper
 {
+    private int waitCounter = 0;
+
     public AnimationHelper()
     {
     }
@@ -71,6 +73,20 @@ public class AnimationHelper
             return objectToScale.transform.localScale;
         }
 
+    }
+
+    public bool waitForMilliseconds(float milliseconds)
+    {
+        int millisecondsPassed = (int)Math.Round(Time.deltaTime * 1000);
+        if ((waitCounter + millisecondsPassed) > milliseconds)
+        {
+            waitCounter = 0;
+            return true;
+        } else
+        {
+            waitCounter += millisecondsPassed;
+            return false;
+        }
     }
 
     public bool NotYetReachedScale(float destination, GameObject objectToMove)
