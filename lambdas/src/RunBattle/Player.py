@@ -1,5 +1,5 @@
 import random
-from CardList import cardList
+from Cards import cardList
 from Animations import Animations
 from Effects import Timing
 from copy import deepcopy
@@ -32,7 +32,7 @@ class Player:
             #activate draw card effects of cards on team
             for card in self.team:
                 if (card != None):
-                    card.activateEffectsFor(Timing.ONDRAW, self, card)
+                    card.activateEffectsFor(Timing.ONDRAW, self)
         else:
             self.activeCard = None
             
@@ -45,7 +45,7 @@ class Player:
         self.team[slotToPlayCardIn - 1] = self.activeCard
         self.activeCard.teamSlot = slotToPlayCardIn
         Animations.animationsList.append(self.playerIdentifier + ",p," + str(slotToPlayCardIn) + ",0")
-        self.activeCard.activateEffectsFor(Timing.INITIALIZE, self, self.activeCard)
+        self.activeCard.activateEffectsFor(Timing.INITIALIZE, self)
         self.activeCard = None
         self.printTeam()
         

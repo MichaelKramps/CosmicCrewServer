@@ -12,19 +12,19 @@ class Card:
         self.teamSlot = 0
         self.effects = effects
         
-    def activateEffectsFor(self, timing, player, card):
+    def activateEffectsFor(self, timing, player):
         for effect in self.effects:
             if (effect.timing == timing):
-                self.activateEffect(effect, player, card)
+                self.activateEffect(effect, player)
                 
-    def activateEffect(self, effect, player, card):
+    def activateEffect(self, effect, player):
         match effect.effectType:
             case EffectType.POWERCOUNTER:
-                self.activatePowerCounterEffect(effect, player, card)
+                self.activatePowerCounterEffect(effect, player)
             case EffectType.CYCLE:
                 self.activateCycleEffect(effect, player)
                 
-    def activatePowerCounterEffect(self, effect, player, card):
+    def activatePowerCounterEffect(self, effect, player):
         match effect.target:
             case Target.SELF:
                 self.powerCounters += effect.intValue
