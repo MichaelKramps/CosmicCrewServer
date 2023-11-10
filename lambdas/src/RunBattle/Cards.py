@@ -28,16 +28,33 @@ class Card:
         match effect.target:
             case Target.SELF:
                 self.powerCounters += effect.intValue
-                Animations.animationsList.append(player.playerIdentifier + ",pow," + str(effect.intValue) + "," + str(self.teamSlot))
+                Animations.addCodeFrom(player, effect, effect.intValue, self.teamSlot)
             case Target.ALL:
                 for card in player.team:
                     if (card != None):
                         card.powerCounters += effect.intValue
-                        Animations.animationsList.append(player.playerIdentifier + ",pow," + str(effect.intValue) + "," + str(card.teamSlot))
+                        Animations.addCodeFrom(player, effect, effect.intValue, card.teamSlot)
+            case Target.LEFTMOST:
+                for card in player.team:
+                    if (card != None):
+                        card.powerCounters += effect.intValue
+                        Animations.addCodeFrom(player, effect, effect.intValue, card.teamSlot)
+                        break
+            case Target.RIGHTMOST:
+                for card in reversed(player.team):
+                    if (card != None):
+                        card.powerCounters += effect.intValue
+                        Animations.addCodeFrom(player, effect, effect.intValue, card.teamSlot)
+                        break
+            case Target.RANDOM:
+                randomRoll = player.rollDie()
+                randomCard = player.gunnerFromRoll()
+                randomCard.powerCounters += effect.intValue
+                Animations.addCodeFrom(player, effect, effect.intValue, randomCard.teamSlot)
                         
     def activateCycleEffect(self, effect, player):
         for iteration in range(0, effect.intValue):
-            player.cycleCard();
+            player.cycleCard()
                 
     def clear(self):
         self.powerCounters = 0
