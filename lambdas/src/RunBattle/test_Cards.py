@@ -10,7 +10,7 @@ import random
 import copy
 import unittest
 
-class Test_CardClass(unittest.TestCase):
+class Test_Cards(unittest.TestCase):
 
     def test_setsId(self):
         card = Card("p", 1, 1, [])
