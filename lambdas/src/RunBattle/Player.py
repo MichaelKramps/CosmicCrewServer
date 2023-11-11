@@ -72,7 +72,6 @@ class Player:
                 return thisIndex
         
     def gunnerWins(self):
-        #check this before putting the winning gunner in the deck
         self.gunnerFromRoll().clear()
         deckWasNotEmpty = len(self.deck) > 0
         self.deck.append(self.gunnerFromRoll())
