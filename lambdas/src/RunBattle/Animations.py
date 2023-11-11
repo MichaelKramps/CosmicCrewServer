@@ -26,5 +26,22 @@ class Animations:
                 return "pow"
             case EffectType.SCRAP:
                 return "scr"
+            
+    @staticmethod
+    def codesAppearInOrder(codes):
+        for existingCodeIndex in range(len(Animations.animationsList)):
+            matchedAllCodes = True
+            for searchingCodeIndex in range(len(codes)):
+                if Animations.animationsList[existingCodeIndex + searchingCodeIndex] != codes[searchingCodeIndex]:
+                    matchedAllCodes = False
+                    break
+            if matchedAllCodes:
+                return matchedAllCodes
+        return False
+
+            
+    @staticmethod
+    def clearAnimations():
+        Animations.animationsList = []
 
     

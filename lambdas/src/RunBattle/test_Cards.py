@@ -172,3 +172,11 @@ class Test_Cards(unittest.TestCase):
         animationString2 = player.playerIdentifier + ",uns,1,0"
         assert animationString1 in Animations.animationsList
         assert animationString2 in Animations.animationsList
+
+    def test_clearRemovesPowerCountersAndDeckSlot(self):
+        card = Card("test", 1, 1, [])
+        card.powerCounters = 3
+        card.teamSlot = 3
+        card.clear()
+        assert card.powerCounters == 0
+        assert card.teamSlot == 0

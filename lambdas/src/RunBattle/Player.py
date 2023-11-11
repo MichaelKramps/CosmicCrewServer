@@ -26,14 +26,15 @@ class Player:
         return self.currentRoll
         
     def drawCard(self):
-        Animations.animationsList.append(self.playerIdentifier + ",dws,1,0")
         if (len(self.deck) > 0):
+            Animations.append(self.playerIdentifier + ",dws,1,0")
             self.activeCard = self.deck.pop(0)
             #activate draw card effects of cards on team
             for card in self.team:
                 if (card != None):
                     card.activateEffectsFor(Timing.ONDRAW, self)
         else:
+            Animations.append(self.playerIdentifier + ",ded,0,0")
             self.activeCard = None
             
     def putCardOnBottomOfDeck(self):
@@ -51,7 +52,7 @@ class Player:
         
     def drawAndPlayCard(self, slotToPlayCardIn):
         self.drawCard()
-        return self.playCard(slotToPlayCardIn)
+        self.playCard(slotToPlayCardIn)
         
     def cycleCard(self):
         self.drawCard()
