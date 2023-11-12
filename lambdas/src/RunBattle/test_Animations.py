@@ -1,7 +1,7 @@
 from Animations import Animations
 import unittest
 
-class Test_Player(unittest.TestCase):
+class Test_Animations(unittest.TestCase):
 
     def test_codesAppearInOrderFailsSingle(self):
         Animations.animationsList = ["a", "b", "c", "d", "e"]
