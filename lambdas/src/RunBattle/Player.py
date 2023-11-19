@@ -1,21 +1,21 @@
 import random
-from Cards import cardList
-from Animations import Animations
+from Cards import Card
 from Effects import Timing
 from copy import deepcopy
 
 class Player:
-    def __init__(self, deckString, playerIdentifier):
+    def __init__(self, deckString, playerIdentifier, animations):
         deckStringList = deckString.split(',')
         self.deck = []
         for cardIdString in deckStringList:
-            thisCard = deepcopy(cardList[int(cardIdString)])
+            thisCard = Card.getCardWithId(int(cardIdString), animations)
             self.deck.append(thisCard)
         self.team = [None, None, None, None, None, None]
         self.discard = []
         self.activeCard = None
         self.playerIdentifier = playerIdentifier
         self.currentRoll = 0
+        self.animations = animations
         
     def shuffleDeck(self):
         random.shuffle(self.deck)
@@ -27,14 +27,14 @@ class Player:
         
     def drawCard(self):
         if (len(self.deck) > 0):
-            Animations.append(self.playerIdentifier + ",dws,1,0")
+            self.animations.append(self.playerIdentifier + ",dws,1,0")
             self.activeCard = self.deck.pop(0)
             #activate draw card effects of cards on team
             for card in self.team:
                 if (card != None):
                     card.activateEffectsFor(Timing.ONDRAW, self)
         else:
-            Animations.append(self.playerIdentifier + ",ded,0,0")
+            self.animations.append(self.playerIdentifier + ",ded,0,0")
             self.activeCard = None
             
     def putCardOnBottomOfDeck(self):
@@ -46,7 +46,7 @@ class Player:
     def playCard(self, slotToPlayCardIn):
         self.team[slotToPlayCardIn - 1] = self.activeCard
         self.activeCard.teamSlot = slotToPlayCardIn
-        Animations.animationsList.append(self.playerIdentifier + ",p," + str(slotToPlayCardIn) + ",0")
+        self.animations.append(self.playerIdentifier + ",p," + str(slotToPlayCardIn) + ",0")
         self.activeCard.activateEffectsFor(Timing.INITIALIZE, self)
         self.activeCard = None
         self.printTeam()
@@ -57,7 +57,7 @@ class Player:
         
     def cycleCard(self):
         self.drawCard()
-        Animations.animationsList.append(self.playerIdentifier + ",uns,1,0");
+        self.animations.append(self.playerIdentifier + ",uns,1,0");
         self.putCardOnBottomOfDeck()
         
     

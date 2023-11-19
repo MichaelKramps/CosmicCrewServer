@@ -1,16 +1,16 @@
 from Effects import effects
 from Effects import EffectType
 from Effects import Target
-from Animations import Animations
 
 class Card:
-    def __init__(self, name, id, power, effects):
+    def __init__(self, name, id, power, effects, animations):
         self.id = id
         self.name = name
         self.power = power
         self.powerCounters = 0
         self.teamSlot = 0
         self.effects = effects
+        self.animations = animations
         
     def activateEffectsFor(self, timing, player):
         for effect in self.effects:
@@ -28,29 +28,29 @@ class Card:
         match effect.target:
             case Target.SELF:
                 self.powerCounters += effect.intValue
-                Animations.addCodeFrom(player, effect, effect.intValue, self.teamSlot)
+                self.animations.addCodeFrom(player, effect, effect.intValue, self.teamSlot)
             case Target.ALL:
                 for card in player.team:
                     if (card != None):
                         card.powerCounters += effect.intValue
-                        Animations.addCodeFrom(player, effect, effect.intValue, card.teamSlot)
+                        self.animations.addCodeFrom(player, effect, effect.intValue, card.teamSlot)
             case Target.LEFTMOST:
                 for card in player.team:
                     if (card != None):
                         card.powerCounters += effect.intValue
-                        Animations.addCodeFrom(player, effect, effect.intValue, card.teamSlot)
+                        self.animations.addCodeFrom(player, effect, effect.intValue, card.teamSlot)
                         break
             case Target.RIGHTMOST:
                 for card in reversed(player.team):
                     if (card != None):
                         card.powerCounters += effect.intValue
-                        Animations.addCodeFrom(player, effect, effect.intValue, card.teamSlot)
+                        self.animations.addCodeFrom(player, effect, effect.intValue, card.teamSlot)
                         break
             case Target.RANDOM:
                 randomRoll = player.rollDie()
                 randomCard = player.gunnerFromRoll()
                 randomCard.powerCounters += effect.intValue
-                Animations.addCodeFrom(player, effect, effect.intValue, randomCard.teamSlot)
+                self.animations.addCodeFrom(player, effect, effect.intValue, randomCard.teamSlot)
                         
     def activateCycleEffect(self, effect, player):
         for iteration in range(0, effect.intValue):
@@ -60,14 +60,19 @@ class Card:
         self.powerCounters = 0
         self.teamSlot = 0
 
+    @staticmethod
+    def getCardWithId(id, animations):
+        cardInfo = cardList[id]
+        return Card(cardInfo["name"], cardInfo["id"], cardInfo["power"], cardInfo["effects"], animations)
+
 cardList = [
-    Card("Baby Gunner", 0, 1, []),
-    Card("Teenage Gunner", 1, 2, []),
-    Card("Adult Gunner", 2, 3, []),
-    Card("CPU Teller", 3, 4, [effects["initializeOnePowerCounterSelf"]]),
-    Card("CPU Lender", 4, 3, [effects["initializeTwoPowerCounterSelf"]]),
-    Card("CPU Banker", 5, 2, [effects["initializeThreePowerCounterSelf"]]),
-    Card("Support Specialist", 6, 1, [effects["initializeOnePowerCounterAll"]]),
-    Card("Athyr Biker", 7, 3, [effects["initializeCycleOne"]]),
-    Card("Kip Ardor", 8, 1, [effects["onDrawOnePowerCounterSelf"]])
+    {"name": "Baby Gunner", "id": 0, "power": 1, "effects": []},
+    {"name": "Teenage Gunner", "id": 1, "power": 2, "effects": []},
+    {"name": "Adult Gunner", "id": 2, "power": 3, "effects": []},
+    {"name": "CPU Teller", "id": 3, "power": 4, "effects": [effects["initializeOnePowerCounterSelf"]]},
+    {"name": "CPU Lender", "id": 4, "power": 3, "effects": [effects["initializeTwoPowerCounterSelf"]]},
+    {"name": "CPU Banker", "id": 5, "power": 2, "effects": [effects["initializeThreePowerCounterSelf"]]},
+    {"name": "Support Specialist", "id": 6,"power":  1, "effects": [effects["initializeOnePowerCounterAll"]]},
+    {"name": "Athyr Biker", "id": 7, "power": 3, "effects": [effects["initializeCycleOne"]]},
+    {"name": "Kip Ardor", "id": 8, "power": 1, "effects": [effects["onDrawOnePowerCounterSelf"]]}
 ]

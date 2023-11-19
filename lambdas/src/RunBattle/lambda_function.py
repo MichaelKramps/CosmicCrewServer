@@ -5,7 +5,7 @@ from Animations import Animations
 
 def lambda_handler(event, context):
     # TODO implement
-    simulator = DogfightSimulator(event["deckOne"], event["deckTwo"])
+    simulator = DogfightSimulator(event["deckOne"], event["deckTwo"], Animations())
     simulator.simulateDogfight()
     return {
         'statusCode': 200,

@@ -1,48 +1,38 @@
 from Effects import EffectType
 
 class Animations:
-    #this does not always reset in the lambda
-    animationsList = []
+    def __init__(self):
+        self.animationsList = []
 
-    @staticmethod
-    def append(animationCode):
-        Animations.animationsList.append(animationCode)
+    def append(self, animationCode):
+        self.animationsList.append(animationCode)
 
-    @staticmethod
-    def addCodeFrom(player, effect, intValue, secondIntValue):
-        Animations.animationsList.append(Animations.animationCodeFrom(player, effect, intValue, secondIntValue))
+    def addCodeFrom(self, player, effect, intValue, secondIntValue):
+        self.animationsList.append(self.animationCodeFrom(player, effect, intValue, secondIntValue))
 
-    @staticmethod
-    def animationCodeFrom(player, effect, intValue, secondIntValue):
+    def animationCodeFrom(self, player, effect, intValue, secondIntValue):
         animationCode = player.playerIdentifier + "," 
-        animationCode += Animations.effectToCode(effect) + ","
+        animationCode += self.effectToCode(effect) + ","
         animationCode += str(intValue) + ","
         animationCode += str(secondIntValue)
         return animationCode
 
-    @staticmethod
-    def effectToCode(effect):
+    def effectToCode(self, effect):
         match effect.effectType:
             case EffectType.POWERCOUNTER:
                 return "pow"
             case EffectType.SCRAP:
                 return "scr"
             
-    @staticmethod
-    def codesAppearInOrder(codes):
-        for existingCodeIndex in range(len(Animations.animationsList)):
+    def codesAppearInOrder(self, codes):
+        for existingCodeIndex in range(len(self.animationsList)):
             matchedAllCodes = True
             for searchingCodeIndex in range(len(codes)):
-                if Animations.animationsList[existingCodeIndex + searchingCodeIndex] != codes[searchingCodeIndex]:
+                if self.animationsList[existingCodeIndex + searchingCodeIndex] != codes[searchingCodeIndex]:
                     matchedAllCodes = False
                     break
             if matchedAllCodes:
                 return matchedAllCodes
         return False
-
-            
-    @staticmethod
-    def clearAnimations():
-        Animations.animationsList = []
 
     

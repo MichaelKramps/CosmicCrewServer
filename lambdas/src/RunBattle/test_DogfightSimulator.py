@@ -4,27 +4,25 @@ from Cards import Card
 import unittest
 
 class Test_DogfightSimulator(unittest.TestCase):
-    def setUp(self):
-        Animations.clearAnimations()
-
     def test_setsPlayers(self):
-        simulator = DogfightSimulator("1", "1")
+        simulator = DogfightSimulator("1", "1", Animations())
         assert simulator.playerOne != None
         assert simulator.playerTwo != None
 
     def test_simulateDogfightSetsStartingDecks(self):
-        simulator = DogfightSimulator("1", "1")
+        simulator = DogfightSimulator("1", "1", Animations())
         simulator.simulateDogfight()
         assert simulator.startingDeckOne != None
         assert simulator.startingDeckTwo != None
 
     def test_getStartingDeckStringIsCorrect(self):
-        simulator = DogfightSimulator("1", "1")
-        testDeck = [Card("test", 23, 0, []), Card("test", 16, 0, []), Card("test", 127, 0, []), Card("test", 1, 0, []), Card("test", 6, 0, [])]
+        animations = Animations()
+        simulator = DogfightSimulator("1", "1", animations)
+        testDeck = [Card("test", 23, 0, [], animations), Card("test", 16, 0, [], animations), Card("test", 127, 0, [], animations), Card("test", 1, 0, [], animations), Card("test", 6, 0, [], animations)]
         assert simulator.getStartingDeckString(testDeck) == "23,16,127,1,6"
 
     def test_setupDogfightOneAndTwoCards(self):
-        simulator = DogfightSimulator("1", "1,1")
+        simulator = DogfightSimulator("1", "1,1", Animations())
         simulator.setupDogfight()
         assert simulator.playerOne.team[0] != None
         assert simulator.playerOne.team[1] == None
@@ -40,7 +38,7 @@ class Test_DogfightSimulator(unittest.TestCase):
         assert simulator.playerTwo.team[5] == None
 
     def test_setupDogfightThreeAndFourCards(self):
-        simulator = DogfightSimulator("1,1,1", "1,1,1,1")
+        simulator = DogfightSimulator("1,1,1", "1,1,1,1", Animations())
         simulator.setupDogfight()
         assert simulator.playerOne.team[0] != None
         assert simulator.playerOne.team[1] != None
@@ -56,7 +54,7 @@ class Test_DogfightSimulator(unittest.TestCase):
         assert simulator.playerTwo.team[5] == None
 
     def test_setupDogfightFiveAndSixCards(self):
-        simulator = DogfightSimulator("1,1,1,1,1", "1,1,1,1,1,1")
+        simulator = DogfightSimulator("1,1,1,1,1", "1,1,1,1,1,1", Animations())
         simulator.setupDogfight()
         assert simulator.playerOne.team[0] != None
         assert simulator.playerOne.team[1] != None
@@ -72,7 +70,7 @@ class Test_DogfightSimulator(unittest.TestCase):
         assert simulator.playerTwo.team[5] != None
 
     def test_setupDogfightSevenAndMoreCards(self):
-        simulator = DogfightSimulator("1,1,1,1,1,1,1", "1,1,1,1,1,1,1,1,1,1,1,1")
+        simulator = DogfightSimulator("1,1,1,1,1,1,1", "1,1,1,1,1,1,1,1,1,1,1,1", Animations())
         simulator.setupDogfight()
         assert simulator.playerOne.team[0] != None
         assert simulator.playerOne.team[1] != None
@@ -88,16 +86,19 @@ class Test_DogfightSimulator(unittest.TestCase):
         assert simulator.playerTwo.team[5] != None
 
     def test_fightHasCorrectWinnerInGuaranteedPlayerOneWin(self):
-        simulator = DogfightSimulator("1,1,1,1,1,1,1", "0,0,0,0,0,0,0,0")
+        animations = Animations()
+        simulator = DogfightSimulator("1,1,1,1,1,1,1", "0,0,0,0,0,0,0,0", animations)
         simulator.simulateDogfight()#fight called inside here
-        assert "p,1w,0,0" in Animations.animationsList
+        assert "p,1w,0,0" in animations.animationsList
 
     def test_fightHasCorrectWinnerInGuaranteedPlayerTwoWin(self):
-        simulator = DogfightSimulator("0,0,0,0,0,0,0,0", "1,1,1,1,1,1,1")
+        animations = Animations()
+        simulator = DogfightSimulator("0,0,0,0,0,0,0,0", "1,1,1,1,1,1,1", animations)
         simulator.simulateDogfight()#fight called inside here
-        assert "s,2w,0,0" in Animations.animationsList
+        assert "s,2w,0,0" in animations.animationsList
 
     def test_fightTiesInGuaranteedTie(self):
-        simulator = DogfightSimulator("0,0,0,0,0,0,0,0", "0,0,0,0,0,0,0,0")
+        animations = Animations()
+        simulator = DogfightSimulator("0,0,0,0,0,0,0,0", "0,0,0,0,0,0,0,0", animations)
         simulator.simulateDogfight()#fight called inside here
-        assert "b,ft,0,0" in Animations.animationsList
+        assert "b,ft,0,0" in animations.animationsList

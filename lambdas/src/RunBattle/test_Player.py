@@ -9,71 +9,72 @@ import random
 import unittest
 
 class Test_Player(unittest.TestCase):
-    def setUp(self):
-        Animations.clearAnimations()
-
     def test_setsPlayerIdentifier(self):
-        player = Player("1", "p")
+        player = Player("1", "p", Animations())
         assert player.playerIdentifier == "p"
 
     def test_setsDeck(self):
-        player = Player("1,2,3", "p")
+        player = Player("1,2,3", "p", Animations())
         assert len(player.deck) == 3
 
     def test_setsTeamBlank(self):
-        player = Player("1", "p")
+        player = Player("1", "p", Animations())
         assert player.team != None
         assert len(player.team) == 6
 
     def test_setsDiscard(self):
-        player = Player("1", "p")
+        player = Player("1", "p", Animations())
         assert player.discard != None
         assert len(player.discard) == 0
 
     def test_currentRoll(self):
-        player = Player("1", "p")
+        player = Player("1", "p", Animations())
         assert player.currentRoll == 0
 
     def test_rollDieRollsSixSidedDie(self):
-        player = Player("1", "p")
+        player = Player("1", "p", Animations())
         player.rollDie()
         assert player.currentRoll > 0
         assert player.currentRoll <= 6
 
     def test_drawCardGetsTopCardOfDeck(self):
-        player = Player("1", "p")
+        player = Player("1", "p", Animations())
         cardToDraw = player.deck[0]
         player.drawCard()
         assert player.activeCard == cardToDraw
 
     def test_drawFromEmptyDeckWritesAnimationCode(self):
-        player = Player("1", "p")
+        animations = Animations()
+        player = Player("1", "p", animations)
         player.deck = []
         player.drawCard()
-        assert "p,ded,0,0" in Animations.animationsList
-        assert len(Animations.animationsList) == 1
+        assert "p,ded,0,0" in animations.animationsList
+        assert len(animations.animationsList) == 1
 
     def test_drawFromDeckWritesAnimationCode(self):
-        player = Player("1", "p")
+        animations = Animations()
+        player = Player("1", "p", animations)
         player.drawCard()
-        assert "p,dws,1,0" in Animations.animationsList
-        assert len(Animations.animationsList) == 1
+        assert "p,dws,1,0" in animations.animationsList
+        assert len(animations.animationsList) == 1
 
     def test_drawCardTriggersDrawCardEffectsOfTeam(self):
-        player = Player("1", "p")
+        animations = Animations()
+        player = Player("1", "p", animations)
         numberPowerCounters = random.randint(1,10)
         drawCardTimingEffect = Effect(Timing.ONDRAW, EffectType.POWERCOUNTER, Target.SELF, numberPowerCounters)
-        cardWithEffect = Card("test", 0, 0, [drawCardTimingEffect])
+        cardWithEffect = Card("test", 0, 0, [drawCardTimingEffect], animations)
         slot = random.randint(1,10000)
         cardWithEffect.teamSlot = slot
         player.team = [None, None, cardWithEffect, None, None, None]
         player.drawCard()
         assert cardWithEffect.powerCounters == numberPowerCounters
-        assert "p,pow," + str(numberPowerCounters) + "," + str(slot) in Animations.animationsList
+        assert "p,pow," + str(numberPowerCounters) + "," + str(slot) in animations.animationsList
 
     def test_putCardOnBottomOfDeckClearsCard(self):
-        player = Player("1", "p")
-        cardToTest = Card("test", 0, 0, [])
+        animations = Animations()
+        player = Player("1", "p", animations)
+        cardToTest = Card("test", 0, 0, [], animations)
         cardToTest.powerCounters = 4
         cardToTest.teamSlot = 5
         player.deck = [cardToTest]
@@ -83,9 +84,10 @@ class Test_Player(unittest.TestCase):
         assert cardToTest.teamSlot == 0
 
     def test_putCardOnBottomOfDeckPutsCardOnBottomOfDeck(self):
-        player = Player("1", "p")
-        cardToTest = Card("test", 0, 0, [])
-        player.deck = [cardToTest, Card("test", 0, 0, []), Card("test", 0, 0, [])]
+        animations = Animations()
+        player = Player("1", "p", animations)
+        cardToTest = Card("test", 0, 0, [], animations)
+        player.deck = [cardToTest, Card("test", 0, 0, [], animations), Card("test", 0, 0, [], animations)]
         player.drawCard()
         player.putCardOnBottomOfDeck()
         assert player.deck[0] != cardToTest
@@ -93,156 +95,176 @@ class Test_Player(unittest.TestCase):
         assert player.deck[2] == cardToTest
 
     def test_playCardPlaysCardInTheRightSpot(self):
-        player = Player("1", "p")
-        cardToTest = Card("test", 0, 0, [])
+        animations = Animations()
+        player = Player("1", "p", animations)
+        cardToTest = Card("test", 0, 0, [], animations)
         player.deck = [cardToTest]
         player.drawCard()
         player.playCard(3)
         assert player.team[2] == cardToTest
 
     def test_playCardSetsTeamSlot(self):
-        player = Player("1", "p")
-        cardToTest = Card("test", 0, 0, [])
+        animations = Animations()
+        player = Player("1", "p", animations)
+        cardToTest = Card("test", 0, 0, [], animations)
         player.deck = [cardToTest]
         player.drawCard()
         player.playCard(3)
         assert cardToTest.teamSlot == 3
 
     def test_playCardAddsAnimationCode(self):
-        player = Player("1", "p")
-        cardToTest = Card("test", 0, 0, [])
+        animations = Animations()
+        player = Player("1", "p", animations)
+        cardToTest = Card("test", 0, 0, [], animations)
         player.deck = [cardToTest]
         player.drawCard()
         player.playCard(3)
-        assert "p,p,3,0" in Animations.animationsList
+        assert "p,p,3,0" in animations.animationsList
 
     def test_playCardActivatesINITIALIZEEffect(self):
-        player = Player("1", "p")
+        animations = Animations()
+        player = Player("1", "p", animations)
         numberPowerCounters = random.randint(1,10)
         initializeEffect = Effect(Timing.INITIALIZE, EffectType.POWERCOUNTER, Target.SELF, numberPowerCounters)
-        cardToTest = Card("test", 0, 0, [initializeEffect])
+        cardToTest = Card("test", 0, 0, [initializeEffect], animations)
         player.deck = [cardToTest]
         player.drawCard()
         player.playCard(3)
         assert cardToTest.powerCounters == numberPowerCounters
 
     def test_cycleCardMovesTopCardToBottom(self):
-        player = Player("1", "p")
-        cardToTest = Card("test", 0, 0, [])
-        player.deck = [cardToTest, Card("test", 0, 0, []), Card("test", 0, 0, [])]
+        animations = Animations()
+        player = Player("1", "p", animations)
+        cardToTest = Card("test", 0, 0, [], animations)
+        player.deck = [cardToTest, Card("test", 0, 0, [], animations), Card("test", 0, 0, [], animations)]
         player.cycleCard()
         assert player.deck[0] != cardToTest
         assert player.deck[1] != cardToTest
         assert player.deck[2] == cardToTest
 
     def test_cycleCardAddsAnimationCodes(self):
-        player = Player("1", "p")
-        cardToTest = Card("test", 0, 0, [])
-        player.deck = [cardToTest, Card("test", 0, 0, []), Card("test", 0, 0, [])]
+        animations = Animations()
+        player = Player("1", "p", animations)
+        cardToTest = Card("test", 0, 0, [], animations)
+        player.deck = [cardToTest, Card("test", 0, 0, [], animations), Card("test", 0, 0, [], animations)]
         player.cycleCard()
-        assert Animations.codesAppearInOrder(["p,dws,1,0", "p,uns,1,0"])
+        assert animations.codesAppearInOrder(["p,dws,1,0", "p,uns,1,0"])
 
     def test_cycleCardPutsDrawCardAnimationCodesInBetweenDrawCodes(self):
-        player = Player("1", "p")
+        animations = Animations()
+        player = Player("1", "p", animations)
         numberPowerCounters = random.randint(1,10)
         onDrawEffect = Effect(Timing.ONDRAW, EffectType.POWERCOUNTER, Target.SELF, numberPowerCounters)
-        cardToTest = Card("test", 0, 0, [onDrawEffect])
+        cardToTest = Card("test", 0, 0, [onDrawEffect], animations)
         cardToTest.teamSlot = 3
         player.team = [None, None, cardToTest, None, None, None]
-        player.deck = [Card("test", 0, 0, []), Card("test", 0, 0, [])]
+        player.deck = [Card("test", 0, 0, [], animations), Card("test", 0, 0, [], animations)]
         player.cycleCard()
-        assert Animations.codesAppearInOrder(["p,dws,1,0", "p,pow," + str(numberPowerCounters) + ",3", "p,uns,1,0"])
+        assert animations.codesAppearInOrder(["p,dws,1,0", "p,pow," + str(numberPowerCounters) + ",3", "p,uns,1,0"])
 
     def test_indexFromRollOneDirectHit(self):
-        player = Player("1", "p")
+        animations = Animations()
+        player = Player("1", "p", animations)
         player.currentRoll = random.randint(1,6)
-        player.team = [Card("test", 0, 0, []), Card("test", 0, 0, []), Card("test", 0, 0, []), Card("test", 0, 0, []), Card("test", 0, 0, []), Card("test", 0, 0, [])]
+        player.team = [Card("test", 0, 0, [], animations), Card("test", 0, 0, [], animations), Card("test", 0, 0, [], animations), Card("test", 0, 0, [], animations), Card("test", 0, 0, [], animations), Card("test", 0, 0, [], animations)]
         assert player.gunnerIndexFromRoll() == player.currentRoll - 1
 
     def test_indexFromRollSingleMiss(self):
-        player = Player("1", "p")
+        animations = Animations()
+        player = Player("1", "p", animations)
         player.currentRoll = 3
-        player.team = [Card("test", 0, 0, []), Card("test", 0, 0, []), None, None, Card("test", 0, 0, []), Card("test", 0, 0, [])]
+        player.team = [Card("test", 0, 0, [], animations), Card("test", 0, 0, [], animations), None, None, Card("test", 0, 0, [], animations), Card("test", 0, 0, [], animations)]
         assert player.gunnerIndexFromRoll() == 4
 
     def test_indexFromRollRolloverSix(self):
-        player = Player("1", "p")
+        animations = Animations()
+        player = Player("1", "p", animations)
         player.currentRoll = 3
-        player.team = [Card("test", 0, 0, []), Card("test", 0, 0, []), None, None, None, None]
+        player.team = [Card("test", 0, 0, [], animations), Card("test", 0, 0, [], animations), None, None, None, None]
         assert player.gunnerIndexFromRoll() == 0
 
     def test_gunnerFromRollReturnsCorrectGunner(self):
-        player = Player("1", "p")
+        animations = Animations()
+        player = Player("1", "p", animations)
         player.rollDie()
-        player.team = [Card("test", 0, 0, []), Card("test", 0, 0, []), None, None, Card("test", 0, 0, []), Card("test", 0, 0, [])]
+        player.team = [Card("test", 0, 0, [], animations), Card("test", 0, 0, [], animations), None, None, Card("test", 0, 0, [], animations), Card("test", 0, 0, [], animations)]
         assert player.gunnerFromRoll() == player.team[player.gunnerIndexFromRoll()]
 
     def test_gunnerWinsClearsWinningGunner(self):
-        player = Player("1", "p")
+        animations = Animations()
+        player = Player("1", "p", animations)
         player.currentRoll = 1
-        cardToTest = Card("test", 0, 0, [])
+        cardToTest = Card("test", 0, 0, [], animations)
         cardToTest.powerCounters = 4
-        player.team = [cardToTest, Card("test", 0, 0, []), Card("test", 0, 0, []), Card("test", 0, 0, []), Card("test", 0, 0, []), Card("test", 0, 0, [])]
+        player.team = [cardToTest, Card("test", 0, 0, [], animations), Card("test", 0, 0, [], animations), Card("test", 0, 0, [], animations), Card("test", 0, 0, [], animations), Card("test", 0, 0, [], animations)]
         player.gunnerWins()
         assert cardToTest.powerCounters == 0
 
     def test_gunnerWinsDoesntReplaceIfEmptyDeck(self):
-        player = Player("1", "p")
+        animations = Animations()
+        player = Player("1", "p", animations)
         player.deck = []
         player.currentRoll = 1
-        player.team = [Card("test", 0, 0, []), Card("test", 0, 0, []), Card("test", 0, 0, []), Card("test", 0, 0, []), Card("test", 0, 0, []), Card("test", 0, 0, [])]
+        player.team = [Card("test", 0, 0, [], animations), Card("test", 0, 0, [], animations), Card("test", 0, 0, [], animations), Card("test", 0, 0, [], animations), Card("test", 0, 0, [], animations), Card("test", 0, 0, [], animations)]
         player.gunnerWins()
         assert player.team[0] == None
 
     def test_gunnerWinsReplacesGunner(self):
-        player = Player("1", "p")
-        cardInDeck = Card("test", 0, 0, [])
+        animations = Animations()
+        player = Player("1", "p", animations)
+        cardInDeck = Card("test", 0, 0, [], animations)
         player.deck = [cardInDeck]
         player.currentRoll = 1
-        player.team = [Card("test", 0, 0, []), Card("test", 0, 0, []), Card("test", 0, 0, []), Card("test", 0, 0, []), Card("test", 0, 0, []), Card("test", 0, 0, [])]
+        player.team = [Card("test", 0, 0, [], animations), Card("test", 0, 0, [], animations), Card("test", 0, 0, [], animations), Card("test", 0, 0, [], animations), Card("test", 0, 0, [], animations), Card("test", 0, 0, [], animations)]
         player.gunnerWins()
         assert player.team[0] == cardInDeck
 
     def test_gunnerWinsPutsWinningGunnerOnBottomOfDeck(self):
-        player = Player("1", "p")
-        player.deck = [Card("test", 0, 0, []), Card("test", 0, 0, [])]
+        animations = Animations()
+        player = Player("1", "p", animations)
+        player.deck = [Card("test", 0, 0, [], animations), Card("test", 0, 0, [], animations)]
         player.currentRoll = 1
-        winningCard = Card("test", 0, 0, [])
-        player.team = [winningCard, Card("test", 0, 0, []), Card("test", 0, 0, []), Card("test", 0, 0, []), Card("test", 0, 0, []), Card("test", 0, 0, [])]
+        winningCard = Card("test", 0, 0, [], animations)
+        player.team = [winningCard, Card("test", 0, 0, [], animations), Card("test", 0, 0, [], animations), Card("test", 0, 0, [], animations), Card("test", 0, 0, [], animations), Card("test", 0, 0, [], animations)]
         player.gunnerWins()
         assert player.deck[1] == winningCard
 
     def test_gunnerLosesClearsLosingGunner(self):
-        player = Player("1", "p")
+        animations = Animations()
+        player = Player("1", "p", animations)
         player.currentRoll = 1
-        cardToTest = Card("test", 0, 0, [])
+        cardToTest = Card("test", 0, 0, [], animations)
         cardToTest.powerCounters = 4
-        player.team = [cardToTest, Card("test", 0, 0, []), Card("test", 0, 0, []), Card("test", 0, 0, []), Card("test", 0, 0, []), Card("test", 0, 0, [])]
+        player.team = [cardToTest, Card("test", 0, 0, [], animations), Card("test", 0, 0, [], animations), Card("test", 0, 0, [], animations), Card("test", 0, 0, [], animations), Card("test", 0, 0, [], animations)]
         player.gunnerLoses()
         assert cardToTest.powerCounters == 0
 
     def test_gunnerLosesAddsLosingGunnerToDiscard(self):
-        player = Player("1", "p")
+        animations = Animations()
+        player = Player("1", "p", animations)
         player.currentRoll = 1
-        cardToTest = Card("test", 0, 0, [])
-        player.team = [cardToTest, Card("test", 0, 0, []), Card("test", 0, 0, []), Card("test", 0, 0, []), Card("test", 0, 0, []), Card("test", 0, 0, [])]
+        cardToTest = Card("test", 0, 0, [], animations)
+        player.team = [cardToTest, Card("test", 0, 0, [], animations), Card("test", 0, 0, [], animations), Card("test", 0, 0, [], animations), Card("test", 0, 0, [], animations), Card("test", 0, 0, [], animations)]
         player.gunnerLoses()
         assert cardToTest in player.discard
 
     def test_gunnerLosesRemovesLosingGunnerFromTeam(self):
-        player = Player("1", "p")
+        animations = Animations()
+        player = Player("1", "p", animations)
         player.currentRoll = 1
-        cardToTest = Card("test", 0, 0, [])
-        player.team = [cardToTest, Card("test", 0, 0, []), Card("test", 0, 0, []), Card("test", 0, 0, []), Card("test", 0, 0, []), Card("test", 0, 0, [])]
+        cardToTest = Card("test", 0, 0, [], animations)
+        player.team = [cardToTest, Card("test", 0, 0, [], animations), Card("test", 0, 0, [], animations), Card("test", 0, 0, [], animations), Card("test", 0, 0, [], animations), Card("test", 0, 0, [], animations)]
         player.gunnerLoses()
         assert player.team[0] == None
 
     def test_stillAliveTrueIfGunnerOnTeam(self):
-        player = Player("1", "p")
-        player.team = [None, None, None, None, Card("test", 0, 0, []), Card("test", 0, 0, [])]
+        animations = Animations()
+        player = Player("1", "p", animations)
+        player.team = [None, None, None, None, Card("test", 0, 0, [], animations), Card("test", 0, 0, [], animations)]
         assert player.stillAlive() == True     
 
     def test_stillAliveFalseIfNoGunnersOnTeam(self):
-        player = Player("1", "p")
+        animations = Animations()
+        player = Player("1", "p", animations)
         player.team = [None, None, None, None, None, None]
         assert player.stillAlive() == False
