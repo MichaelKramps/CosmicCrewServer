@@ -1,6 +1,7 @@
 from Effects import EffectType
 
 class Animations:
+    #this does not always reset in the lambda
     animationsList = []
 
     @staticmethod

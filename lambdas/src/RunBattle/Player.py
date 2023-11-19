@@ -38,9 +38,10 @@ class Player:
             self.activeCard = None
             
     def putCardOnBottomOfDeck(self):
-        self.activeCard.clear()
-        self.deck.append(self.activeCard)
-        self.activeCard = None
+        if (self.activeCard != None):
+            self.activeCard.clear()
+            self.deck.append(self.activeCard)
+            self.activeCard = None
         
     def playCard(self, slotToPlayCardIn):
         self.team[slotToPlayCardIn - 1] = self.activeCard
