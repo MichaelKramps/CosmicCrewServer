@@ -42,23 +42,37 @@ class Player:
             self.activeCard.clear()
             self.deck.append(self.activeCard)
             self.activeCard = None
+        else:
+            self.animations.append(self.playerIdentifier + ",ded,0,0")
         
     def playCard(self, slotToPlayCardIn):
-        self.team[slotToPlayCardIn - 1] = self.activeCard
-        self.activeCard.teamSlot = slotToPlayCardIn
-        self.animations.append(self.playerIdentifier + ",p," + str(slotToPlayCardIn) + ",0")
-        self.activeCard.activateEffectsFor(Timing.INITIALIZE, self)
-        self.activeCard = None
-        self.printTeam()
+        if (self.activeCard != None):
+            self.team[slotToPlayCardIn - 1] = self.activeCard
+            self.activeCard.teamSlot = slotToPlayCardIn
+            self.animations.append(self.playerIdentifier + ",p," + str(slotToPlayCardIn) + ",0")
+            self.activeCard.activateEffectsFor(Timing.INITIALIZE, self)
+            self.activeCard = None
+            self.printTeam()
         
     def drawAndPlayCard(self, slotToPlayCardIn):
         self.drawCard()
         self.playCard(slotToPlayCardIn)
+
+    def drawCardSetupStep(self):
+        if (self.leftmostOpenTeamSlot() > 0):
+            #means there is an open gunner slot
+            self.drawCard()
+            self.playCard(self.leftmostOpenTeamSlot())
         
     def cycleCard(self):
-        self.drawCard()
-        self.animations.append(self.playerIdentifier + ",uns,1,0");
-        self.putCardOnBottomOfDeck()
+        if (len(self.deck) > 0):
+            self.drawCard()
+            #self.activeCard is the drawn card
+            self.activeCard.activateEffectsFor(Timing.WHENCYCLED, self)
+            if (self.activeCard != None):
+                #means self.activeCard was not played
+                self.animations.append(self.playerIdentifier + ",uns,1,0");
+                self.putCardOnBottomOfDeck()
         
     
     def gunnerFromRoll(self):
@@ -71,6 +85,12 @@ class Player:
                 thisIndex = thisIndex - 6
             if self.team[thisIndex] != None:
                 return thisIndex
+            
+    def leftmostOpenTeamSlot(self):
+        for index in range(0,6):
+            if (self.team[index] == None):
+                return index + 1
+        return 0
         
     def gunnerWins(self):
         self.gunnerFromRoll().clear()

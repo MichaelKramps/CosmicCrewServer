@@ -6,11 +6,13 @@ class Timing(Enum):
     LOSER = 3
     SIGNINGBONUS = 4
     ONDRAW = 5
+    WHENCYCLED = 6
     
 class EffectType(Enum):
     POWERCOUNTER = 1
     SCRAP = 2
     CYCLE = 3
+    PLAYCARD = 4
     
 class Target(Enum):
     SELF = 1
@@ -50,5 +52,7 @@ effects = {
     "initializeThreePowerCounterSelf": Effect(Timing.INITIALIZE, EffectType.POWERCOUNTER, Target.SELF, 3),
     "initializeOnePowerCounterAll": Effect(Timing.INITIALIZE, EffectType.POWERCOUNTER, Target.ALL, 1),
     "initializeCycleOne": Effect(Timing.INITIALIZE, EffectType.CYCLE, Target.NONE, 1),
-    "onDrawOnePowerCounterSelf": Effect(Timing.ONDRAW, EffectType.POWERCOUNTER, Target.SELF, 1)
+    "onDrawOnePowerCounterSelf": Effect(Timing.ONDRAW, EffectType.POWERCOUNTER, Target.SELF, 1),
+    "onDrawOnePowerCounterLeftmost": Effect(Timing.ONDRAW, EffectType.POWERCOUNTER, Target.LEFTMOST, 1),
+    "whenCycledPlayCard": Effect(Timing.WHENCYCLED, EffectType.PLAYCARD, Target.SELF, 1)
 }

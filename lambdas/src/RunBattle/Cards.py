@@ -23,6 +23,8 @@ class Card:
                 self.activatePowerCounterEffect(effect, player)
             case EffectType.CYCLE:
                 self.activateCycleEffect(effect, player)
+            case EffectType.PLAYCARD:
+                self.activatePlayCardEffect(effect, player)
                 
     def activatePowerCounterEffect(self, effect, player):
         match effect.target:
@@ -55,6 +57,12 @@ class Card:
     def activateCycleEffect(self, effect, player):
         for iteration in range(0, effect.intValue):
             player.cycleCard()
+
+    def activatePlayCardEffect(self, effect, player):
+        match effect.target:
+            case Target.SELF:
+                if (player.leftmostOpenTeamSlot() > 0):
+                    player.playCard(player.leftmostOpenTeamSlot())
                 
     def clear(self):
         self.powerCounters = 0
@@ -74,5 +82,7 @@ cardList = [
     {"name": "CPU Banker", "id": 5, "power": 2, "effects": [effects["initializeThreePowerCounterSelf"]]},
     {"name": "Support Specialist", "id": 6,"power":  1, "effects": [effects["initializeOnePowerCounterAll"]]},
     {"name": "Athyr Biker", "id": 7, "power": 3, "effects": [effects["initializeCycleOne"]]},
-    {"name": "Kip Ardor", "id": 8, "power": 1, "effects": [effects["onDrawOnePowerCounterSelf"]]}
+    {"name": "Kip Ardor", "id": 8, "power": 1, "effects": [effects["onDrawOnePowerCounterSelf"]]},
+    {"name": "Klara Cobblestone", "id": 9, "power": 1, "effects": [effects["onDrawOnePowerCounterLeftmost"]]},
+    {"name": "Tadej, Unleashed", "id": 10, "power": 6, "effects": [effects["whenCycledPlayCard"]]}
 ]

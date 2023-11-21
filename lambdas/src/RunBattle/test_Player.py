@@ -3,6 +3,7 @@ from Effects import Effect
 from Effects import Timing
 from Effects import EffectType
 from Effects import Target
+from Effects import effects
 from Cards import Card
 from Player import Player
 import random
@@ -268,3 +269,12 @@ class Test_Player(unittest.TestCase):
         player = Player("1", "p", animations)
         player.team = [None, None, None, None, None, None]
         assert player.stillAlive() == False
+
+    def test_playCardWhenCycledWorks(self):
+        animations = Animations()
+        player = Player("1", "p", animations)
+        cycleEffectCard = Card("cycle", 0, 1, [effects["initializeCycleOne"]], animations)
+        playWhenCycledCard = Card("playWhenCycled", 1, 1, [effects["whenCycledPlayCard"]], animations)
+        player.deck = [cycleEffectCard, playWhenCycledCard]
+        player.drawAndPlayCard(1)
+        assert player.team == [cycleEffectCard, playWhenCycledCard, None, None, None, None]

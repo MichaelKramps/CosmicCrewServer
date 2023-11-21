@@ -85,6 +85,24 @@ class Test_DogfightSimulator(unittest.TestCase):
         assert simulator.playerTwo.team[4] != None
         assert simulator.playerTwo.team[5] != None
 
+    def test_playCardWhenCycledWorksProperly(self):
+        #id 3 has initialize: cycle 1 card
+        #id 10 has when this card is cycled, play it in your leftmost open gunner slot
+        simulator = DogfightSimulator("1,1,1,1,1,1,1", "7,10,1,1,1,1,1,1", Animations())
+        simulator.setupDogfight()
+        assert simulator.playerOne.team[0] != None
+        assert simulator.playerOne.team[1] != None
+        assert simulator.playerOne.team[2] != None
+        assert simulator.playerOne.team[3] != None
+        assert simulator.playerOne.team[4] != None
+        assert simulator.playerOne.team[5] != None
+        assert simulator.playerTwo.team[0] != None
+        assert simulator.playerTwo.team[1] != None
+        assert simulator.playerTwo.team[2] != None
+        assert simulator.playerTwo.team[3] != None
+        assert simulator.playerTwo.team[4] != None
+        assert simulator.playerTwo.team[5] != None
+
     def test_fightHasCorrectWinnerInGuaranteedPlayerOneWin(self):
         animations = Animations()
         simulator = DogfightSimulator("1,1,1,1,1,1,1", "0,0,0,0,0,0,0,0", animations)

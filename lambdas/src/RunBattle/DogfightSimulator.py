@@ -23,20 +23,9 @@ class DogfightSimulator:
         return deckString[:-1]
         
     def setupDogfight(self):
-        cardSlot = 1;
-        while (len(self.playerOne.deck) > 0 and len(self.playerTwo.deck) > 0 and cardSlot <=6):
-            self.playerOne.drawAndPlayCard(cardSlot)
-            self.playerTwo.drawAndPlayCard(cardSlot)
-            cardSlot += 1
-            
-        if (len(self.playerOne.deck) > 0 and cardSlot <=6):
-            while (len(self.playerOne.deck) > 0 and cardSlot <= 6):
-                self.playerOne.drawAndPlayCard(cardSlot)
-                cardSlot += 1
-        elif (len(self.playerTwo.deck) > 0 and cardSlot <=6):
-            while (len(self.playerTwo.deck) > 0 and cardSlot <= 6):
-                self.playerTwo.drawAndPlayCard(cardSlot)
-                cardSlot += 1
+        for index in range(0,6):
+            self.playerOne.drawCardSetupStep()
+            self.playerTwo.drawCardSetupStep()
                     
     def fight(self):
         while(self.playerOne.stillAlive() and self.playerTwo.stillAlive()):
