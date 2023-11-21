@@ -49,10 +49,9 @@ class DogfightSimulator:
                 #write the animation code
             else:
                 #fighters tie
+                self.animations.append('b,gt,' + str(rollOne) + ',' + str(rollTwo))
                 self.playerOne.gunnerLoses()
                 self.playerTwo.gunnerLoses()
-                #write the animation code
-                self.animations.append('b,gt,' + str(rollOne) + ',' + str(rollTwo))
         #end while
         if self.playerOne.stillAlive():
             self.animations.append('p,1w,0,0')

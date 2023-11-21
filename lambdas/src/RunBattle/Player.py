@@ -93,6 +93,7 @@ class Player:
         return 0
         
     def gunnerWins(self):
+        self.gunnerFromRoll().activateEffectsFor(Timing.WINNER, self)
         self.gunnerFromRoll().clear()
         deckWasNotEmpty = len(self.deck) > 0
         self.deck.append(self.gunnerFromRoll())
@@ -102,6 +103,7 @@ class Player:
             self.drawAndPlayCard(indexOfWinningGunner + 1)
             
     def gunnerLoses(self):
+        self.gunnerFromRoll().activateEffectsFor(Timing.LOSER, self)
         self.gunnerFromRoll().clear()
         self.discard.append(self.gunnerFromRoll())
         self.team[self.gunnerIndexFromRoll()] = None

@@ -3,8 +3,10 @@ from Effects import Effect
 from Effects import Timing
 from Effects import EffectType
 from Effects import Target
+from Effects import TargetFilter
 from Effects import effects
 from Cards import Card
+from Cards import Civilization
 from Player import Player
 import random
 import unittest
@@ -278,3 +280,45 @@ class Test_Player(unittest.TestCase):
         player.deck = [cycleEffectCard, playWhenCycledCard]
         player.drawAndPlayCard(1)
         assert player.team == [cycleEffectCard, playWhenCycledCard, None, None, None, None]
+
+    def test_canCycleMoreThanOneCard(self):
+        animations = Animations()
+        player = Player("1", "p", animations)
+        cycleEffect = Effect(Timing.INITIALIZE, EffectType.CYCLE, Target.NONE, 3)
+        testCard = Card("test", 0, 0, [], animations)
+        player.deck = [Card("test", 0, 0, [cycleEffect], animations), Card("test", 0, 0, [], animations), Card("test", 0, 0, [], animations), Card("test", 0, 0, [], animations), testCard]
+        player.drawAndPlayCard(1)
+        assert player.deck[0] == testCard
+
+    def test_canActivateLoserEffects(self):
+        animations = Animations()
+        player = Player("1", "p", animations)
+        loserEffect = Effect(Timing.LOSER, EffectType.CYCLE, Target.NONE, 3)
+        testCard = Card("test", 0, 0, [], animations)
+        player.team = [Card("test", 0, 0, [loserEffect], animations), None, None, None, None, Card("test", 0, 0, [], animations)]
+        player.deck = [Card("test", 0, 0, [], animations), Card("test", 0, 0, [], animations), Card("test", 0, 0, [], animations), testCard]
+        player.currentRoll = 1
+        player.gunnerLoses()
+        assert player.deck[0] == testCard
+
+    def test_canActivateWinnerEffects(self):
+        animations = Animations()
+        player = Player("1", "p", animations)
+        winnerEffect = Effect(Timing.WINNER, EffectType.CYCLE, Target.NONE, 3)
+        testCard = Card("test", 0, 0, [], animations)
+        player.team = [Card("test", 0, 0, [winnerEffect], animations), None, None, None, None, Card("test", 0, 0, [], animations)]
+        player.deck = [Card("test", 0, 0, [], animations), Card("test", 0, 0, [], animations), Card("test", 0, 0, [], animations), testCard]
+        player.currentRoll = 1
+        player.gunnerWins()
+        assert player.team[0] == testCard
+
+    def test_targetFilterWorks(self):
+        animations = Animations()
+        player = Player("1", "p", animations)
+        filteredEffect = Effect(Timing.INITIALIZE, EffectType.POWERCOUNTER, Target.ALL, 1).addTargetFilter(TargetFilter.ATHYR)
+        player.team = [Card("test", 0, 0, [], animations).addCivilization(Civilization.ATHYR), None, None, None, None, Card("test", 0, 0, [], animations)]
+        player.deck = [Card("test", 0, 0, [filteredEffect], animations).addCivilization(Civilization.LEANOR)]
+        player.drawAndPlayCard(2)
+        assert player.team[0].powerCounters == 1
+        assert player.team[1].powerCounters == 0
+        assert player.team[5].powerCounters == 0

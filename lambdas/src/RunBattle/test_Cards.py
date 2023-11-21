@@ -4,6 +4,7 @@ from Effects import effects
 from Effects import Timing
 from Effects import EffectType
 from Effects import Target
+from Effects import Condition
 from Animations import Animations
 from Player import Player
 import random
@@ -179,6 +180,18 @@ class Test_Cards(unittest.TestCase):
         animationString2 = player.playerIdentifier + ",uns,1,0"
         assert animationString1 in animations.animationsList
         assert animationString2 in animations.animationsList
+
+    def test_conditionActiveCardHasPower(self):
+        animations = Animations();
+        player = Player("0", "p", animations)
+        conditionValue = random.randint(1,10)
+        effectWithCondition = Effect(Timing.ONDRAW, EffectType.POWERCOUNTER, Target.ALL, 1).addCondition(Condition.ACTIVECARDHASPOWER, conditionValue)
+        player.team = [Card("test", 0, 0, [effectWithCondition], animations), Card("test", 0, 0, [], animations), None, None, None, None]
+        player.deck = [Card("test", 0, conditionValue, [], animations)]
+        player.drawCard()
+        assert player.team[0].powerCounters == 1
+        assert player.team[1].powerCounters == 1
+
 
     def test_clearRemovesPowerCountersAndDeckSlot(self):
         card = Card("test", 1, 1, [], Animations())
