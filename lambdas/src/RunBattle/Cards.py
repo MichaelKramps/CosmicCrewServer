@@ -95,20 +95,26 @@ class Card:
                 return self.civilization == Civilization.RANCE
             case TargetFilter.RANCE:
                 return self.civilization == Civilization.LEANOR
+            case TargetFilter.HASPOWERCOUNTER:
+                return self.powerCounters > 0
         return True
                 
     def clear(self):
         self.powerCounters = 0
         self.teamSlot = 0
 
-    def addCivilization(self, cardInfo):
+    def addCivilizationFromInfo(self, cardInfo):
         self.civilization = Card.determineCivilization(cardInfo)
+        return self
+    
+    def addCivilization(self, civilization):
+        self.civilization = civilization
         return self
 
     @staticmethod
     def getCardWithId(id, animations):
         cardInfo = cardList[id]
-        return Card(cardInfo["name"], cardInfo["id"], cardInfo["power"], cardInfo["effects"], animations).addCivilization(cardInfo)
+        return Card(cardInfo["name"], cardInfo["id"], cardInfo["power"], cardInfo["effects"], animations).addCivilizationFromInfo(cardInfo)
     
     @staticmethod
     def determineCivilization(cardInfo):
@@ -137,5 +143,12 @@ cardList = [
     {"name": "Tadej, Unleashed", "id": 10, "power": 6, "effects": [effects["whenCycledPlayCard"]], "civilization": "athyr"},
     {"name": "Drone Papa", "id": 11, "power": 3, "effects": [effects["onDrawOnePowerCounterAllIfCardIsOnePower"]], "civilization": "athyr"},
     {"name": "Sepp Stepper", "id": 12, "power": 3, "effects": [effects["loserCycleThree"]], "civilization": "athyr"},
-    {"name": "Long Barreller", "id": 13, "power": 2, "effects": [effects["initializeOnePowerCounterAllAthyr"]], "civilization": "athyr"}
+    {"name": "Long Barreller", "id": 13, "power": 2, "effects": [effects["initializeOnePowerCounterAllAthyr"]], "civilization": "athyr"},
+    {"name": "Fixer Upper", "id": 14, "power": 7, "effects": [effects["initializeRemoveOnePowerCounterLeftmost"]], "civilization": "athyr"}
+    #{"name": "Body Snatcher", "id": 15, "power": 2, "effects": [effects["bodySnatcherEffect"]], "civilization": "athyr"},
+    #{"name": "Garbage Collector", "id": 16, "power": 4, "effects": [effects["signingBonusScrapOne"]], "civilization": "athyr"},
+    #{"name": "Scrathyr", "id": 17, "power": 2, "effects": [effects["signingBonusScrapThree"]], "civilization": "athyr"},
+    #{"name": "Shop Owner", "id": 18, "power": 2, "effects": [effects["gunnerFightsCycleOne"]], "civilization": "athyr"},
+    #{"name": "Tandem Biker", "id": 19, "power": 5, "effects": [effects["initializeBothCycleOne"]], "civilization": "athyr"},
+    #{"name": "Jonas, Revived", "id": 20, "power": 3, "effects": [effects["discardCycledCards"]], "civilization": "athyr"},
 ]

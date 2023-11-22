@@ -93,20 +93,24 @@ class Player:
         return 0
         
     def gunnerWins(self):
-        self.gunnerFromRoll().activateEffectsFor(Timing.WINNER, self)
-        self.gunnerFromRoll().clear()
+        self.activeCard = self.gunnerFromRoll()
+        self.activeCard.clear()
         deckWasNotEmpty = len(self.deck) > 0
-        self.deck.append(self.gunnerFromRoll())
+        self.deck.append(self.activeCard)
         indexOfWinningGunner = self.gunnerIndexFromRoll()
         self.team[indexOfWinningGunner] = None
+        self.activeCard.activateEffectsFor(Timing.WINNER, self)
         if deckWasNotEmpty:
             self.drawAndPlayCard(indexOfWinningGunner + 1)
             
     def gunnerLoses(self):
-        self.gunnerFromRoll().activateEffectsFor(Timing.LOSER, self)
-        self.gunnerFromRoll().clear()
-        self.discard.append(self.gunnerFromRoll())
+        self.activeCard = self.gunnerFromRoll()
+        self.activeCard.clear()
+        self.discard.append(self.activeCard)
         self.team[self.gunnerIndexFromRoll()] = None
+        self.activeCard.activateEffectsFor(Timing.LOSER, self)
+        self.activeCard = None
+
         
     def stillAlive(self):
         for fighter in self.team:

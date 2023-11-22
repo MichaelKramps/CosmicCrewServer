@@ -27,6 +27,7 @@ class TargetFilter(Enum):
     ATHYR = 2
     LEANOR = 3
     RANCE = 4
+    HASPOWERCOUNTER = 5
 
 class Condition(Enum):
     NONE = 1
@@ -79,5 +80,6 @@ effects = {
     "whenCycledPlayCard": Effect(Timing.WHENCYCLED, EffectType.PLAYCARD, Target.SELF, 1),
     "onDrawOnePowerCounterAllIfCardIsOnePower": Effect(Timing.ONDRAW, EffectType.POWERCOUNTER, Target.ALL, 1).addCondition(Condition.ACTIVECARDHASPOWER, 1),
     "loserCycleThree": Effect(Timing.LOSER, EffectType.CYCLE, Target.NONE, 3),
-    "initializeOnePowerCounterAllAthyr": Effect(Timing.INITIALIZE, EffectType.POWERCOUNTER, Target.ALL, 1).addTargetFilter(TargetFilter.ATHYR)
+    "initializeOnePowerCounterAllAthyr": Effect(Timing.INITIALIZE, EffectType.POWERCOUNTER, Target.ALL, 1).addTargetFilter(TargetFilter.ATHYR),
+    "initializeRemoveOnePowerCounterLeftmost": Effect(Timing.INITIALIZE, EffectType.POWERCOUNTER, Target.LEFTMOST, -1).addTargetFilter(TargetFilter.HASPOWERCOUNTER)
 }
