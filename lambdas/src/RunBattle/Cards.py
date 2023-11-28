@@ -84,8 +84,11 @@ class Card:
                 self.animations.addCodeFrom(player, effect, effect.intValue, randomCard.teamSlot)
                         
     def activateCycleEffect(self, effect, player):
+        print("cycling")
         for iteration in range(0, effect.intValue):
             player.cycleCard()
+            if (effect.target == Target.BOTHPLAYERS):
+                player.opponent.cycleCard()
 
     def activatePlayCardEffect(self, effect, player):
         match effect.target:
@@ -162,6 +165,6 @@ cardList = [
     {"name": "Garbage Collector", "id": 16, "power": 4, "effectNames": ["signingBonusScrapOne"], "civilization": "athyr"},
     {"name": "Scrathyr", "id": 17, "power": 2, "effectNames": ["signingBonusScrapThree"], "civilization": "athyr"},
     {"name": "Shop Owner", "id": 18, "power": 2, "effectNames": ["anyWinnerCycleOne", "anyLoserCycleOne"], "civilization": "athyr"},
-    #{"name": "Tandem Biker", "id": 19, "power": 5, "effectNames": ["initializeBothCycleOne"], "civilization": "athyr"},
+    {"name": "Tandem Biker", "id": 19, "power": 5, "effectNames": ["initializeBothCycleOne"], "civilization": "athyr"},
     #{"name": "Jonas, Revived", "id": 20, "power": 3, "effectNames": ["discardCycledCards"], "civilization": "athyr"},
 ]

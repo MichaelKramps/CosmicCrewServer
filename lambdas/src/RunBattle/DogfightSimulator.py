@@ -6,6 +6,8 @@ class DogfightSimulator:
         self.animations = animations
         self.playerOne = Player(deckOne, "p", self.animations)
         self.playerTwo = Player(deckTwo, "s", self.animations)
+        self.playerOne.addOpponent(self.playerTwo)
+        self.playerTwo.addOpponent(self.playerOne)
     
     def simulateDogfight(self):
         self.playerOne.shuffleDeck()

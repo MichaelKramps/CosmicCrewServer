@@ -16,6 +16,9 @@ class Player:
         self.playerIdentifier = playerIdentifier
         self.currentRoll = 0
         self.animations = animations
+
+    def addOpponent(self, opponent):
+        self.opponent = opponent
         
     def shuffleDeck(self):
         random.shuffle(self.deck)

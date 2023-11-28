@@ -245,3 +245,19 @@ class Test_Cards(unittest.TestCase):
         player.currentRoll = 2
         player.gunnerLoses()
         assert player.team[0].powerCounters == powerValue
+
+    def test_bothPlayersCycleOne(self):
+        animations = Animations()
+        player1 = Player("0", "p", animations)
+        player2 = Player("1", "s", animations)
+        player1.addOpponent(player2)
+        player2.addOpponent(player1)
+        bothCycleEffect = Effect(Timing.INITIALIZE, EffectType.CYCLE, Target.BOTHPLAYERS, 1)
+        testCard1 = Card("test", 0, 0, [], animations)
+        testCard2 = Card("test", 0, 0, [], animations)
+        player1.deck = [Card("test", 0, 0, [bothCycleEffect], animations), Card("test", 0, 0, [], animations), testCard1]
+        player2.deck = [Card("test", 0, 0, [], animations), testCard2]
+        player1.team = [None, None, None, None, None, None]
+        player1.drawAndPlayCard(1)
+        assert player1.deck[0] == testCard1
+        assert player2.deck[0] == testCard2

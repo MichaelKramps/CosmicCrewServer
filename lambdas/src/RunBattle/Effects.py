@@ -25,6 +25,7 @@ class Target(Enum):
     CYCLEDCARD = 5
     ALL = 6
     NONE = 7
+    BOTHPLAYERS = 8
 
 class TargetFilter(Enum):
     NOFILTER = 1
@@ -115,4 +116,5 @@ effects = {
     "signingBonusScrapThree": Effect(Timing.SIGNINGBONUS, EffectType.SCRAP, Target.NONE, 3),
     "anyWinnerCycleOne": Effect(Timing.ANYWINNER, EffectType.CYCLE, Target.NONE, 1),
     "anyLoserCycleOne": Effect(Timing.ANYLOSER, EffectType.CYCLE, Target.NONE, 1),
+    "initializeBothCycleOne": Effect(Timing.INITIALIZE, EffectType.CYCLE, Target.BOTHPLAYERS, 1)
 }
