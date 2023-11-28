@@ -100,6 +100,9 @@ class Player:
         indexOfWinningGunner = self.gunnerIndexFromRoll()
         self.team[indexOfWinningGunner] = None
         self.activeCard.activateEffectsFor(Timing.WINNER, self)
+        for fighter in self.team:
+            if fighter != None:
+                fighter.activateEffectsFor(Timing.ANYWINNER, self)
         if deckWasNotEmpty:
             self.drawAndPlayCard(indexOfWinningGunner + 1)
             
@@ -109,6 +112,9 @@ class Player:
         self.discard.append(self.activeCard)
         self.team[self.gunnerIndexFromRoll()] = None
         self.activeCard.activateEffectsFor(Timing.LOSER, self)
+        for fighter in self.team:
+            if fighter != None:
+                fighter.activateEffectsFor(Timing.ANYLOSER, self)
         self.activeCard = None
 
         

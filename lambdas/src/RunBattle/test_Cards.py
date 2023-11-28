@@ -225,3 +225,23 @@ class Test_Cards(unittest.TestCase):
         player.currentRoll = 1
         player.gunnerWins()
         assert player.deck[0].effects[1].fireXMoreTimes == 1
+
+    def test_anyWinnerEffectsTrigger(self):
+        animations = Animations()
+        player = Player("0", "p", animations)
+        powerValue = random.randint(1,10)
+        anyWinnerEffect = Effect(Timing.ANYWINNER, EffectType.POWERCOUNTER, Target.SELF, powerValue)
+        player.team = [Card("test", 0, 0, [anyWinnerEffect], animations), Card("test", 0, powerValue, [], animations), None, None, None, None]
+        player.currentRoll = 2
+        player.gunnerWins()
+        assert player.team[0].powerCounters == powerValue
+
+    def test_anyLoserEffectsTrigger(self):
+        animations = Animations()
+        player = Player("0", "p", animations)
+        powerValue = random.randint(1,10)
+        anyWinnerEffect = Effect(Timing.ANYLOSER, EffectType.POWERCOUNTER, Target.SELF, powerValue)
+        player.team = [Card("test", 0, 0, [anyWinnerEffect], animations), Card("test", 0, powerValue, [], animations), None, None, None, None]
+        player.currentRoll = 2
+        player.gunnerLoses()
+        assert player.team[0].powerCounters == powerValue

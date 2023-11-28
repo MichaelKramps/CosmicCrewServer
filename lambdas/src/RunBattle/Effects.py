@@ -3,11 +3,13 @@ import copy
 
 class Timing(Enum):
     INITIALIZE = 1
-    WINNER = 2
-    LOSER = 3
-    SIGNINGBONUS = 4
-    ONDRAW = 5
-    WHENCYCLED = 6
+    WINNER = 2 #when this card wins
+    LOSER = 3 #when this card loses
+    ANYWINNER = 4 #when any friendly fighter wins
+    ANYLOSER = 5 #when any friendly fighter loses
+    SIGNINGBONUS = 6
+    ONDRAW = 7
+    WHENCYCLED = 8
     
 class EffectType(Enum):
     POWERCOUNTER = 1
@@ -111,4 +113,6 @@ effects = {
     "bodySnatcherEffect": Effect(Timing.ONDRAW, EffectType.POWERCOUNTER, Target.SELF, Target.CYCLEDCARD).addNumberTimesToFire(1),
     "signingBonusScrapOne": Effect(Timing.SIGNINGBONUS, EffectType.SCRAP, Target.NONE, 1),
     "signingBonusScrapThree": Effect(Timing.SIGNINGBONUS, EffectType.SCRAP, Target.NONE, 3),
+    "anyWinnerCycleOne": Effect(Timing.ANYWINNER, EffectType.CYCLE, Target.NONE, 1),
+    "anyLoserCycleOne": Effect(Timing.ANYLOSER, EffectType.CYCLE, Target.NONE, 1),
 }
