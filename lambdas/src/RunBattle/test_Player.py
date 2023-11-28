@@ -275,8 +275,8 @@ class Test_Player(unittest.TestCase):
     def test_playCardWhenCycledWorks(self):
         animations = Animations()
         player = Player("1", "p", animations)
-        cycleEffectCard = Card("cycle", 0, 1, [effects["initializeCycleOne"]], animations)
-        playWhenCycledCard = Card("playWhenCycled", 1, 1, [effects["whenCycledPlayCard"]], animations)
+        cycleEffectCard = Card("cycle", 0, 1, [Effect.withName("initializeCycleOne")], animations)
+        playWhenCycledCard = Card("playWhenCycled", 1, 1, [Effect.withName("whenCycledPlayCard")], animations)
         player.deck = [cycleEffectCard, playWhenCycledCard]
         player.drawAndPlayCard(1)
         assert player.team == [cycleEffectCard, playWhenCycledCard, None, None, None, None]

@@ -1,4 +1,5 @@
 from enum import Enum
+import copy
 
 class Timing(Enum):
     INITIALIZE = 1
@@ -19,8 +20,9 @@ class Target(Enum):
     LEFTMOST = 2
     RIGHTMOST = 3
     RANDOM = 4
-    ALL = 5
-    NONE = 6
+    CYCLEDCARD = 5
+    ALL = 6
+    NONE = 7
 
 class TargetFilter(Enum):
     NOFILTER = 1
@@ -42,6 +44,8 @@ class Effect:
         self.intValue = intValue
         self.conditionValue = 0
         self.targetFilter = TargetFilter.NOFILTER
+        self.originalFireXMoreTimes = -1
+        self.fireXMoreTimes = -1 #means it fires forever
         
     def getAnimationCode(self, player, card):
         #player,effectCode,target,intValue
@@ -69,6 +73,28 @@ class Effect:
         self.targetFilter = filter
         return self
     
+    def addNumberTimesToFire(self, numberTimesToFire):
+        self.originalFireXMoreTimes = numberTimesToFire
+        self.fireXMoreTimes = numberTimesToFire
+        return self
+    
+    def fireEffect(self):
+        if self.fireXMoreTimes > 0:
+            self.fireXMoreTimes -= 1
+
+    def resetEffect(self):
+        if (self.originalFireXMoreTimes > 0):
+            self.fireXMoreTimes = self.originalFireXMoreTimes
+
+    @staticmethod
+    def withName(name):
+        effect = effects[name]
+        if (effect.originalFireXMoreTimes != -1):
+            return Effect(effect.timing, effect.effectType, effect.target, effect.intValue).addCondition(effect.condition, effect.conditionValue).addTargetFilter(effect.targetFilter).addNumberTimesToFire(effect.originalFireXMoreTimes)
+        else:
+            return effect
+
+    
 effects = {
     "initializeOnePowerCounterSelf": Effect(Timing.INITIALIZE, EffectType.POWERCOUNTER, Target.SELF, 1),
     "initializeTwoPowerCounterSelf": Effect(Timing.INITIALIZE, EffectType.POWERCOUNTER, Target.SELF, 2),
@@ -81,5 +107,6 @@ effects = {
     "onDrawOnePowerCounterAllIfCardIsOnePower": Effect(Timing.ONDRAW, EffectType.POWERCOUNTER, Target.ALL, 1).addCondition(Condition.ACTIVECARDHASPOWER, 1),
     "loserCycleThree": Effect(Timing.LOSER, EffectType.CYCLE, Target.NONE, 3),
     "initializeOnePowerCounterAllAthyr": Effect(Timing.INITIALIZE, EffectType.POWERCOUNTER, Target.ALL, 1).addTargetFilter(TargetFilter.ATHYR),
-    "initializeRemoveOnePowerCounterLeftmost": Effect(Timing.INITIALIZE, EffectType.POWERCOUNTER, Target.LEFTMOST, -1).addTargetFilter(TargetFilter.HASPOWERCOUNTER)
+    "initializeRemoveOnePowerCounterLeftmost": Effect(Timing.INITIALIZE, EffectType.POWERCOUNTER, Target.LEFTMOST, -1).addTargetFilter(TargetFilter.HASPOWERCOUNTER),
+    "bodySnatcherEffect": Effect(Timing.ONDRAW, EffectType.POWERCOUNTER, Target.SELF, Target.CYCLEDCARD).addNumberTimesToFire(1)
 }

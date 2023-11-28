@@ -34,12 +34,12 @@ class Test_Cards(unittest.TestCase):
         assert card.powerCounters == 0
 
     def test_setEffects(self):
-        effectsList = [effects["initializeOnePowerCounterSelf"]]
+        effectsList = [Effect.withName("initializeOnePowerCounterSelf")]
         card = Card("p", 1, 1, effectsList, Animations())
         assert card.effects == effectsList
 
     def test_activatesSelfPowerCounterEffects(self):
-        animations = Animations();
+        animations = Animations()
         player = Player("0", "p", animations)
         numberPowerCounters = random.randint(1,10)
         timing = random.choice(list(Timing))
@@ -52,7 +52,7 @@ class Test_Cards(unittest.TestCase):
         assert animationString in animations.animationsList
 
     def test_supportsMultipleEffectActivations(self):
-        animations = Animations();
+        animations = Animations()
         player = Player("0", "p", animations)
         numberPowerCounters1 = random.randint(1,10)
         numberPowerCounters2 = random.randint(1,10)
@@ -200,3 +200,28 @@ class Test_Cards(unittest.TestCase):
         card.clear()
         assert card.powerCounters == 0
         assert card.teamSlot == 0
+
+    def test_bodySnatcherEffect(self):
+        animations = Animations()
+        player = Player("0", "p", animations)
+        powerValue = random.randint(1,10)
+        player.team = [None, None, None, None, None, None]
+        player.deck = [Card("test", 0, 0, [Effect.withName("initializeCycleOne"), Effect.withName("bodySnatcherEffect")], animations), Card("test", 0, powerValue, [], animations)]
+        player.drawAndPlayCard(1)
+        assert player.team[0].powerCounters == powerValue
+        assert animations.codesAppearInOrder(["p,dws,1,0", "p,pow," + str(powerValue) + ",1", "p,uns,1,0"])
+        player.drawAndPlayCard(2)
+        assert player.team[0].powerCounters == powerValue
+
+    def test_xTimesEffectsReset(self):
+        animations = Animations()
+        player = Player("0", "p", animations)
+        powerValue = random.randint(1,10)
+        player.team = [None, None, None, None, None, None]
+        player.deck = [Card("test", 0, 0, [Effect.withName("initializeCycleOne"), Effect.withName("bodySnatcherEffect")], animations), Card("test", 0, powerValue, [], animations)]
+        player.drawAndPlayCard(1)
+        assert player.team[0].powerCounters == powerValue
+        assert animations.codesAppearInOrder(["p,dws,1,0", "p,pow," + str(powerValue) + ",1", "p,uns,1,0"])
+        player.currentRoll = 1
+        player.gunnerWins()
+        assert player.deck[0].effects[1].fireXMoreTimes == 1

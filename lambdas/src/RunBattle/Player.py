@@ -8,7 +8,7 @@ class Player:
         deckStringList = deckString.split(',')
         self.deck = []
         for cardIdString in deckStringList:
-            thisCard = Card.getCardWithId(int(cardIdString), animations)
+            thisCard = Card.withId(int(cardIdString), animations)
             self.deck.append(thisCard)
         self.team = [None, None, None, None, None, None]
         self.discard = []
