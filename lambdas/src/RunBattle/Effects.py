@@ -108,5 +108,7 @@ effects = {
     "loserCycleThree": Effect(Timing.LOSER, EffectType.CYCLE, Target.NONE, 3),
     "initializeOnePowerCounterAllAthyr": Effect(Timing.INITIALIZE, EffectType.POWERCOUNTER, Target.ALL, 1).addTargetFilter(TargetFilter.ATHYR),
     "initializeRemoveOnePowerCounterLeftmost": Effect(Timing.INITIALIZE, EffectType.POWERCOUNTER, Target.LEFTMOST, -1).addTargetFilter(TargetFilter.HASPOWERCOUNTER),
-    "bodySnatcherEffect": Effect(Timing.ONDRAW, EffectType.POWERCOUNTER, Target.SELF, Target.CYCLEDCARD).addNumberTimesToFire(1)
+    "bodySnatcherEffect": Effect(Timing.ONDRAW, EffectType.POWERCOUNTER, Target.SELF, Target.CYCLEDCARD).addNumberTimesToFire(1),
+    "signingBonusScrapOne": Effect(Timing.SIGNINGBONUS, EffectType.SCRAP, Target.NONE, 1),
+    "signingBonusScrapThree": Effect(Timing.SIGNINGBONUS, EffectType.SCRAP, Target.NONE, 3),
 }

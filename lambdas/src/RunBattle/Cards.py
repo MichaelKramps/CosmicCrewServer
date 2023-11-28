@@ -158,9 +158,9 @@ cardList = [
     {"name": "Sepp Stepper", "id": 12, "power": 3, "effectNames": ["loserCycleThree"], "civilization": "athyr"},
     {"name": "Long Barreller", "id": 13, "power": 2, "effectNames": ["initializeOnePowerCounterAllAthyr"], "civilization": "athyr"},
     {"name": "Fixer Upper", "id": 14, "power": 7, "effectNames": ["initializeRemoveOnePowerCounterLeftmost"], "civilization": "athyr"},
-    {"name": "Body Snatcher", "id": 15, "power": 2, "effectNames": ["initializeCycleOne", "bodySnatcherEffect"], "civilization": "athyr"}
-    #{"name": "Garbage Collector", "id": 16, "power": 4, "effectNames": ["signingBonusScrapOne"], "civilization": "athyr"},
-    #{"name": "Scrathyr", "id": 17, "power": 2, "effectNames": ["signingBonusScrapThree"], "civilization": "athyr"},
+    {"name": "Body Snatcher", "id": 15, "power": 2, "effectNames": ["initializeCycleOne", "bodySnatcherEffect"], "civilization": "athyr"},
+    {"name": "Garbage Collector", "id": 16, "power": 4, "effectNames": ["signingBonusScrapOne"], "civilization": "athyr"},
+    {"name": "Scrathyr", "id": 17, "power": 2, "effectNames": ["signingBonusScrapThree"], "civilization": "athyr"}
     #{"name": "Shop Owner", "id": 18, "power": 2, "effectNames": ["gunnerFightsCycleOne"], "civilization": "athyr"},
     #{"name": "Tandem Biker", "id": 19, "power": 5, "effectNames": ["initializeBothCycleOne"], "civilization": "athyr"},
     #{"name": "Jonas, Revived", "id": 20, "power": 3, "effectNames": ["discardCycledCards"], "civilization": "athyr"},
