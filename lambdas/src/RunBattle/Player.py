@@ -15,6 +15,7 @@ class Player:
         self.activeCard = None
         self.playerIdentifier = playerIdentifier
         self.currentRoll = 0
+        self.opponent = None
         self.animations = animations
 
     def addOpponent(self, opponent):
@@ -33,12 +34,22 @@ class Player:
             self.animations.append(self.playerIdentifier + ",dws,1,0")
             self.activeCard = self.deck.pop(0)
             #activate draw card effects of cards on team
-            for card in self.team:
-                if (card != None):
-                    card.activateEffectsFor(Timing.ONDRAW, self)
+            self.activateEffectsForTeam(Timing.ONDRAW)
+            self.activateEffectsForOpponentTeam(Timing.ONOPPONENTDRAW)
         else:
             self.animations.append(self.playerIdentifier + ",ded,0,0")
             self.activeCard = None
+
+    def activateEffectsForTeam(self, timing):
+        for card in self.team:
+            if (card != None):
+                card.activateEffectsFor(timing, self)
+
+    def activateEffectsForOpponentTeam(self, timing):
+        if self.opponent != None:
+            for card in self.opponent.team:
+                if (card != None):
+                    card.activateEffectsFor(timing, self.opponent)
             
     def putCardOnBottomOfDeck(self):
         if (self.activeCard != None):
@@ -74,7 +85,7 @@ class Player:
             self.activeCard.activateEffectsFor(Timing.WHENCYCLED, self)
             if (self.activeCard != None):
                 #means self.activeCard was not played
-                self.animations.append(self.playerIdentifier + ",uns,1,0");
+                self.animations.append(self.playerIdentifier + ",uns,1,0")
                 self.putCardOnBottomOfDeck()
         
     
@@ -98,23 +109,31 @@ class Player:
     def gunnerWins(self):
         self.activeCard = self.gunnerFromRoll()
         self.activeCard.clear()
-        deckWasNotEmpty = len(self.deck) > 0
         self.deck.append(self.activeCard)
         indexOfWinningGunner = self.gunnerIndexFromRoll()
+        self.cardSlotOfWinningGunner = indexOfWinningGunner + 1
         self.team[indexOfWinningGunner] = None
-        self.activeCard.activateEffectsFor(Timing.WINNER, self)
+        #need to separate this from the rest
+        return self.activeCard
+
+    def activateGunnerWinsEffects(self, winningGunner):
+        winningGunner.activateEffectsFor(Timing.WINNER, self)
         for fighter in self.team:
             if fighter != None:
                 fighter.activateEffectsFor(Timing.ANYWINNER, self)
-        if deckWasNotEmpty:
-            self.drawAndPlayCard(indexOfWinningGunner + 1)
+        if len(self.deck) > 1: #if card was in deck before gunner was put back in deck
+            self.drawAndPlayCard(self.cardSlotOfWinningGunner)
+        self.activeCard = None
             
     def gunnerLoses(self):
         self.activeCard = self.gunnerFromRoll()
         self.activeCard.clear()
         self.discard.append(self.activeCard)
         self.team[self.gunnerIndexFromRoll()] = None
-        self.activeCard.activateEffectsFor(Timing.LOSER, self)
+        return self.activeCard
+    
+    def activateGunnerLosesEffects(self, losingGunner):
+        losingGunner.activateEffectsFor(Timing.LOSER, self)
         for fighter in self.team:
             if fighter != None:
                 fighter.activateEffectsFor(Timing.ANYLOSER, self)

@@ -10,6 +10,7 @@ class Timing(Enum):
     SIGNINGBONUS = 6
     ONDRAW = 7
     WHENCYCLED = 8
+    ONOPPONENTDRAW = 9
     
 class EffectType(Enum):
     POWERCOUNTER = 1
@@ -116,5 +117,7 @@ effects = {
     "signingBonusScrapThree": Effect(Timing.SIGNINGBONUS, EffectType.SCRAP, Target.NONE, 3),
     "anyWinnerCycleOne": Effect(Timing.ANYWINNER, EffectType.CYCLE, Target.NONE, 1),
     "anyLoserCycleOne": Effect(Timing.ANYLOSER, EffectType.CYCLE, Target.NONE, 1),
-    "initializeBothCycleOne": Effect(Timing.INITIALIZE, EffectType.CYCLE, Target.BOTHPLAYERS, 1)
+    "initializeBothCycleOne": Effect(Timing.INITIALIZE, EffectType.CYCLE, Target.BOTHPLAYERS, 1),
+    "onOpponentDrawPowerCounterLeftmost": Effect(Timing.ONOPPONENTDRAW, EffectType.POWERCOUNTER, Target.LEFTMOST, 1),
+    "onOpponentDrawPowerCounterRightmost": Effect(Timing.ONOPPONENTDRAW, EffectType.POWERCOUNTER, Target.RIGHTMOST, 1),
 }

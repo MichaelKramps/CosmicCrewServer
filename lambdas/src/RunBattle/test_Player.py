@@ -219,7 +219,8 @@ class Test_Player(unittest.TestCase):
         player.deck = [cardInDeck]
         player.currentRoll = 1
         player.team = [Card("test", 0, 0, [], animations), Card("test", 0, 0, [], animations), Card("test", 0, 0, [], animations), Card("test", 0, 0, [], animations), Card("test", 0, 0, [], animations), Card("test", 0, 0, [], animations)]
-        player.gunnerWins()
+        indexOfWinningGunner = player.gunnerWins()
+        player.activateGunnerWinsEffects(indexOfWinningGunner)
         assert player.team[0] == cardInDeck
 
     def test_gunnerWinsPutsWinningGunnerOnBottomOfDeck(self):
@@ -229,7 +230,8 @@ class Test_Player(unittest.TestCase):
         player.currentRoll = 1
         winningCard = Card("test", 0, 0, [], animations)
         player.team = [winningCard, Card("test", 0, 0, [], animations), Card("test", 0, 0, [], animations), Card("test", 0, 0, [], animations), Card("test", 0, 0, [], animations), Card("test", 0, 0, [], animations)]
-        player.gunnerWins()
+        indexOfWinningGunner = player.gunnerWins()
+        player.activateGunnerWinsEffects(indexOfWinningGunner)
         assert player.deck[1] == winningCard
 
     def test_gunnerLosesClearsLosingGunner(self):
@@ -298,7 +300,8 @@ class Test_Player(unittest.TestCase):
         player.team = [Card("test", 0, 0, [loserEffect], animations), None, None, None, None, Card("test", 0, 0, [], animations)]
         player.deck = [Card("test", 0, 0, [], animations), Card("test", 0, 0, [], animations), Card("test", 0, 0, [], animations), testCard]
         player.currentRoll = 1
-        player.gunnerLoses()
+        losingGunner = player.gunnerLoses()
+        player.activateGunnerLosesEffects(losingGunner)
         assert player.deck[0] == testCard
 
     def test_canActivateWinnerEffects(self):
@@ -309,7 +312,8 @@ class Test_Player(unittest.TestCase):
         player.team = [Card("test", 0, 0, [winnerEffect], animations), None, None, None, None, Card("test", 0, 0, [], animations)]
         player.deck = [Card("test", 0, 0, [], animations), Card("test", 0, 0, [], animations), Card("test", 0, 0, [], animations), testCard]
         player.currentRoll = 1
-        player.gunnerWins()
+        indexOfWinningGunner = player.gunnerWins()
+        player.activateGunnerWinsEffects(indexOfWinningGunner)
         assert player.team[0] == testCard
 
     def test_targetFilterWorks(self):

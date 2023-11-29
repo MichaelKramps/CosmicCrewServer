@@ -41,19 +41,25 @@ class DogfightSimulator:
             if fighterOnePower > fighterTwoPower:
                 #fighterOne wins
                 self.animations.append('b,g1,' + str(rollOne) + ',' + str(rollTwo))
-                replaceGunner = self.playerOne.gunnerWins()
-                self.playerTwo.gunnerLoses()
+                winningGunner = self.playerOne.gunnerWins()
+                losingGunner = self.playerTwo.gunnerLoses()
+                self.playerOne.activateGunnerWinsEffects(winningGunner)
+                self.playerTwo.activateGunnerLosesEffects(losingGunner)
             elif fighterTwoPower > fighterOnePower:
                 #fighterTwo wins
                 self.animations.append('b,g2,' + str(rollOne) + ',' + str(rollTwo))
-                self.playerOne.gunnerLoses()
-                replaceGunner = self.playerTwo.gunnerWins()
+                losingGunner = self.playerOne.gunnerLoses()
+                winningGunner = self.playerTwo.gunnerWins()
+                self.playerOne.activateGunnerLosesEffects(losingGunner)
+                self.playerTwo.activateGunnerWinsEffects(winningGunner)
                 #write the animation code
             else:
                 #fighters tie
                 self.animations.append('b,gt,' + str(rollOne) + ',' + str(rollTwo))
-                self.playerOne.gunnerLoses()
-                self.playerTwo.gunnerLoses()
+                losingGunner1 = self.playerOne.gunnerLoses()
+                losingGunner2 = self.playerTwo.gunnerLoses()
+                self.playerOne.activateGunnerLosesEffects(losingGunner1)
+                self.playerTwo.activateGunnerLosesEffects(losingGunner2)
         #end while
         if self.playerOne.stillAlive():
             self.animations.append('p,1w,0,0')

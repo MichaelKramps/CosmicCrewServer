@@ -223,7 +223,8 @@ class Test_Cards(unittest.TestCase):
         assert player.team[0].powerCounters == powerValue
         assert animations.codesAppearInOrder(["p,dws,1,0", "p,pow," + str(powerValue) + ",1", "p,uns,1,0"])
         player.currentRoll = 1
-        player.gunnerWins()
+        indexOfWinningGunner = player.gunnerWins()
+        player.activateGunnerWinsEffects(indexOfWinningGunner)
         assert player.deck[0].effects[1].fireXMoreTimes == 1
 
     def test_anyWinnerEffectsTrigger(self):
@@ -233,7 +234,8 @@ class Test_Cards(unittest.TestCase):
         anyWinnerEffect = Effect(Timing.ANYWINNER, EffectType.POWERCOUNTER, Target.SELF, powerValue)
         player.team = [Card("test", 0, 0, [anyWinnerEffect], animations), Card("test", 0, powerValue, [], animations), None, None, None, None]
         player.currentRoll = 2
-        player.gunnerWins()
+        indexOfWinningGunner = player.gunnerWins()
+        player.activateGunnerWinsEffects(indexOfWinningGunner)
         assert player.team[0].powerCounters == powerValue
 
     def test_anyLoserEffectsTrigger(self):
@@ -243,7 +245,8 @@ class Test_Cards(unittest.TestCase):
         anyWinnerEffect = Effect(Timing.ANYLOSER, EffectType.POWERCOUNTER, Target.SELF, powerValue)
         player.team = [Card("test", 0, 0, [anyWinnerEffect], animations), Card("test", 0, powerValue, [], animations), None, None, None, None]
         player.currentRoll = 2
-        player.gunnerLoses()
+        losingGunner = player.gunnerLoses()
+        player.activateGunnerLosesEffects(losingGunner)
         assert player.team[0].powerCounters == powerValue
 
     def test_bothPlayersCycleOne(self):
@@ -261,3 +264,19 @@ class Test_Cards(unittest.TestCase):
         player1.drawAndPlayCard(1)
         assert player1.deck[0] == testCard1
         assert player2.deck[0] == testCard2
+
+    def test_opponentDrawsCard(self):
+        animations = Animations()
+        player1 = Player("0", "p", animations)
+        player2 = Player("1", "s", animations)
+        player1.addOpponent(player2)
+        player2.addOpponent(player1)
+        opponentDrawsEffect = Effect(Timing.ONOPPONENTDRAW, EffectType.POWERCOUNTER, Target.SELF, 1)
+        testCard = Card("test", 0, 0, [opponentDrawsEffect], animations)
+        testCard.teamSlot = 1
+        player2.deck = [Card("test", 0, 0, [], animations)]
+        player1.team = [testCard, None, None, None, None, None]
+        player2.drawCard()
+        assert testCard.powerCounters == 1
+        print(animations.animationsList)
+        assert animations.codesAppearInOrder(["p,pow,1,1"])
