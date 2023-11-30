@@ -93,12 +93,24 @@ class Player:
         return self.team[self.gunnerIndexFromRoll()]
     
     def gunnerIndexFromRoll(self):
+        return self.gunnerIndexFromSlot(self.currentRoll)
+            
+    def gunnerIndexFromSlot(self, slotNumber):
         for index in range(0,6):
-            thisIndex = self.currentRoll - 1 + index
+            thisIndex = slotNumber - 1 + index
             if thisIndex >= 6:
                 thisIndex = thisIndex - 6
             if self.team[thisIndex] != None:
                 return thisIndex
+            
+    def gunnerIndexFromSlotWithFilter(self, slotNumber, effect):
+        for index in range(0,6):
+            thisIndex = slotNumber - 1 + index
+            if thisIndex >= 6:
+                thisIndex = thisIndex - 6
+            if self.team[thisIndex] != None and self.team[thisIndex].passesFilter(effect):
+                return thisIndex
+        return None
             
     def leftmostOpenTeamSlot(self):
         for index in range(0,6):

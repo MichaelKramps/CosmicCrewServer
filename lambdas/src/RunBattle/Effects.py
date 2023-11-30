@@ -38,6 +38,7 @@ class TargetFilter(Enum):
 class Condition(Enum):
     NONE = 1
     ACTIVECARDHASPOWER = 2
+    TEAMHASATLEASTXGUNNERS = 3
     
 class Effect:
     def __init__(self, timing, effectType, target, intValue):
@@ -120,4 +121,6 @@ effects = {
     "initializeBothCycleOne": Effect(Timing.INITIALIZE, EffectType.CYCLE, Target.BOTHPLAYERS, 1),
     "onOpponentDrawPowerCounterLeftmost": Effect(Timing.ONOPPONENTDRAW, EffectType.POWERCOUNTER, Target.LEFTMOST, 1),
     "onOpponentDrawPowerCounterRightmost": Effect(Timing.ONOPPONENTDRAW, EffectType.POWERCOUNTER, Target.RIGHTMOST, 1),
+    "initializeFourPowerCountersSelfIfFourFighters": Effect(Timing.INITIALIZE, EffectType.POWERCOUNTER, Target.SELF, 4).addCondition(Condition.TEAMHASATLEASTXGUNNERS, 4),
+    "initializeTwoPowerCountersRandomLeanor": Effect(Timing.INITIALIZE, EffectType.POWERCOUNTER, Target.RANDOM, 2).addTargetFilter(TargetFilter.LEANOR)
 }

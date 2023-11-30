@@ -4,6 +4,7 @@ from Effects import Target
 from Effects import Condition
 from Effects import TargetFilter
 from enum import Enum
+import random
 
 class Civilization(Enum):
     NONE = 1
@@ -37,6 +38,12 @@ class Card:
                 if (player.activeCard.power == effect.conditionValue):
                     return True
                 return False
+            case Condition.TEAMHASATLEASTXGUNNERS:
+                fightersOnTeam = 0
+                for slot in player.team:
+                    if slot != None:
+                        fightersOnTeam += 1
+                return fightersOnTeam >= effect.conditionValue
         return True
             
                 
@@ -78,10 +85,12 @@ class Card:
                         self.animations.addCodeFrom(player, effect, effect.intValue, card.teamSlot)
                         break
             case Target.RANDOM:
-                randomRoll = player.rollDie()
-                randomCard = player.gunnerFromRoll()
-                randomCard.powerCounters += effect.intValue
-                self.animations.addCodeFrom(player, effect, effect.intValue, randomCard.teamSlot)
+                randomRoll = random.randint(1, 6)
+                indexOfFighterToGiveEffect = player.gunnerIndexFromSlotWithFilter(randomRoll, effect)
+                if indexOfFighterToGiveEffect != None:
+                    randomCard = player.team[indexOfFighterToGiveEffect]
+                    randomCard.powerCounters += effect.intValue
+                    self.animations.addCodeFrom(player, effect, effect.intValue, randomCard.teamSlot)
                         
     def activateCycleEffect(self, effect, player):
         print("cycling")
@@ -103,9 +112,9 @@ class Card:
             case TargetFilter.ATHYR:
                 return self.civilization == Civilization.ATHYR
             case TargetFilter.LEANOR:
-                return self.civilization == Civilization.RANCE
-            case TargetFilter.RANCE:
                 return self.civilization == Civilization.LEANOR
+            case TargetFilter.RANCE:
+                return self.civilization == Civilization.RANCE
             case TargetFilter.HASPOWERCOUNTER:
                 return self.powerCounters > 0
         return True
@@ -167,4 +176,7 @@ cardList = [
     {"name": "Shop Owner", "id": 18, "power": 2, "effectNames": ["anyWinnerCycleOne", "anyLoserCycleOne"], "civilization": "athyr"},
     {"name": "Tandem Biker", "id": 19, "power": 5, "effectNames": ["initializeBothCycleOne"], "civilization": "athyr"},
     {"name": "Jonas, Revived", "id": 20, "power": 3, "effectNames": ["onOpponentDrawPowerCounterLeftmost", "onOpponentDrawPowerCounterRightmost"], "civilization": "athyr"},
+    {"name": "Extroverted Fighter", "id": 21, "power": 3, "effectNames": ["initializeFourPowerCountersSelfIfFourFighters"], "civilization": "leanor"},
+    {"name": "Leanor Hype Man", "id": 22, "power": 3, "effectNames": ["initializeTwoPowerCountersRandomLeanor"], "civilization": "leanor"},
+    #{"name": "Shy Flyer", "id": 23, "power": 2, "effectNames": [], "civilization": "leanor"},
 ]

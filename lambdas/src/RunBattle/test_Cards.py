@@ -1,9 +1,11 @@
 from Cards import Card
+from Cards import Civilization
 from Effects import Effect
 from Effects import effects
 from Effects import Timing
 from Effects import EffectType
 from Effects import Target
+from Effects import TargetFilter
 from Effects import Condition
 from Animations import Animations
 from Player import Player
@@ -152,6 +154,26 @@ class Test_Cards(unittest.TestCase):
         animationString3 = player.playerIdentifier + ",pow," + str(numberPowerCounters) + "," + str(rightmostCard.teamSlot)
         assert animationString1 in animations.animationsList or animationString2 in animations.animationsList or animationString3 in animations.animationsList
 
+    def test_activatesRANDOMPowerCounterEffectsWithFilter(self):
+        animations = Animations()
+        numberPowerCounters = random.randint(1,10)
+        timing = random.choice(list(Timing))
+        randomPowerCounterEffect = Effect(timing, EffectType.POWERCOUNTER, Target.RANDOM, numberPowerCounters).addTargetFilter(TargetFilter.LEANOR)
+        cardWithEffect = Card("test", 0, 0, [randomPowerCounterEffect], animations)
+        cardWithEffect.teamSlot = random.randint(1,10000)
+        leftmostCard = Card("test", 0, 0, [], animations)
+        leftmostCard.teamSlot = random.randint(1,10000)
+        rightmostCard = Card("test", 0, 0, [], animations).addCivilization(Civilization.LEANOR)
+        rightmostCard.teamSlot = random.randint(1,10000)
+        player = Player("0", "test", animations)
+        player.team = [None, leftmostCard, cardWithEffect, None, rightmostCard, None]
+        cardWithEffect.activateEffectsFor(timing, player)
+        assert cardWithEffect.powerCounters == 0 and leftmostCard.powerCounters == 0 and rightmostCard.powerCounters == numberPowerCounters
+        animationString1 = player.playerIdentifier + ",pow," + str(numberPowerCounters) + "," + str(cardWithEffect.teamSlot)
+        animationString2 = player.playerIdentifier + ",pow," + str(numberPowerCounters) + "," + str(leftmostCard.teamSlot)
+        animationString3 = player.playerIdentifier + ",pow," + str(numberPowerCounters) + "," + str(rightmostCard.teamSlot)
+        assert animationString1 not in animations.animationsList and animationString2 not in animations.animationsList and animationString3 in animations.animationsList
+
     def test_cycleEffect(self):
         animations = Animations();
         player = Player("0", "p", animations)
@@ -278,5 +300,27 @@ class Test_Cards(unittest.TestCase):
         player1.team = [testCard, None, None, None, None, None]
         player2.drawCard()
         assert testCard.powerCounters == 1
-        print(animations.animationsList)
         assert animations.codesAppearInOrder(["p,pow,1,1"])
+
+    def test_numberCardsOnTeamConditionDoesntActivateEffectCorrectly(self):
+        animations = Animations()
+        player = Player("0", "p", animations)
+        powerCounterEffect = Effect(Timing.INITIALIZE, EffectType.POWERCOUNTER, Target.SELF, 1).addCondition(Condition.TEAMHASATLEASTXGUNNERS, 3)
+        testCard = Card("test", 0, 0, [powerCounterEffect], animations)
+        testCard.teamSlot = 2
+        player.deck = [testCard]
+        player.team = [Card("test", 0, 0, [], animations), None, None, None, None, None]
+        player.drawAndPlayCard(2)
+        assert testCard.powerCounters == 0
+
+    def test_numberCardsOnTeamConditionActivatesEffectCorrectly(self):
+        animations = Animations()
+        player = Player("0", "p", animations)
+        powerCounterEffect = Effect(Timing.INITIALIZE, EffectType.POWERCOUNTER, Target.SELF, 1).addCondition(Condition.TEAMHASATLEASTXGUNNERS, 3)
+        testCard = Card("test", 0, 0, [powerCounterEffect], animations)
+        testCard.teamSlot = 2
+        player.deck = [testCard]
+        player.team = [Card("test", 0, 0, [], animations), None, Card("test", 0, 0, [], animations), None, None, None]
+        player.drawAndPlayCard(2)
+        assert testCard.powerCounters == 1
+        assert animations.codesAppearInOrder(["p,pow,1,2"])
