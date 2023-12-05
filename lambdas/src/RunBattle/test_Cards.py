@@ -324,3 +324,55 @@ class Test_Cards(unittest.TestCase):
         player.drawAndPlayCard(2)
         assert testCard.powerCounters == 1
         assert animations.codesAppearInOrder(["p,pow,1,2"])
+
+    def test_replacingWinningFighterEffectTriggers(self):
+        animations = Animations()
+        player = Player("0", "p", animations)
+        player.currentRoll = 1
+        replaceWinnerEffect = Effect(Timing.INITIALIZE, EffectType.POWERCOUNTER, Target.SELF, 1).addCondition(Condition.REPLACINGWINNER, 0)
+        testCard = Card("test", 0, 0, [replaceWinnerEffect], animations)
+        testCard.teamSlot = 1
+        player.deck = [testCard]
+        player.team = [Card("test", 0, 0, [], animations), None, Card("test", 0, 0, [], animations), None, None, None]
+        winningFighter = player.gunnerWins()
+        player.activateGunnerWinsEffects(winningFighter)
+        assert testCard.powerCounters == 1
+        assert animations.codesAppearInOrder(["p,pow,1,1"])
+
+    def test_replacingWinningFighterEffectTriggers(self):
+        animations = Animations()
+        player = Player("0", "p", animations)
+        replaceWinnerEffect = Effect(Timing.INITIALIZE, EffectType.POWERCOUNTER, Target.SELF, 1).addCondition(Condition.REPLACINGWINNER, 0)
+        testCard = Card("test", 0, 0, [replaceWinnerEffect], animations)
+        testCard.teamSlot = 1
+        player.deck = [testCard]
+        player.team = [Card("test", 0, 0, [], animations), None, Card("test", 0, 0, [], animations), None, None, None]
+        player.drawAndPlayCard(2)
+        assert testCard.powerCounters == 0
+        assert not animations.codesAppearInOrder(["p,pow,1,1"])
+
+    def test_destroyCardEffectWorks(self):
+        animations = Animations()
+        player = Player("0", "p", animations)
+        destroyCardEffect = Effect(Timing.INITIALIZE, EffectType.DESTROYCARD, Target.SELF, 0)
+        testCard = Card("test", 0, 0, [destroyCardEffect], animations)
+        testCard.teamSlot = 1
+        player.deck = [testCard]
+        player.drawAndPlayCard(1)
+        assert player.team[0] == None
+        assert player.discard[0] == testCard
+        assert animations.codesAppearInOrder(["p,des,0,1"])
+
+    def test_destroyCardEffectWorks(self):
+        animations = Animations()
+        player = Player("0", "p", animations)
+        destroyCardEffect = Effect(Timing.POWERCHANGE, EffectType.DESTROYCARD, Target.SELF, 0).addCondition(Condition.SELFHASPOWER, 2)
+        powerCounterEffect = Effect(Timing.INITIALIZE, EffectType.POWERCOUNTER, Target.ALL, 1)
+        testCard = Card("test", 0, 1, [destroyCardEffect], animations)
+        testCard.teamSlot = 1
+        player.deck = [Card("test", 0, 0, [powerCounterEffect], animations)]
+        player.team = [testCard, None, None, None, None, None]
+        player.drawAndPlayCard(2)
+        assert player.team[0] == None
+        assert player.discard[0] == testCard
+        assert animations.codesAppearInOrder(["p,des,0,1"])

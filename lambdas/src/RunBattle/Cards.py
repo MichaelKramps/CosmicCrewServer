@@ -1,6 +1,7 @@
 from Effects import Effect
 from Effects import EffectType
 from Effects import Target
+from Effects import Timing
 from Effects import Condition
 from Effects import TargetFilter
 from enum import Enum
@@ -21,6 +22,7 @@ class Card:
         self.teamSlot = 0
         self.effects = effects
         self.civilization = Civilization.NONE
+        self.replacingWinner = False
         self.animations = animations
         
     def activateEffectsFor(self, timing, player):
@@ -44,6 +46,10 @@ class Card:
                     if slot != None:
                         fightersOnTeam += 1
                 return fightersOnTeam >= effect.conditionValue
+            case Condition.REPLACINGWINNER:
+                return self.replacingWinner
+            case Condition.SELFHASPOWER:
+                return self.getTotalPower() >= effect.conditionValue
         return True
             
                 
@@ -55,6 +61,8 @@ class Card:
                 self.activateCycleEffect(effect, player)
             case EffectType.PLAYCARD:
                 self.activatePlayCardEffect(effect, player)
+            case EffectType.DESTROYCARD:
+                self.activateDestroyCardEffect(player)
         effect.fireEffect()
             
                 
@@ -64,25 +72,30 @@ class Card:
                 if (effect.intValue == Target.CYCLEDCARD):
                     self.powerCounters += player.activeCard.power
                     self.animations.addCodeFrom(player, effect, player.activeCard.power, self.teamSlot)
+                    self.activateEffectsFor(Timing.POWERCHANGE, player)
                 else:
                     self.powerCounters += effect.intValue
                     self.animations.addCodeFrom(player, effect, effect.intValue, self.teamSlot)
+                    self.activateEffectsFor(Timing.POWERCHANGE, player)
             case Target.ALL:
                 for card in player.team:
                     if (card != None and card.passesFilter(effect)):
                         card.powerCounters += effect.intValue
                         self.animations.addCodeFrom(player, effect, effect.intValue, card.teamSlot)
+                        card.activateEffectsFor(Timing.POWERCHANGE, player)
             case Target.LEFTMOST:
                 for card in player.team:
                     if (card != None and card.passesFilter(effect)):
                         card.powerCounters += effect.intValue
                         self.animations.addCodeFrom(player, effect, effect.intValue, card.teamSlot)
+                        card.activateEffectsFor(Timing.POWERCHANGE, player)
                         break
             case Target.RIGHTMOST:
                 for card in reversed(player.team):
                     if (card != None and card.passesFilter(effect)):
                         card.powerCounters += effect.intValue
                         self.animations.addCodeFrom(player, effect, effect.intValue, card.teamSlot)
+                        card.activateEffectsFor(Timing.POWERCHANGE, player)
                         break
             case Target.RANDOM:
                 randomRoll = random.randint(1, 6)
@@ -91,9 +104,9 @@ class Card:
                     randomCard = player.team[indexOfFighterToGiveEffect]
                     randomCard.powerCounters += effect.intValue
                     self.animations.addCodeFrom(player, effect, effect.intValue, randomCard.teamSlot)
+                    randomCard.activateEffectsFor(Timing.POWERCHANGE, player)
                         
     def activateCycleEffect(self, effect, player):
-        print("cycling")
         for iteration in range(0, effect.intValue):
             player.cycleCard()
             if (effect.target == Target.BOTHPLAYERS):
@@ -104,6 +117,9 @@ class Card:
             case Target.SELF:
                 if (player.leftmostOpenTeamSlot() > 0):
                     player.playCard(player.leftmostOpenTeamSlot())
+
+    def activateDestroyCardEffect(self, player):
+        player.destroyCard(self)
 
     def passesFilter(self, effect):
         match effect.targetFilter:
@@ -122,6 +138,7 @@ class Card:
     def clear(self):
         self.powerCounters = 0
         self.teamSlot = 0
+        self.replacingWinner = False
         for effect in self.effects:
             effect.resetEffect()
 
@@ -132,6 +149,9 @@ class Card:
     def addCivilization(self, civilization):
         self.civilization = civilization
         return self
+    
+    def getTotalPower(self):
+        return self.power + self.powerCounters
 
     @staticmethod
     def withId(id, animations):
@@ -178,5 +198,11 @@ cardList = [
     {"name": "Jonas, Revived", "id": 20, "power": 3, "effectNames": ["onOpponentDrawPowerCounterLeftmost", "onOpponentDrawPowerCounterRightmost"], "civilization": "athyr"},
     {"name": "Extroverted Fighter", "id": 21, "power": 3, "effectNames": ["initializeFourPowerCountersSelfIfFourFighters"], "civilization": "leanor"},
     {"name": "Leanor Hype Man", "id": 22, "power": 3, "effectNames": ["initializeTwoPowerCountersRandomLeanor"], "civilization": "leanor"},
-    #{"name": "Shy Flyer", "id": 23, "power": 2, "effectNames": [], "civilization": "leanor"},
+    {"name": "Shy Flyer", "id": 23, "power": 2, "effectNames": ["initializeReplaceWinnerTwoPowerCountersAll"], "civilization": "leanor"},
+    {"name": "Supercharged Brawler", "id": 24, "power": 9, "effectNames": ["destroyIfPowerTen"], "civilization": "leanor"},
+    #{"name": "Name", "id": 25, "power": 2, "effectNames": [], "civilization": "leanor"},
+    #{"name": "Name", "id": 26, "power": 2, "effectNames": [], "civilization": "leanor"},
+    #{"name": "Name", "id": 27, "power": 2, "effectNames": [], "civilization": "leanor"},
+    #{"name": "Name", "id": 28, "power": 2, "effectNames": [], "civilization": "leanor"},
+    #{"name": "Name", "id": 29, "power": 2, "effectNames": [], "civilization": "leanor"},
 ]

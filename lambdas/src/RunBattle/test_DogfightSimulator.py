@@ -1,5 +1,10 @@
 from DogfightSimulator import DogfightSimulator
 from Animations import Animations
+from Effects import Effect
+from Effects import Timing
+from Effects import EffectType
+from Effects import Target
+from Effects import Condition
 from Cards import Card
 import unittest
 
@@ -89,6 +94,37 @@ class Test_DogfightSimulator(unittest.TestCase):
         #id 3 has initialize: cycle 1 card
         #id 10 has when this card is cycled, play it in your leftmost open gunner slot
         simulator = DogfightSimulator("1,1,1,1,1,1,1", "7,10,1,1,1,1,1,1", Animations())
+        simulator.setupDogfight()
+        assert simulator.playerOne.team[0] != None
+        assert simulator.playerOne.team[1] != None
+        assert simulator.playerOne.team[2] != None
+        assert simulator.playerOne.team[3] != None
+        assert simulator.playerOne.team[4] != None
+        assert simulator.playerOne.team[5] != None
+        assert simulator.playerTwo.team[0] != None
+        assert simulator.playerTwo.team[1] != None
+        assert simulator.playerTwo.team[2] != None
+        assert simulator.playerTwo.team[3] != None
+        assert simulator.playerTwo.team[4] != None
+        assert simulator.playerTwo.team[5] != None
+
+    def test_setupDrawsUntilAllSlotsAreFilled(self):
+        #id 3 has initialize: cycle 1 card
+        #id 10 has when this card is cycled, play it in your leftmost open gunner slot
+        animations = Animations()
+        simulator = DogfightSimulator("1,1,1,1,1,1,1", "1,1,1,1,1,1,1,1", animations)
+        initialize2PowerCounters = Effect(Timing.INITIALIZE, EffectType.POWERCOUNTER, Target.SELF, 5)
+        destroyWhen3Power = Effect(Timing.POWERCHANGE, EffectType.DESTROYCARD, Target.SELF, 0).addCondition(Condition.SELFHASPOWER, 3)
+        destroysItself = Card("destroysItself", 0, 0, [initialize2PowerCounters, destroyWhen3Power], animations)
+        simulator.playerOne.deck = [
+            destroysItself, 
+            Card("test", 0, 0, [], animations), 
+            Card("test", 0, 0, [], animations), 
+            Card("test", 0, 0, [], animations), 
+            Card("test", 0, 0, [], animations), 
+            Card("test", 0, 0, [], animations), 
+            Card("test", 0, 0, [], animations), 
+            Card("test", 0, 0, [], animations)]
         simulator.setupDogfight()
         assert simulator.playerOne.team[0] != None
         assert simulator.playerOne.team[1] != None

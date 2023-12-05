@@ -25,7 +25,7 @@ class DogfightSimulator:
         return deckString[:-1]
         
     def setupDogfight(self):
-        for index in range(0,6):
+        while self.playerOne.openingDrawShouldOccur() or self.playerTwo.openingDrawShouldOccur():
             self.playerOne.drawCardSetupStep()
             self.playerTwo.drawCardSetupStep()
                     

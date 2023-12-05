@@ -11,12 +11,14 @@ class Timing(Enum):
     ONDRAW = 7
     WHENCYCLED = 8
     ONOPPONENTDRAW = 9
+    POWERCHANGE = 10
     
 class EffectType(Enum):
     POWERCOUNTER = 1
     SCRAP = 2
     CYCLE = 3
     PLAYCARD = 4
+    DESTROYCARD = 5
     
 class Target(Enum):
     SELF = 1
@@ -39,6 +41,8 @@ class Condition(Enum):
     NONE = 1
     ACTIVECARDHASPOWER = 2
     TEAMHASATLEASTXGUNNERS = 3
+    REPLACINGWINNER = 4
+    SELFHASPOWER = 5
     
 class Effect:
     def __init__(self, timing, effectType, target, intValue):
@@ -53,7 +57,6 @@ class Effect:
         self.fireXMoreTimes = -1 #means it fires forever
         
     def getAnimationCode(self, player, card):
-        #player,effectCode,target,intValue
         animationCode = player.playerIdentifier + ","
         animationCode += self.getEffectCode()
         animationCode += str(self.intValue) + ","
@@ -66,8 +69,8 @@ class Effect:
                 return "pow,"
             case EffectType.SCRAP:
                 return "scr,"
-            case EffectType.CYCLE:
-                return "cyc,"
+            case EffectType.DESTROYCARD:
+                return "des,"
             
     def addCondition(self, condition, conditionValue):
         self.condition = condition
@@ -122,5 +125,7 @@ effects = {
     "onOpponentDrawPowerCounterLeftmost": Effect(Timing.ONOPPONENTDRAW, EffectType.POWERCOUNTER, Target.LEFTMOST, 1),
     "onOpponentDrawPowerCounterRightmost": Effect(Timing.ONOPPONENTDRAW, EffectType.POWERCOUNTER, Target.RIGHTMOST, 1),
     "initializeFourPowerCountersSelfIfFourFighters": Effect(Timing.INITIALIZE, EffectType.POWERCOUNTER, Target.SELF, 4).addCondition(Condition.TEAMHASATLEASTXGUNNERS, 4),
-    "initializeTwoPowerCountersRandomLeanor": Effect(Timing.INITIALIZE, EffectType.POWERCOUNTER, Target.RANDOM, 2).addTargetFilter(TargetFilter.LEANOR)
+    "initializeTwoPowerCountersRandomLeanor": Effect(Timing.INITIALIZE, EffectType.POWERCOUNTER, Target.RANDOM, 2).addTargetFilter(TargetFilter.LEANOR),
+    "initializeReplaceWinnerTwoPowerCountersAll": Effect(Timing.INITIALIZE, EffectType.POWERCOUNTER, Target.ALL, 2).addCondition(Condition.REPLACINGWINNER, 0),
+    "destroyIfPowerTen": Effect(Timing.POWERCHANGE, EffectType.DESTROYCARD, Target.SELF, 0).addCondition(Condition.SELFHASPOWER, 10),
 }

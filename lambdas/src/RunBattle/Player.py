@@ -72,11 +72,23 @@ class Player:
         self.drawCard()
         self.playCard(slotToPlayCardIn)
 
+    def replaceWinner(self, slotToPlayCardIn):
+        self.drawCard()
+        self.activeCard.replacingWinner = True
+        self.playCard(slotToPlayCardIn)
+
     def drawCardSetupStep(self):
         if (self.leftmostOpenTeamSlot() > 0):
             #means there is an open gunner slot
             self.drawCard()
             self.playCard(self.leftmostOpenTeamSlot())
+
+    def openingDrawShouldOccur(self):
+        if (len(self.deck) == 0):
+            return False
+        if self.leftmostOpenTeamSlot() > 0:
+            return True
+        return False
         
     def cycleCard(self):
         if (len(self.deck) > 0):
@@ -134,7 +146,7 @@ class Player:
             if fighter != None:
                 fighter.activateEffectsFor(Timing.ANYWINNER, self)
         if len(self.deck) > 1: #if card was in deck before gunner was put back in deck
-            self.drawAndPlayCard(self.cardSlotOfWinningGunner)
+            self.replaceWinner(self.cardSlotOfWinningGunner)
         self.activeCard = None
             
     def gunnerLoses(self):
@@ -143,6 +155,12 @@ class Player:
         self.discard.append(self.activeCard)
         self.team[self.gunnerIndexFromRoll()] = None
         return self.activeCard
+    
+    def destroyCard(self, cardToDestroy):
+        self.team[cardToDestroy.teamSlot - 1] = None
+        self.discard.append(cardToDestroy)
+        self.animations.append(self.playerIdentifier + ",des,0," + str(cardToDestroy.teamSlot))
+        cardToDestroy.clear()
     
     def activateGunnerLosesEffects(self, losingGunner):
         losingGunner.activateEffectsFor(Timing.LOSER, self)
