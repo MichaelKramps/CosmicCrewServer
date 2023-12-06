@@ -5,14 +5,16 @@ class Timing(Enum):
     INITIALIZE = 1
     WINNER = 2 #when this card wins
     LOSER = 3 #when this card loses
-    ANYWINNER = 4 #when any friendly fighter wins
-    ANYLOSER = 5 #when any friendly fighter loses
-    SIGNINGBONUS = 6
-    ONDRAW = 7
-    WHENCYCLED = 8
-    ONOPPONENTDRAW = 9
-    POWERCHANGE = 10
-    ONANYINITIALIZE = 11
+    AFTERWINNING = 4 #when this card wins, after it has been replaced by another gunner
+    ANYWINNER = 5 #when any friendly fighter wins
+    ANYLOSER = 6 #when any friendly fighter loses
+    SIGNINGBONUS = 7
+    ONDRAW = 8
+    WHENCYCLED = 9
+    ONOPPONENTDRAW = 10
+    POWERCHANGE = 11
+    ONANYINITIALIZE = 12
+    ONFRIENDLYPOWERCOUNTER = 13
     
 class EffectType(Enum):
     POWERCOUNTER = 1
@@ -22,6 +24,7 @@ class EffectType(Enum):
     DESTROYCARD = 5
     SETFIGHTERDESTINATION = 6
     SETOPPOSINGFIGHTERDESTINATION = 7
+    REPLACEFIGHTER = 8
     
 class Target(Enum):
     SELF = 1
@@ -35,6 +38,7 @@ class Target(Enum):
     OPPOSINGFIGHTER = 9
     DECK = 10
     DISCARD = 11
+    REPLACEMENTFIGHTER = 12
 
 class TargetFilter(Enum):
     NOFILTER = 1
@@ -42,6 +46,7 @@ class TargetFilter(Enum):
     LEANOR = 3
     RANCE = 4
     HASPOWERCOUNTER = 5
+    LOWESTPOWER = 6
 
 class Condition(Enum):
     NONE = 1
@@ -49,6 +54,9 @@ class Condition(Enum):
     TEAMHASATLEASTXGUNNERS = 3
     REPLACINGWINNER = 4
     SELFHASPOWER = 5
+
+class IntValue(Enum):
+    CURRENTPOWERCOUNTERS = 1
     
 class Effect:
     def __init__(self, timing, effectType, target, intValue):
@@ -137,4 +145,7 @@ effects = {
     "onAnyInitializeOnePowerCounterSelf": Effect(Timing.ONANYINITIALIZE, EffectType.POWERCOUNTER, Target.SELF, 1),
     "sparkyTombManEffect": Effect(Timing.LOSER, EffectType.SETOPPOSINGFIGHTERDESTINATION, Target.DISCARD, 0),
     "loserPutBackInDeck": Effect(Timing.LOSER, EffectType.SETFIGHTERDESTINATION, Target.DECK, 0),
+    "transferPowerCountersToReplacement": Effect(Timing.AFTERWINNING, EffectType.POWERCOUNTER, Target.REPLACEMENTFIGHTER, IntValue.CURRENTPOWERCOUNTERS),
+    "powerCounterSelfOnTeammatePowerCounter": Effect(Timing.ONFRIENDLYPOWERCOUNTER, EffectType.POWERCOUNTER, Target.SELF, 1),
+    "loserReplaceFighterLowestInDiscard": Effect(Timing.LOSER, EffectType.REPLACEFIGHTER, Target.DISCARD, 0).addTargetFilter(TargetFilter.LOWESTPOWER)
 }

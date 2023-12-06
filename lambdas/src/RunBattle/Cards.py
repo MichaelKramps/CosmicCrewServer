@@ -4,6 +4,7 @@ from Effects import Target
 from Effects import Timing
 from Effects import Condition
 from Effects import TargetFilter
+from Effects import IntValue
 from enum import Enum
 import random
 
@@ -67,6 +68,8 @@ class Card:
                 self.activateSetFighterDestinationEffect(effect, player)
             case EffectType.SETOPPOSINGFIGHTERDESTINATION:
                 self.activateSetOpposingFighterDestinationEffect(effect, player)
+            case EffectType.REPLACEFIGHTER:
+                self.activateReplaceFighterEffect(effect, player)
         effect.fireEffect()
         if effect.timing == Timing.INITIALIZE:
             player.activateEffectsForTeam(Timing.ONANYINITIALIZE)
@@ -80,22 +83,26 @@ class Card:
                     self.powerCounters += player.activeCard.power
                     self.animations.addCodeFrom(player, effect, player.activeCard.power, self.teamSlot)
                     self.activateEffectsFor(Timing.POWERCHANGE, player)
+                    player.activateEffectsForTeammates(Timing.ONFRIENDLYPOWERCOUNTER, self.teamSlot)
                 else:
                     self.powerCounters += effect.intValue
                     self.animations.addCodeFrom(player, effect, effect.intValue, self.teamSlot)
                     self.activateEffectsFor(Timing.POWERCHANGE, player)
+                    player.activateEffectsForTeammates(Timing.ONFRIENDLYPOWERCOUNTER, self.teamSlot)
             case Target.ALL:
                 for card in player.team:
                     if (card != None and card.passesFilter(effect)):
                         card.powerCounters += effect.intValue
                         self.animations.addCodeFrom(player, effect, effect.intValue, card.teamSlot)
                         card.activateEffectsFor(Timing.POWERCHANGE, player)
+                        player.activateEffectsForTeammates(Timing.ONFRIENDLYPOWERCOUNTER, card.teamSlot)
             case Target.LEFTMOST:
                 for card in player.team:
                     if (card != None and card.passesFilter(effect)):
                         card.powerCounters += effect.intValue
                         self.animations.addCodeFrom(player, effect, effect.intValue, card.teamSlot)
                         card.activateEffectsFor(Timing.POWERCHANGE, player)
+                        player.activateEffectsForTeammates(Timing.ONFRIENDLYPOWERCOUNTER, card.teamSlot)
                         break
             case Target.RIGHTMOST:
                 for card in reversed(player.team):
@@ -103,6 +110,7 @@ class Card:
                         card.powerCounters += effect.intValue
                         self.animations.addCodeFrom(player, effect, effect.intValue, card.teamSlot)
                         card.activateEffectsFor(Timing.POWERCHANGE, player)
+                        player.activateEffectsForTeammates(Timing.ONFRIENDLYPOWERCOUNTER, card.teamSlot)
                         break
             case Target.RANDOM:
                 randomRoll = random.randint(1, 6)
@@ -112,6 +120,17 @@ class Card:
                     randomCard.powerCounters += effect.intValue
                     self.animations.addCodeFrom(player, effect, effect.intValue, randomCard.teamSlot)
                     randomCard.activateEffectsFor(Timing.POWERCHANGE, player)
+                    player.activateEffectsForTeammates(Timing.ONFRIENDLYPOWERCOUNTER, randomCard.teamSlot)
+            case Target.REPLACEMENTFIGHTER:
+                powerCountersToAdd = 0
+                if (effect.intValue == IntValue.CURRENTPOWERCOUNTERS):
+                    powerCountersToAdd = self.powerCounters
+                else:
+                    powerCountersToAdd = effect.intValue
+                replacementCard = player.team[self.teamSlot - 1]
+                replacementCard.powerCounters += powerCountersToAdd
+                replacementCard.activateEffectsFor(Timing.POWERCHANGE, player)
+                player.activateEffectsForTeammates(Timing.ONFRIENDLYPOWERCOUNTER, replacementCard.teamSlot)
                         
     def activateCycleEffect(self, effect, player):
         for iteration in range(0, effect.intValue):
@@ -135,6 +154,9 @@ class Card:
 
     def activateSetOpposingFighterDestinationEffect(self, effect, player):
         player.opponent.setFighterDestination(effect)
+
+    def activateReplaceFighterEffect(self, effect, player):
+        player.replaceFighterEffect(effect, self)
 
     def passesFilter(self, effect):
         match effect.targetFilter:
@@ -218,6 +240,11 @@ cardList = [
     {"name": "Fabiano, Starter Gun", "id": 25, "power": 4, "effectNames": ["onAnyInitializeOnePowerCounterSelf"], "civilization": "leanor"},
     {"name": "Sparky Sparky Tomb Man", "id": 26, "power": 3, "effectNames": ["sparkyTombManEffect"], "civilization": "leanor"},
     {"name": "Maxime, the Gifter", "id": 27, "power": 6, "effectNames": ["loserPutBackInDeck"], "civilization": "leanor"},
-    #{"name": "Name", "id": 28, "power": 2, "effectNames": [], "civilization": "leanor"},
-    #{"name": "Name", "id": 29, "power": 2, "effectNames": [], "civilization": "leanor"},
+    {"name": "Sniper Patton", "id": 28, "power": 2, "effectNames": ["transferPowerCountersToReplacement"], "civilization": "leanor"},
+    {"name": "General Gonto", "id": 29, "power": 1, "effectNames": ["powerCounterSelfOnTeammatePowerCounter"], "civilization": "leanor"},
+    {"name": "Untrained Medic", "id": 30, "power": 3, "effectNames": ["loserReplaceFighterLowestInDiscard"], "civilization": "leanor"},
+    #{"name": "Name", "id": 31, "power": 2, "effectNames": [], "civilization": "leanor"},
+    #{"name": "Name", "id": 32, "power": 2, "effectNames": [], "civilization": "leanor"},
+    #{"name": "Name", "id": 33, "power": 2, "effectNames": [], "civilization": "leanor"},
+    #{"name": "Name", "id": 34, "power": 2, "effectNames": [], "civilization": "leanor"},
 ]

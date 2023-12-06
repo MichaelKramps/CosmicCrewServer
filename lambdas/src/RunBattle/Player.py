@@ -2,6 +2,7 @@ import random
 from Cards import Card
 from Effects import Timing
 from Effects import Target
+from Effects import TargetFilter
 from enum import IntEnum
 from copy import deepcopy
 
@@ -50,6 +51,11 @@ class Player:
     def activateEffectsForTeam(self, timing):
         for card in self.team:
             if (card != None):
+                card.activateEffectsFor(timing, self)
+
+    def activateEffectsForTeammates(self, timing, teamSlotToAvoid):
+        for card in self.team:
+            if (card != None and card.teamSlot != teamSlotToAvoid):
                 card.activateEffectsFor(timing, self)
 
     def activateEffectsForOpponentTeam(self, timing):
@@ -139,10 +145,7 @@ class Player:
         
     def gunnerWins(self):
         self.activeCard = self.gunnerFromRoll()
-        self.activeCard.clear()
-        indexOfWinningGunner = self.gunnerIndexFromRoll()
-        self.cardSlotOfWinningGunner = indexOfWinningGunner + 1
-        self.team[indexOfWinningGunner] = None
+        self.team[self.activeCard.teamSlot - 1] = None
         self.fighterDestination = FighterDestination.DECK
         #need to separate this from the rest
         return self.activeCard
@@ -153,13 +156,14 @@ class Player:
             if fighter != None:
                 fighter.activateEffectsFor(Timing.ANYWINNER, self)
         if len(self.deck) > 0: #if card was in deck before gunner was put back in deck
-            self.replaceWinner(self.cardSlotOfWinningGunner)
+            self.replaceWinner(winningGunner.teamSlot)
+        winningGunner.activateEffectsFor(Timing.AFTERWINNING, self)
+        winningGunner.clear()
         self.sendFighterToDestination(winningGunner)
         self.activeCard = None
             
     def gunnerLoses(self):
         self.activeCard = self.gunnerFromRoll()
-        self.activeCard.clear()
         self.team[self.gunnerIndexFromRoll()] = None
         self.fighterDestination = FighterDestination.DISCARD
         return self.activeCard
@@ -169,6 +173,7 @@ class Player:
         for fighter in self.team:
             if fighter != None:
                 fighter.activateEffectsFor(Timing.ANYLOSER, self)
+        losingGunner.clear()
         self.sendFighterToDestination(losingGunner)
         self.activeCard = None
 
@@ -191,6 +196,21 @@ class Player:
         self.animations.append(self.playerIdentifier + ",des,0," + str(cardToDestroy.teamSlot))
         self.fighterDestination = FighterDestination.DISCARD
         cardToDestroy.clear()
+
+    def replaceFighterEffect(self, effect, cardToReplace):
+        if effect.target == Target.DISCARD:
+            if (len(self.discard) > 0):
+                 match effect.targetFilter:
+                    case TargetFilter.LOWESTPOWER:
+                        indexOfLowestPowerCard = 0
+                        for index in range(len(self.discard)):
+                            card = self.discard[index]
+                            if card.power > self.discard[indexOfLowestPowerCard].power:
+                                lowestPowerCard = card
+                        self.team[cardToReplace.teamSlot - 1] = self.discard[indexOfLowestPowerCard]
+                        self.team[cardToReplace.teamSlot - 1].teamSlot = cardToReplace.teamSlot
+                        self.discard[indexOfLowestPowerCard] = cardToReplace
+                        self.animations.append(self.playerIdentifier + ",pfd," + str(indexOfLowestPowerCard) + "," + str(cardToReplace.teamSlot))
 
     def getFighterDestination(self):
         return str(int(self.fighterDestination))

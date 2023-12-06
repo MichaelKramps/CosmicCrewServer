@@ -7,6 +7,7 @@ from Effects import EffectType
 from Effects import Target
 from Effects import TargetFilter
 from Effects import Condition
+from Effects import IntValue
 from Animations import Animations
 from Player import Player
 from Player import FighterDestination
@@ -59,7 +60,7 @@ class Test_Cards(unittest.TestCase):
         player = Player("0", "p", animations)
         numberPowerCounters1 = random.randint(1,10)
         numberPowerCounters2 = random.randint(1,10)
-        timing = random.choice(list(Timing))
+        timing = Timing.INITIALIZE
         selfPowerCounterEffect1 = Effect(timing, EffectType.POWERCOUNTER, Target.SELF, numberPowerCounters1)
         selfPowerCounterEffect2 = Effect(timing, EffectType.POWERCOUNTER, Target.SELF, numberPowerCounters2)
         cardWithEffect = Card("test", 0, 0, [selfPowerCounterEffect1, selfPowerCounterEffect2], animations)
@@ -72,9 +73,9 @@ class Test_Cards(unittest.TestCase):
         assert animationString2 in animations.animationsList
 
     def test_activatesALLPowerCounterEffects(self):
-        animations = Animations();
+        animations = Animations()
         numberPowerCounters = random.randint(1,10)
-        timing = random.choice(list(Timing))
+        timing = Timing.INITIALIZE
         allPowerCounterEffect = Effect(timing, EffectType.POWERCOUNTER, Target.ALL, numberPowerCounters)
         cardWithEffect = Card("test", 0, 0, [allPowerCounterEffect], animations)
         cardWithEffect.teamSlot = random.randint(1,10000)
@@ -98,7 +99,7 @@ class Test_Cards(unittest.TestCase):
     def test_activatesLEFTMOSTPowerCounterEffects(self):
         animations = Animations();
         numberPowerCounters = random.randint(1,10)
-        timing = random.choice(list(Timing))
+        timing = Timing.INITIALIZE
         leftmostPowerCounterEffect = Effect(timing, EffectType.POWERCOUNTER, Target.LEFTMOST, numberPowerCounters)
         cardWithEffect = Card("test", 0, 0, [leftmostPowerCounterEffect], animations)
         cardWithEffect.teamSlot = random.randint(1,10000)
@@ -118,7 +119,7 @@ class Test_Cards(unittest.TestCase):
     def test_activatesRIGHTMOSTPowerCounterEffects(self):
         animations = Animations();
         numberPowerCounters = random.randint(1,10)
-        timing = random.choice(list(Timing))
+        timing = Timing.INITIALIZE
         rightmostPowerCounterEffect = Effect(timing, EffectType.POWERCOUNTER, Target.RIGHTMOST, numberPowerCounters)
         cardWithEffect = Card("test", 0, 0, [rightmostPowerCounterEffect], animations)
         cardWithEffect.teamSlot = random.randint(1,10000)
@@ -138,7 +139,7 @@ class Test_Cards(unittest.TestCase):
     def test_activatesRANDOMPowerCounterEffects(self):
         animations = Animations();
         numberPowerCounters = random.randint(1,10)
-        timing = random.choice(list(Timing))
+        timing = Timing.INITIALIZE
         randomPowerCounterEffect = Effect(timing, EffectType.POWERCOUNTER, Target.RANDOM, numberPowerCounters)
         cardWithEffect = Card("test", 0, 0, [randomPowerCounterEffect], animations)
         cardWithEffect.teamSlot = random.randint(1,10000)
@@ -158,7 +159,7 @@ class Test_Cards(unittest.TestCase):
     def test_activatesRANDOMPowerCounterEffectsWithFilter(self):
         animations = Animations()
         numberPowerCounters = random.randint(1,10)
-        timing = random.choice(list(Timing))
+        timing = Timing.INITIALIZE
         randomPowerCounterEffect = Effect(timing, EffectType.POWERCOUNTER, Target.RANDOM, numberPowerCounters).addTargetFilter(TargetFilter.LEANOR)
         cardWithEffect = Card("test", 0, 0, [randomPowerCounterEffect], animations)
         cardWithEffect.teamSlot = random.randint(1,10000)
@@ -179,7 +180,7 @@ class Test_Cards(unittest.TestCase):
         animations = Animations();
         player = Player("0", "p", animations)
         numberToCycle = random.randint(1,10)
-        timing = random.choice(list(Timing))
+        timing = Timing.INITIALIZE
         selfPowerCounterEffect = Effect(timing, EffectType.CYCLE, Target.NONE, numberToCycle)
         cardWithEffect = Card("test", 0, 0, [selfPowerCounterEffect], animations)
         testDeck = [
@@ -439,3 +440,44 @@ class Test_Cards(unittest.TestCase):
         assert len(player1.discard) == 0
         assert player1.fighterDestination == FighterDestination.DECK
         assert testCard in player1.deck
+
+    def test_transferPowerCountersEffectWorks(self):
+        animations = Animations()
+        player1 = Player("0", "p", animations)
+        transferCountersEffect = Effect(Timing.AFTERWINNING, EffectType.POWERCOUNTER, Target.REPLACEMENTFIGHTER, IntValue.CURRENTPOWERCOUNTERS)
+        transferCard = Card("test", 0, 0, [transferCountersEffect], animations)
+        numberPowerCounters = random.randint(1,10)
+        transferCard.powerCounters = numberPowerCounters
+        testCard = Card("test", 0, 0, [], animations)
+        player1.team = [transferCard, None, None, None, None, None]
+        player1.deck = [testCard]
+        winner = player1.gunnerWins()
+        player1.activateGunnerWinsEffects(winner)
+        assert testCard.powerCounters == numberPowerCounters
+
+    def test_onFriendlyPowerCounterEffectWorks(self):
+        animations = Animations()
+        player1 = Player("0", "p", animations)
+        onPowerCounterEffect = Effect(Timing.ONFRIENDLYPOWERCOUNTER, EffectType.POWERCOUNTER, Target.SELF, 1)
+        testCard = Card("test", 0, 0, [onPowerCounterEffect], animations)
+        numberPowerCounters = random.randint(1,10)
+        initializeEffect = Effect(Timing.INITIALIZE, EffectType.POWERCOUNTER, Target.SELF, numberPowerCounters)
+        initializeCard = Card("test", 0, 0, [initializeEffect], animations)
+        player1.team = [testCard, None, None, None, None, None]
+        player1.deck = [initializeCard, initializeCard]
+        player1.drawAndPlayCard(2)
+        player1.drawAndPlayCard(3)
+        assert testCard.powerCounters == 2
+
+    def test_replaceFighterEffectWorks(self):
+        animations = Animations()
+        player1 = Player("0", "p", animations)
+        replaceEffect = Effect(Timing.INITIALIZE, EffectType.REPLACEFIGHTER, Target.DISCARD, 0).addTargetFilter(TargetFilter.LOWESTPOWER)
+        testCard = Card("test", 0, 2, [], animations)
+        initializeCard = Card("test", 0, 0, [replaceEffect], animations)
+        initializeCard.teamSlot = 1
+        player1.discard = [testCard, Card("test", 0, 1, [], animations)]
+        player1.deck = [initializeCard]
+        player1.drawAndPlayCard(1)
+        assert player1.team[0] == testCard
+        assert animations.codesAppearInOrder(["p,pfd,0,1"])
