@@ -63,6 +63,10 @@ class Card:
                 self.activatePlayCardEffect(effect, player)
             case EffectType.DESTROYCARD:
                 self.activateDestroyCardEffect(effect, player)
+            case EffectType.SETFIGHTERDESTINATION:
+                self.activateSetFighterDestinationEffect(effect, player)
+            case EffectType.SETOPPOSINGFIGHTERDESTINATION:
+                self.activateSetOpposingFighterDestinationEffect(effect, player)
         effect.fireEffect()
         if effect.timing == Timing.INITIALIZE:
             player.activateEffectsForTeam(Timing.ONANYINITIALIZE)
@@ -125,6 +129,13 @@ class Card:
         match effect.target:
             case Target.SELF:
                 player.destroyCard(self)
+
+    def activateSetFighterDestinationEffect(self, effect, player):
+        print("hi bee")
+
+    def activateSetOpposingFighterDestinationEffect(self, effect, player):
+        print("kramps321")
+        player.opponent.setFighterDestination(effect)
 
     def passesFilter(self, effect):
         match effect.targetFilter:

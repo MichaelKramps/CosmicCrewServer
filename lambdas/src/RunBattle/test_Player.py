@@ -250,7 +250,7 @@ class Test_Player(unittest.TestCase):
         player.currentRoll = 1
         cardToTest = Card("test", 0, 0, [], animations)
         player.team = [cardToTest, Card("test", 0, 0, [], animations), Card("test", 0, 0, [], animations), Card("test", 0, 0, [], animations), Card("test", 0, 0, [], animations), Card("test", 0, 0, [], animations)]
-        player.gunnerLoses()
+        player.activateGunnerLosesEffects(player.gunnerLoses())
         assert cardToTest in player.discard
 
     def test_gunnerLosesRemovesLosingGunnerFromTeam(self):

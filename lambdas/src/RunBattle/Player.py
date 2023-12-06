@@ -1,10 +1,11 @@
 import random
 from Cards import Card
 from Effects import Timing
-from enum import Enum
+from Effects import Target
+from enum import IntEnum
 from copy import deepcopy
 
-class FighterDestination(Enum):
+class FighterDestination(IntEnum):
     DECK = 0
     DISCARD = 1
 
@@ -139,7 +140,6 @@ class Player:
     def gunnerWins(self):
         self.activeCard = self.gunnerFromRoll()
         self.activeCard.clear()
-        self.deck.append(self.activeCard)
         indexOfWinningGunner = self.gunnerIndexFromRoll()
         self.cardSlotOfWinningGunner = indexOfWinningGunner + 1
         self.team[indexOfWinningGunner] = None
@@ -152,14 +152,14 @@ class Player:
         for fighter in self.team:
             if fighter != None:
                 fighter.activateEffectsFor(Timing.ANYWINNER, self)
-        if len(self.deck) > 1: #if card was in deck before gunner was put back in deck
+        if len(self.deck) > 0: #if card was in deck before gunner was put back in deck
             self.replaceWinner(self.cardSlotOfWinningGunner)
+        self.sendFighterToDestination(winningGunner)
         self.activeCard = None
             
     def gunnerLoses(self):
         self.activeCard = self.gunnerFromRoll()
         self.activeCard.clear()
-        self.discard.append(self.activeCard)
         self.team[self.gunnerIndexFromRoll()] = None
         self.fighterDestination = FighterDestination.DISCARD
         return self.activeCard
@@ -169,7 +169,21 @@ class Player:
         for fighter in self.team:
             if fighter != None:
                 fighter.activateEffectsFor(Timing.ANYLOSER, self)
+        self.sendFighterToDestination(losingGunner)
         self.activeCard = None
+
+    def setFighterDestination(self, effect):
+        match effect.target:
+            case Target.DECK:
+                self.fighterDestination = FighterDestination.DECK
+            case Target.DISCARD:
+                self.fighterDestination = FighterDestination.DISCARD
+
+    def sendFighterToDestination(self, fighterToSend):
+        if (self.fighterDestination == FighterDestination.DECK):
+            self.deck.append(fighterToSend)
+        elif (self.fighterDestination == FighterDestination.DISCARD):
+            self.discard.append(fighterToSend)
     
     def destroyCard(self, cardToDestroy):
         self.team[cardToDestroy.teamSlot - 1] = None
@@ -179,7 +193,7 @@ class Player:
         cardToDestroy.clear()
 
     def getFighterDestination(self):
-        return str(self.fighterDestination)
+        return str(int(self.fighterDestination))
         
     def stillAlive(self):
         for fighter in self.team:
