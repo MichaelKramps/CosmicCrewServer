@@ -1,7 +1,12 @@
 import random
 from Cards import Card
 from Effects import Timing
+from enum import Enum
 from copy import deepcopy
+
+class FighterDestination(Enum):
+    DECK = 0
+    DISCARD = 1
 
 class Player:
     def __init__(self, deckString, playerIdentifier, animations):
@@ -17,6 +22,7 @@ class Player:
         self.currentRoll = 0
         self.opponent = None
         self.animations = animations
+        self.fighterDestination = FighterDestination.DECK
 
     def addOpponent(self, opponent):
         self.opponent = opponent
@@ -137,6 +143,7 @@ class Player:
         indexOfWinningGunner = self.gunnerIndexFromRoll()
         self.cardSlotOfWinningGunner = indexOfWinningGunner + 1
         self.team[indexOfWinningGunner] = None
+        self.fighterDestination = FighterDestination.DECK
         #need to separate this from the rest
         return self.activeCard
 
@@ -154,13 +161,8 @@ class Player:
         self.activeCard.clear()
         self.discard.append(self.activeCard)
         self.team[self.gunnerIndexFromRoll()] = None
+        self.fighterDestination = FighterDestination.DISCARD
         return self.activeCard
-    
-    def destroyCard(self, cardToDestroy):
-        self.team[cardToDestroy.teamSlot - 1] = None
-        self.discard.append(cardToDestroy)
-        self.animations.append(self.playerIdentifier + ",des,0," + str(cardToDestroy.teamSlot))
-        cardToDestroy.clear()
     
     def activateGunnerLosesEffects(self, losingGunner):
         losingGunner.activateEffectsFor(Timing.LOSER, self)
@@ -168,7 +170,16 @@ class Player:
             if fighter != None:
                 fighter.activateEffectsFor(Timing.ANYLOSER, self)
         self.activeCard = None
+    
+    def destroyCard(self, cardToDestroy):
+        self.team[cardToDestroy.teamSlot - 1] = None
+        self.discard.append(cardToDestroy)
+        self.animations.append(self.playerIdentifier + ",des,0," + str(cardToDestroy.teamSlot))
+        self.fighterDestination = FighterDestination.DISCARD
+        cardToDestroy.clear()
 
+    def getFighterDestination(self):
+        return str(self.fighterDestination)
         
     def stillAlive(self):
         for fighter in self.team:

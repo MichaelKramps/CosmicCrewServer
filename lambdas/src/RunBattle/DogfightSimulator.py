@@ -1,5 +1,6 @@
 from Player import Player
 from Animations import Animations
+from enum import Enum
 
 class DogfightSimulator:
     def __init__(self, deckOne, deckTwo, animations):
@@ -40,14 +41,12 @@ class DogfightSimulator:
             fighterTwoPower = fighterTwo.power + fighterTwo.powerCounters
             if fighterOnePower > fighterTwoPower:
                 #fighterOne wins
-                self.animations.append('b,g1,' + str(rollOne) + ',' + str(rollTwo))
                 winningGunner = self.playerOne.gunnerWins()
                 losingGunner = self.playerTwo.gunnerLoses()
                 self.playerOne.activateGunnerWinsEffects(winningGunner)
                 self.playerTwo.activateGunnerLosesEffects(losingGunner)
             elif fighterTwoPower > fighterOnePower:
                 #fighterTwo wins
-                self.animations.append('b,g2,' + str(rollOne) + ',' + str(rollTwo))
                 losingGunner = self.playerOne.gunnerLoses()
                 winningGunner = self.playerTwo.gunnerWins()
                 self.playerOne.activateGunnerLosesEffects(losingGunner)
@@ -55,11 +54,11 @@ class DogfightSimulator:
                 #write the animation code
             else:
                 #fighters tie
-                self.animations.append('b,gt,' + str(rollOne) + ',' + str(rollTwo))
                 losingGunner1 = self.playerOne.gunnerLoses()
                 losingGunner2 = self.playerTwo.gunnerLoses()
                 self.playerOne.activateGunnerLosesEffects(losingGunner1)
                 self.playerTwo.activateGunnerLosesEffects(losingGunner2)
+            self.animations.append('b,gd,' + self.playerOne.getFighterDestination() + ',' + self.playerTwo.getFighterDestination())
         #end while
         if self.playerOne.stillAlive():
             self.animations.append('p,1w,0,0')

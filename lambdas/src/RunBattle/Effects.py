@@ -12,6 +12,7 @@ class Timing(Enum):
     WHENCYCLED = 8
     ONOPPONENTDRAW = 9
     POWERCHANGE = 10
+    ONANYINITIALIZE = 11
     
 class EffectType(Enum):
     POWERCOUNTER = 1
@@ -19,6 +20,8 @@ class EffectType(Enum):
     CYCLE = 3
     PLAYCARD = 4
     DESTROYCARD = 5
+    SETFIGHTERDESTINATION = 6
+    SETOPPOSINGFIGHTERDESTINATION = 6
     
 class Target(Enum):
     SELF = 1
@@ -29,6 +32,9 @@ class Target(Enum):
     ALL = 6
     NONE = 7
     BOTHPLAYERS = 8
+    OPPOSINGFIGHTER = 9
+    DECK = 10
+    DISCARD = 11
 
 class TargetFilter(Enum):
     NOFILTER = 1
@@ -128,4 +134,6 @@ effects = {
     "initializeTwoPowerCountersRandomLeanor": Effect(Timing.INITIALIZE, EffectType.POWERCOUNTER, Target.RANDOM, 2).addTargetFilter(TargetFilter.LEANOR),
     "initializeReplaceWinnerTwoPowerCountersAll": Effect(Timing.INITIALIZE, EffectType.POWERCOUNTER, Target.ALL, 2).addCondition(Condition.REPLACINGWINNER, 0),
     "destroyIfPowerTen": Effect(Timing.POWERCHANGE, EffectType.DESTROYCARD, Target.SELF, 0).addCondition(Condition.SELFHASPOWER, 10),
+    "onAnyInitializeOnePowerCounterSelf": Effect(Timing.ONANYINITIALIZE, EffectType.POWERCOUNTER, Target.SELF, 1),
+    "sparkyTombManEffect": Effect(Timing.LOSER, EffectType.SETOPPOSINGFIGHTERDESTINATION, Target.DISCARD, 0),
 }

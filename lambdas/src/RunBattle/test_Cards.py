@@ -9,6 +9,7 @@ from Effects import TargetFilter
 from Effects import Condition
 from Animations import Animations
 from Player import Player
+from Player import FighterDestination
 import random
 import copy
 import unittest
@@ -44,7 +45,7 @@ class Test_Cards(unittest.TestCase):
         animations = Animations()
         player = Player("0", "p", animations)
         numberPowerCounters = random.randint(1,10)
-        timing = random.choice(list(Timing))
+        timing = Timing.LOSER
         selfPowerCounterEffect = Effect(timing, EffectType.POWERCOUNTER, Target.SELF, numberPowerCounters)
         cardWithEffect = Card("test", 0, 0, [selfPowerCounterEffect], animations)
         cardWithEffect.teamSlot = random.randint(1,10000)
@@ -376,3 +377,52 @@ class Test_Cards(unittest.TestCase):
         assert player.team[0] == None
         assert player.discard[0] == testCard
         assert animations.codesAppearInOrder(["p,des,0,1"])
+
+    def test_onAnyInitializeTimingWorks(self):
+        animations = Animations()
+        player = Player("0", "p", animations)
+        anyInitializeEffect = Effect(Timing.ONANYINITIALIZE, EffectType.POWERCOUNTER, Target.SELF, 1)
+        initializeEffect = Effect(Timing.INITIALIZE, EffectType.POWERCOUNTER, Target.SELF, 0)
+        testCard = Card("test", 0, 0, [anyInitializeEffect], animations)
+        testCard.teamSlot = 1
+        player.deck = [Card("test", 0, 0, [initializeEffect], animations)]
+        player.team = [testCard, None, None, None, None, None]
+        player.drawAndPlayCard(2)
+        assert player.team[0].powerCounters == 1
+
+    def test_onAnyInitializeTimingWorksWithOpponentInitialize(self):
+        animations = Animations()
+        player1 = Player("0", "p", animations)
+        player2 = Player("1", "s", animations)
+        player1.addOpponent(player2)
+        player2.addOpponent(player1)
+        anyInitializeEffect = Effect(Timing.ONANYINITIALIZE, EffectType.POWERCOUNTER, Target.SELF, 1)
+        initializeEffect = Effect(Timing.INITIALIZE, EffectType.POWERCOUNTER, Target.SELF, 0)
+        testCard = Card("test", 0, 0, [anyInitializeEffect], animations)
+        testCard.teamSlot = 1
+        player2.deck = [Card("test", 0, 0, [initializeEffect], animations)]
+        player1.team = [testCard, None, None, None, None, None]
+        player2.drawAndPlayCard(1)
+        assert testCard.powerCounters == 1
+        assert animations.codesAppearInOrder(["p,pow,1,1"])
+
+    def test_sparkyTombEffectWorks(self):
+        animations = Animations()
+        player1 = Player("0", "p", animations)
+        player2 = Player("1", "s", animations)
+        player1.addOpponent(player2)
+        player2.addOpponent(player1)
+        sparkTombEffect = Effect(Timing.LOSER, EffectType.SETOPPOSINGFIGHTERDESTINATION, Target.DISCARD, 0)
+        testCard = Card("test", 0, 0, [], animations)
+        player1.currentRoll = 1
+        player2.currentRoll = 1
+        player1.team = [Card("test", 0, 0, [sparkTombEffect], animations), None, None, None, None, None]
+        player2.team = [testCard, None, None, None, None, None]
+        loser = player1.gunnerLoses()
+        winner = player2.gunnerWins()
+        player1.activateGunnerLosesEffects(loser)
+        player2.activateGunnerWinsEffects(winner)
+        assert len(player2.discard) == 1
+        assert player2.discard[0] == testCard
+        assert player1.fighterDestination == FighterDestination.DISCARD
+        assert player2.fighterDestination == FighterDestination.DISCARD

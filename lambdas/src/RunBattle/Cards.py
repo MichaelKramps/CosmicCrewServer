@@ -62,8 +62,11 @@ class Card:
             case EffectType.PLAYCARD:
                 self.activatePlayCardEffect(effect, player)
             case EffectType.DESTROYCARD:
-                self.activateDestroyCardEffect(player)
+                self.activateDestroyCardEffect(effect, player)
         effect.fireEffect()
+        if effect.timing == Timing.INITIALIZE:
+            player.activateEffectsForTeam(Timing.ONANYINITIALIZE)
+            player.activateEffectsForOpponentTeam(Timing.ONANYINITIALIZE)
             
                 
     def activatePowerCounterEffect(self, effect, player):
@@ -118,8 +121,10 @@ class Card:
                 if (player.leftmostOpenTeamSlot() > 0):
                     player.playCard(player.leftmostOpenTeamSlot())
 
-    def activateDestroyCardEffect(self, player):
-        player.destroyCard(self)
+    def activateDestroyCardEffect(self, effect, player):
+        match effect.target:
+            case Target.SELF:
+                player.destroyCard(self)
 
     def passesFilter(self, effect):
         match effect.targetFilter:
@@ -200,8 +205,8 @@ cardList = [
     {"name": "Leanor Hype Man", "id": 22, "power": 3, "effectNames": ["initializeTwoPowerCountersRandomLeanor"], "civilization": "leanor"},
     {"name": "Shy Flyer", "id": 23, "power": 2, "effectNames": ["initializeReplaceWinnerTwoPowerCountersAll"], "civilization": "leanor"},
     {"name": "Supercharged Brawler", "id": 24, "power": 9, "effectNames": ["destroyIfPowerTen"], "civilization": "leanor"},
-    #{"name": "Name", "id": 25, "power": 2, "effectNames": [], "civilization": "leanor"},
-    #{"name": "Name", "id": 26, "power": 2, "effectNames": [], "civilization": "leanor"},
+    {"name": "Fabiano, Starter Gun", "id": 25, "power": 4, "effectNames": ["onAnyInitializeOnePowerCounterSelf"], "civilization": "leanor"},
+    {"name": "Sparky Sparky Tomb Man", "id": 26, "power": 3, "effectNames": ["sparkyTombManEffect"], "civilization": "leanor"},
     #{"name": "Name", "id": 27, "power": 2, "effectNames": [], "civilization": "leanor"},
     #{"name": "Name", "id": 28, "power": 2, "effectNames": [], "civilization": "leanor"},
     #{"name": "Name", "id": 29, "power": 2, "effectNames": [], "civilization": "leanor"},
