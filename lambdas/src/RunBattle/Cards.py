@@ -131,10 +131,9 @@ class Card:
                 player.destroyCard(self)
 
     def activateSetFighterDestinationEffect(self, effect, player):
-        print("hi bee")
+        player.setFighterDestination(effect)
 
     def activateSetOpposingFighterDestinationEffect(self, effect, player):
-        print("kramps321")
         player.opponent.setFighterDestination(effect)
 
     def passesFilter(self, effect):
@@ -218,7 +217,7 @@ cardList = [
     {"name": "Supercharged Brawler", "id": 24, "power": 9, "effectNames": ["destroyIfPowerTen"], "civilization": "leanor"},
     {"name": "Fabiano, Starter Gun", "id": 25, "power": 4, "effectNames": ["onAnyInitializeOnePowerCounterSelf"], "civilization": "leanor"},
     {"name": "Sparky Sparky Tomb Man", "id": 26, "power": 3, "effectNames": ["sparkyTombManEffect"], "civilization": "leanor"},
-    #{"name": "Name", "id": 27, "power": 2, "effectNames": [], "civilization": "leanor"},
+    {"name": "Maxime, the Gifter", "id": 27, "power": 6, "effectNames": ["loserPutBackInDeck"], "civilization": "leanor"},
     #{"name": "Name", "id": 28, "power": 2, "effectNames": [], "civilization": "leanor"},
     #{"name": "Name", "id": 29, "power": 2, "effectNames": [], "civilization": "leanor"},
 ]

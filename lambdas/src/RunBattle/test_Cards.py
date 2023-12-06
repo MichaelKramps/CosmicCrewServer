@@ -426,3 +426,16 @@ class Test_Cards(unittest.TestCase):
         assert player2.discard[0] == testCard
         assert player1.fighterDestination == FighterDestination.DISCARD
         assert player2.fighterDestination == FighterDestination.DISCARD
+
+    def test_loseAndGoToBottomOfDeckEffectWorks(self):
+        animations = Animations()
+        player1 = Player("0", "p", animations)
+        loseDeckEffect = Effect(Timing.LOSER, EffectType.SETFIGHTERDESTINATION, Target.DECK, 0)
+        testCard = Card("test", 0, 0, [loseDeckEffect], animations)
+        player1.currentRoll = 1
+        player1.team = [testCard, None, None, None, None, None]
+        loser = player1.gunnerLoses()
+        player1.activateGunnerLosesEffects(loser)
+        assert len(player1.discard) == 0
+        assert player1.fighterDestination == FighterDestination.DECK
+        assert testCard in player1.deck
