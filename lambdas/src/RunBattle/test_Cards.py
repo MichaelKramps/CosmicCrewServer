@@ -486,12 +486,26 @@ class Test_Cards(unittest.TestCase):
         player1.drawAndPlayCard(3)
         assert testCard.powerCounters == 2
 
+    def test_onFriendlyPowerCounterDoesntFireWhenRemovingCounter(self):
+        animations = Animations()
+        player1 = Player("0", "p", animations)
+        onPowerCounterEffect = Effect(Timing.ONFRIENDLYPOWERCOUNTER, EffectType.POWERCOUNTER, Target.SELF, 1)
+        testCard = Card("test", 0, 0, [onPowerCounterEffect], animations)
+        numberPowerCounters = -1
+        initializeEffect = Effect(Timing.INITIALIZE, EffectType.POWERCOUNTER, Target.SELF, numberPowerCounters)
+        initializeCard = Card("test", 0, 0, [initializeEffect, onPowerCounterEffect], animations)
+        player1.team = [testCard, None, None, None, None, None]
+        player1.deck = [initializeCard, initializeCard]
+        player1.drawAndPlayCard(2)
+        player1.drawAndPlayCard(3)
+        assert testCard.powerCounters == 0
+
     def test_onFriendlyPowerCounterCantTriggerItself(self):
         animations = Animations()
         player1 = Player("0", "p", animations)
         onPowerCounterEffect = Effect(Timing.ONFRIENDLYPOWERCOUNTER, EffectType.POWERCOUNTER, Target.SELF, 1)
         testCard = Card("test", 0, 0, [onPowerCounterEffect], animations)
-        numberPowerCounters = random.randint(1,10)
+        numberPowerCounters = 1
         initializeEffect = Effect(Timing.INITIALIZE, EffectType.POWERCOUNTER, Target.SELF, numberPowerCounters)
         initializeCard1 = Card("test", 0, 0, [initializeEffect, onPowerCounterEffect], animations)
         initializeCard1.teamSlot = 2
@@ -518,3 +532,55 @@ class Test_Cards(unittest.TestCase):
         player1.drawAndPlayCard(1)
         assert player1.team[0] == testCard
         assert animations.codesAppearInOrder(["p,pfd,0,1"])
+
+    def test_replaceFighterEffectPicksTheCorrectFighterToReplace(self):
+        animations = Animations()
+        player1 = Player("0", "p", animations)
+        replaceEffect = Effect(Timing.INITIALIZE, EffectType.REPLACEFIGHTER, Target.DISCARD, 0).addTargetFilter(TargetFilter.LOWESTPOWER)
+        testCard = Card("test", 0, 6, [], animations)
+        initializeCard = Card("test", 0, 0, [replaceEffect], animations)
+        initializeCard.teamSlot = 1
+        player1.discard = [Card("test", 0, 4, [], animations), testCard, Card("test", 0, 3, [], animations)]
+        player1.deck = [initializeCard]
+        player1.drawAndPlayCard(1)
+        player1.printTeam()
+        assert player1.team[0] == testCard
+        assert animations.codesAppearInOrder(["p,pfd,1,1"])
+
+    def test_leanorWinsPowerUpLeanorFighters(self):
+        animations = Animations()
+        player1 = Player("0", "p", animations)
+        leanorWinsEffect = Effect(Timing.ANYWINNER, EffectType.POWERCOUNTER, Target.ALL, 1).addCondition(Condition.ACTIVECARDISLEANOR, 1).addTargetFilter(TargetFilter.LEANOR)
+        testCard = Card("test", 0, 0, [leanorWinsEffect], animations)
+        testCard.civilization = Civilization.LEANOR
+        leanorCard = Card("test", 0, 0, [], animations)
+        leanorCard.civilization = Civilization.LEANOR
+        leanorCard2 = Card("test", 0, 0, [], animations)
+        leanorCard2.civilization = Civilization.LEANOR
+        nonLeanorCard = Card("test", 0, 0, [], animations)
+        player1.team = [testCard, nonLeanorCard, leanorCard, leanorCard2, None, None]
+        player1.currentRoll = 4
+        winner = player1.gunnerWins()
+        player1.activateGunnerWinsEffects(winner)
+        assert testCard.powerCounters == 1
+        assert nonLeanorCard.powerCounters == 0
+        assert leanorCard.powerCounters == 1
+
+    def test_leanorWinsPowerUpLeanorFightersNonLeanorWinner(self):
+        animations = Animations()
+        player1 = Player("0", "p", animations)
+        leanorWinsEffect = Effect(Timing.ANYWINNER, EffectType.POWERCOUNTER, Target.ALL, 1).addCondition(Condition.ACTIVECARDISLEANOR, 1).addTargetFilter(TargetFilter.LEANOR)
+        testCard = Card("test", 0, 0, [leanorWinsEffect], animations)
+        testCard.civilization = Civilization.LEANOR
+        leanorCard = Card("test", 0, 0, [], animations)
+        leanorCard.civilization = Civilization.LEANOR
+        leanorCard2 = Card("test", 0, 0, [], animations)
+        leanorCard2.civilization = Civilization.LEANOR
+        nonLeanorCard = Card("test", 0, 0, [], animations)
+        player1.team = [testCard, nonLeanorCard, leanorCard, leanorCard2, None, None]
+        player1.currentRoll = 2
+        winner = player1.gunnerWins()
+        player1.activateGunnerWinsEffects(winner)
+        assert testCard.powerCounters == 0
+        assert leanorCard.powerCounters == 0
+        assert leanorCard2.powerCounters == 0

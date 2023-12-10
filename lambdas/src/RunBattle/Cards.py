@@ -51,6 +51,8 @@ class Card:
                 return self.replacingWinner
             case Condition.SELFHASPOWER:
                 return self.getTotalPower() >= effect.conditionValue
+            case Condition.ACTIVECARDISLEANOR:
+                return player.activeCard.civilization == Civilization.LEANOR
         return True
             
                 
@@ -83,26 +85,26 @@ class Card:
                     self.powerCounters += player.activeCard.power
                     self.animations.addCodeFrom(player, effect, player.activeCard.power, self.teamSlot)
                     self.activateEffectsFor(Timing.POWERCHANGE, player)
-                    self.attemptOnFriendlyEffect(player, effect, self.teamSlot)
+                    self.attemptOnFriendlyEffect(player, effect, self.teamSlot, player.activeCard.power)
                 else:
                     self.powerCounters += effect.intValue
                     self.animations.addCodeFrom(player, effect, effect.intValue, self.teamSlot)
                     self.activateEffectsFor(Timing.POWERCHANGE, player)
-                    self.attemptOnFriendlyEffect(player, effect, self.teamSlot)
+                    self.attemptOnFriendlyEffect(player, effect, self.teamSlot, effect.intValue)
             case Target.ALL:
                 for card in player.team:
                     if (card != None and card.passesFilter(effect)):
                         card.powerCounters += effect.intValue
                         self.animations.addCodeFrom(player, effect, effect.intValue, card.teamSlot)
-                        card.activateEffectsFor(Timing.POWERCHANGE, player, card.teamSlot)
-                        self.attemptOnFriendlyEffect(player, effect)
+                        card.activateEffectsFor(Timing.POWERCHANGE, player)
+                        self.attemptOnFriendlyEffect(player, effect, card.teamSlot, effect.intValue)
             case Target.LEFTMOST:
                 for card in player.team:
                     if (card != None and card.passesFilter(effect)):
                         card.powerCounters += effect.intValue
                         self.animations.addCodeFrom(player, effect, effect.intValue, card.teamSlot)
                         card.activateEffectsFor(Timing.POWERCHANGE, player)
-                        self.attemptOnFriendlyEffect(player, effect, card.teamSlot)
+                        self.attemptOnFriendlyEffect(player, effect, card.teamSlot, effect.intValue)
                         break
             case Target.RIGHTMOST:
                 for card in reversed(player.team):
@@ -110,7 +112,7 @@ class Card:
                         card.powerCounters += effect.intValue
                         self.animations.addCodeFrom(player, effect, effect.intValue, card.teamSlot)
                         card.activateEffectsFor(Timing.POWERCHANGE, player)
-                        self.attemptOnFriendlyEffect(player, effect, card.teamSlot)
+                        self.attemptOnFriendlyEffect(player, effect, card.teamSlot, effect.intValue)
                         break
             case Target.RANDOM:
                 randomRoll = random.randint(1, 6)
@@ -120,7 +122,7 @@ class Card:
                     randomCard.powerCounters += effect.intValue
                     self.animations.addCodeFrom(player, effect, effect.intValue, randomCard.teamSlot)
                     randomCard.activateEffectsFor(Timing.POWERCHANGE, player)
-                    self.attemptOnFriendlyEffect(player, effect, randomCard.teamSlot)
+                    self.attemptOnFriendlyEffect(player, effect, randomCard.teamSlot, effect.intValue)
             case Target.REPLACEMENTFIGHTER:
                 powerCountersToAdd = 0
                 if (effect.intValue == IntValue.CURRENTPOWERCOUNTERS):
@@ -131,7 +133,7 @@ class Card:
                 replacementCard.powerCounters += powerCountersToAdd
                 self.animations.addCodeFrom(player, effect, powerCountersToAdd, replacementCard.teamSlot)
                 replacementCard.activateEffectsFor(Timing.POWERCHANGE, player)
-                self.attemptOnFriendlyEffect(player, effect, replacementCard.teamSlot)
+                self.attemptOnFriendlyEffect(player, effect, replacementCard.teamSlot, powerCountersToAdd)
                         
     def activateCycleEffect(self, effect, player):
         for iteration in range(0, effect.intValue):
@@ -159,8 +161,8 @@ class Card:
     def activateReplaceFighterEffect(self, effect, player):
         player.replaceFighterEffect(effect, self)
 
-    def attemptOnFriendlyEffect(self, player, effect, teamSlot):
-        if (effect.timing != Timing.ONFRIENDLYPOWERCOUNTER): #prevents infinite power counter effect
+    def attemptOnFriendlyEffect(self, player, effect, teamSlot, powerCountersAdded):
+        if (effect.timing != Timing.ONFRIENDLYPOWERCOUNTER and powerCountersAdded > 0): #prevents infinite power counter effect
             player.activateEffectsForTeammates(Timing.ONFRIENDLYPOWERCOUNTER, teamSlot)
 
     def passesFilter(self, effect):
@@ -248,7 +250,7 @@ cardList = [
     {"name": "Sniper Patton", "id": 28, "power": 2, "effectNames": ["transferPowerCountersToReplacement"], "civilization": "leanor"},
     {"name": "General Gonto", "id": 29, "power": 1, "effectNames": ["powerCounterSelfOnTeammatePowerCounter"], "civilization": "leanor"},
     {"name": "Untrained Medic", "id": 30, "power": 3, "effectNames": ["loserReplaceFighterLowestInDiscard"], "civilization": "leanor"},
-    #{"name": "Name", "id": 31, "power": 2, "effectNames": [], "civilization": "leanor"},
+    {"name": "Shak Shyarov", "id": 31, "power": 1, "effectNames": ["powerCounterAllLeanorWhenLeanorWins", "powerCounterAllLeanorWhenLeanorLoses"], "civilization": "leanor"},
     #{"name": "Name", "id": 32, "power": 2, "effectNames": [], "civilization": "leanor"},
     #{"name": "Name", "id": 33, "power": 2, "effectNames": [], "civilization": "leanor"},
     #{"name": "Name", "id": 34, "power": 2, "effectNames": [], "civilization": "leanor"},

@@ -54,6 +54,9 @@ class Condition(Enum):
     TEAMHASATLEASTXGUNNERS = 3
     REPLACINGWINNER = 4
     SELFHASPOWER = 5
+    ACTIVECARDISATHYR = 6
+    ACTIVECARDISLEANOR = 7
+    ACTIVECARDISRANCE = 8
 
 class IntValue(Enum):
     CURRENTPOWERCOUNTERS = 1
@@ -147,5 +150,7 @@ effects = {
     "loserPutBackInDeck": Effect(Timing.LOSER, EffectType.SETFIGHTERDESTINATION, Target.DECK, 0),
     "transferPowerCountersToReplacement": Effect(Timing.AFTERWINNING, EffectType.POWERCOUNTER, Target.REPLACEMENTFIGHTER, IntValue.CURRENTPOWERCOUNTERS),
     "powerCounterSelfOnTeammatePowerCounter": Effect(Timing.ONFRIENDLYPOWERCOUNTER, EffectType.POWERCOUNTER, Target.SELF, 1),
-    "loserReplaceFighterLowestInDiscard": Effect(Timing.LOSER, EffectType.REPLACEFIGHTER, Target.DISCARD, 0).addTargetFilter(TargetFilter.LOWESTPOWER)
+    "loserReplaceFighterLowestInDiscard": Effect(Timing.LOSER, EffectType.REPLACEFIGHTER, Target.DISCARD, 0).addTargetFilter(TargetFilter.LOWESTPOWER),
+    "powerCounterAllLeanorWhenLeanorWins": Effect(Timing.ANYWINNER, EffectType.POWERCOUNTER, Target.ALL, 1).addCondition(Condition.ACTIVECARDISLEANOR, 1).addTargetFilter(TargetFilter.LEANOR),
+    "powerCounterAllLeanorWhenLeanorLoses": Effect(Timing.ANYLOSER, EffectType.POWERCOUNTER, Target.ALL, 1).addCondition(Condition.ACTIVECARDISLEANOR, 1).addTargetFilter(TargetFilter.LEANOR),
 }

@@ -206,7 +206,7 @@ class Player:
                         for index in range(len(self.discard)):
                             card = self.discard[index]
                             if card.power > self.discard[indexOfLowestPowerCard].power:
-                                lowestPowerCard = card
+                                indexOfLowestPowerCard = index
                         self.team[cardToReplace.teamSlot - 1] = self.discard[indexOfLowestPowerCard]
                         self.team[cardToReplace.teamSlot - 1].teamSlot = cardToReplace.teamSlot
                         self.discard[indexOfLowestPowerCard] = cardToReplace
