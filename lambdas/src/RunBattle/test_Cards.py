@@ -537,7 +537,7 @@ class Test_Cards(unittest.TestCase):
         animations = Animations()
         player1 = Player("0", "p", animations)
         replaceEffect = Effect(Timing.INITIALIZE, EffectType.REPLACEFIGHTER, Target.DISCARD, 0).addTargetFilter(TargetFilter.LOWESTPOWER)
-        testCard = Card("test", 0, 6, [], animations)
+        testCard = Card("test", 0, 2, [], animations)
         initializeCard = Card("test", 0, 0, [replaceEffect], animations)
         initializeCard.teamSlot = 1
         player1.discard = [Card("test", 0, 4, [], animations), testCard, Card("test", 0, 3, [], animations)]
@@ -545,6 +545,7 @@ class Test_Cards(unittest.TestCase):
         player1.drawAndPlayCard(1)
         player1.printTeam()
         assert player1.team[0] == testCard
+        assert player1.discard[-1] == initializeCard
         assert animations.codesAppearInOrder(["p,pfd,1,1"])
 
     def test_leanorWinsPowerUpLeanorFighters(self):

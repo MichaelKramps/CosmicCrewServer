@@ -59,6 +59,10 @@ class DogfightSimulator:
                 self.playerOne.activateGunnerLosesEffects(losingGunner1)
                 self.playerTwo.activateGunnerLosesEffects(losingGunner2)
             self.animations.append('b,gd,' + self.playerOne.getFighterDestination() + ',' + self.playerTwo.getFighterDestination())
+            self.playerOne.printTeam()
+            self.playerOne.printDiscard()
+            self.playerTwo.printTeam()
+            self.playerTwo.printDiscard()
         #end while
         if self.playerOne.stillAlive():
             self.animations.append('p,1w,0,0')

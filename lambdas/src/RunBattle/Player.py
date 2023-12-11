@@ -79,7 +79,6 @@ class Player:
             self.animations.append(self.playerIdentifier + ",p," + str(slotToPlayCardIn) + ",0")
             self.activeCard.activateEffectsFor(Timing.INITIALIZE, self)
             self.activeCard = None
-            self.printTeam()
         
     def drawAndPlayCard(self, slotToPlayCardIn):
         self.drawCard()
@@ -198,6 +197,8 @@ class Player:
         cardToDestroy.clear()
 
     def replaceFighterEffect(self, effect, cardToReplace):
+        print("replacing fighter")
+        #self.printDiscard()
         if effect.target == Target.DISCARD:
             if (len(self.discard) > 0):
                  match effect.targetFilter:
@@ -205,11 +206,17 @@ class Player:
                         indexOfLowestPowerCard = 0
                         for index in range(len(self.discard)):
                             card = self.discard[index]
-                            if card.power > self.discard[indexOfLowestPowerCard].power:
+                            #print(str(index) + " has power: " + str(card.power))
+                            if card.power < self.discard[indexOfLowestPowerCard].power:
+                                #print("index " + str(index) + " loses to index " + str(indexOfLowestPowerCard))
                                 indexOfLowestPowerCard = index
-                        self.team[cardToReplace.teamSlot - 1] = self.discard[indexOfLowestPowerCard]
-                        self.team[cardToReplace.teamSlot - 1].teamSlot = cardToReplace.teamSlot
-                        self.discard[indexOfLowestPowerCard] = cardToReplace
+                        replacingCard = self.discard.pop(indexOfLowestPowerCard)
+                        replacingCard.teamSlot = cardToReplace.teamSlot
+                        #print("removed card from discard")
+                        #self.printDiscard()
+                        self.team[cardToReplace.teamSlot - 1] = replacingCard
+                        #print("put card on team at team slot " + str(cardToReplace.teamSlot))
+                        #self.printTeam()
                         self.animations.append(self.playerIdentifier + ",pfd," + str(indexOfLowestPowerCard) + "," + str(cardToReplace.teamSlot))
 
     def getFighterDestination(self):
@@ -230,3 +237,14 @@ class Player:
             else:
                 teamString += " (" + card.name + ": " + str(card.power + card.powerCounters) + ") "
         print(teamString)
+        self.printDiscard()
+    
+    def printDiscard(self):
+        print("---------= " + self.playerIdentifier + " discard =---------")
+        discardString = ""
+        for card in self.discard:
+            if card == None:
+                discardString += " (None) "
+            else:
+                discardString += " (" + card.name + ": " + str(card.power + card.powerCounters) + ") "
+        print(discardString)
