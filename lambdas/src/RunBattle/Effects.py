@@ -124,6 +124,8 @@ effects = {
     "initializeOnePowerCounterSelf": Effect(Timing.INITIALIZE, EffectType.POWERCOUNTER, Target.SELF, 1),
     "initializeTwoPowerCounterSelf": Effect(Timing.INITIALIZE, EffectType.POWERCOUNTER, Target.SELF, 2),
     "initializeThreePowerCounterSelf": Effect(Timing.INITIALIZE, EffectType.POWERCOUNTER, Target.SELF, 3),
+    "initializeOnePowerCounterLeftmost": Effect(Timing.INITIALIZE, EffectType.POWERCOUNTER, Target.LEFTMOST, 1),
+    "initializeOnePowerCounterRightmost": Effect(Timing.INITIALIZE, EffectType.POWERCOUNTER, Target.RIGHTMOST, 1),
     "initializeOnePowerCounterAll": Effect(Timing.INITIALIZE, EffectType.POWERCOUNTER, Target.ALL, 1),
     "initializeCycleOne": Effect(Timing.INITIALIZE, EffectType.CYCLE, Target.NONE, 1),
     "onDrawOnePowerCounterSelf": Effect(Timing.ONDRAW, EffectType.POWERCOUNTER, Target.SELF, 1),
@@ -153,4 +155,7 @@ effects = {
     "loserReplaceFighterLowestInDiscard": Effect(Timing.LOSER, EffectType.REPLACEFIGHTER, Target.DISCARD, 0).addTargetFilter(TargetFilter.LOWESTPOWER),
     "powerCounterAllLeanorWhenLeanorWins": Effect(Timing.ANYWINNER, EffectType.POWERCOUNTER, Target.ALL, 1).addCondition(Condition.ACTIVECARDISLEANOR, 1).addTargetFilter(TargetFilter.LEANOR),
     "powerCounterAllLeanorWhenLeanorLoses": Effect(Timing.ANYLOSER, EffectType.POWERCOUNTER, Target.ALL, 1).addCondition(Condition.ACTIVECARDISLEANOR, 1).addTargetFilter(TargetFilter.LEANOR),
+    "winnerPowerCounterAll": Effect(Timing.WINNER, EffectType.POWERCOUNTER, Target.ALL, 1),
+    "anyWinnerTwoPowerCountersSelf": Effect(Timing.ANYWINNER, EffectType.POWERCOUNTER, Target.SELF, 2),
+    "anyLoserTwoPowerCountersSelf": Effect(Timing.ANYLOSER, EffectType.POWERCOUNTER, Target.SELF, 2),
 }
