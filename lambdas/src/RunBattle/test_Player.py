@@ -200,7 +200,8 @@ class Test_Player(unittest.TestCase):
         cardToTest = Card("test", 0, 0, [], animations)
         cardToTest.powerCounters = 4
         player.team = [cardToTest, Card("test", 0, 0, [], animations), Card("test", 0, 0, [], animations), Card("test", 0, 0, [], animations), Card("test", 0, 0, [], animations), Card("test", 0, 0, [], animations)]
-        player.activateGunnerWinsEffects(player.gunnerWins())
+        player.gunnerWins()
+        player.activateGunnerWinsEffects()
         assert cardToTest.powerCounters == 0
 
     def test_gunnerWinsDoesntReplaceIfEmptyDeck(self):
@@ -223,8 +224,8 @@ class Test_Player(unittest.TestCase):
         card = Card("test", 0, 0, [], animations)
         card.teamSlot = 1
         player.team = [card, Card("test", 0, 0, [], animations), Card("test", 0, 0, [], animations), Card("test", 0, 0, [], animations), Card("test", 0, 0, [], animations), Card("test", 0, 0, [], animations)]
-        indexOfWinningGunner = player.gunnerWins()
-        player.activateGunnerWinsEffects(indexOfWinningGunner)
+        player.gunnerWins()
+        player.activateGunnerWinsEffects()
         assert player.team[0] == cardInDeck
 
     def test_gunnerWinsPutsWinningGunnerOnBottomOfDeck(self):
@@ -234,8 +235,8 @@ class Test_Player(unittest.TestCase):
         player.currentRoll = 1
         winningCard = Card("test", 0, 0, [], animations)
         player.team = [winningCard, Card("test", 0, 0, [], animations), Card("test", 0, 0, [], animations), Card("test", 0, 0, [], animations), Card("test", 0, 0, [], animations), Card("test", 0, 0, [], animations)]
-        indexOfWinningGunner = player.gunnerWins()
-        player.activateGunnerWinsEffects(indexOfWinningGunner)
+        player.gunnerWins()
+        player.activateGunnerWinsEffects()
         assert player.deck[1] == winningCard
 
     def test_gunnerLosesClearsLosingGunner(self):
@@ -245,7 +246,8 @@ class Test_Player(unittest.TestCase):
         cardToTest = Card("test", 0, 0, [], animations)
         cardToTest.powerCounters = 4
         player.team = [cardToTest, Card("test", 0, 0, [], animations), Card("test", 0, 0, [], animations), Card("test", 0, 0, [], animations), Card("test", 0, 0, [], animations), Card("test", 0, 0, [], animations)]
-        player.activateGunnerLosesEffects(player.gunnerLoses())
+        player.gunnerLoses()
+        player.activateGunnerLosesEffects()
         assert cardToTest.powerCounters == 0
 
     def test_gunnerLosesAddsLosingGunnerToDiscard(self):
@@ -254,7 +256,8 @@ class Test_Player(unittest.TestCase):
         player.currentRoll = 1
         cardToTest = Card("test", 0, 0, [], animations)
         player.team = [cardToTest, Card("test", 0, 0, [], animations), Card("test", 0, 0, [], animations), Card("test", 0, 0, [], animations), Card("test", 0, 0, [], animations), Card("test", 0, 0, [], animations)]
-        player.activateGunnerLosesEffects(player.gunnerLoses())
+        player.gunnerLoses()
+        player.activateGunnerLosesEffects()
         assert cardToTest in player.discard
 
     def test_gunnerLosesRemovesLosingGunnerFromTeam(self):
@@ -262,6 +265,7 @@ class Test_Player(unittest.TestCase):
         player = Player("1", "p", animations)
         player.currentRoll = 1
         cardToTest = Card("test", 0, 0, [], animations)
+        cardToTest.teamSlot = 1
         player.team = [cardToTest, Card("test", 0, 0, [], animations), Card("test", 0, 0, [], animations), Card("test", 0, 0, [], animations), Card("test", 0, 0, [], animations), Card("test", 0, 0, [], animations)]
         player.gunnerLoses()
         assert player.team[0] == None
@@ -304,8 +308,8 @@ class Test_Player(unittest.TestCase):
         player.team = [Card("test", 0, 0, [loserEffect], animations), None, None, None, None, Card("test", 0, 0, [], animations)]
         player.deck = [Card("test", 0, 0, [], animations), Card("test", 0, 0, [], animations), Card("test", 0, 0, [], animations), testCard]
         player.currentRoll = 1
-        losingGunner = player.gunnerLoses()
-        player.activateGunnerLosesEffects(losingGunner)
+        player.gunnerLoses()
+        player.activateGunnerLosesEffects()
         assert player.deck[0] == testCard
 
     def test_canActivateWinnerEffects(self):
@@ -318,8 +322,8 @@ class Test_Player(unittest.TestCase):
         player.team = [teamCard, None, None, None, None, Card("test", 0, 0, [], animations)]
         player.deck = [Card("test", 0, 0, [], animations), Card("test", 0, 0, [], animations), Card("test", 0, 0, [], animations), testCard]
         player.currentRoll = 1
-        indexOfWinningGunner = player.gunnerWins()
-        player.activateGunnerWinsEffects(indexOfWinningGunner)
+        player.gunnerWins()
+        player.activateGunnerWinsEffects()
         assert player.team[0] == testCard
 
     def test_targetFilterWorks(self):

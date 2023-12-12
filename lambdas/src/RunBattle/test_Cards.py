@@ -247,8 +247,8 @@ class Test_Cards(unittest.TestCase):
         assert player.team[0].powerCounters == powerValue
         assert animations.codesAppearInOrder(["p,dws,1,0", "p,pow," + str(powerValue) + ",1", "p,uns,1,0"])
         player.currentRoll = 1
-        indexOfWinningGunner = player.gunnerWins()
-        player.activateGunnerWinsEffects(indexOfWinningGunner)
+        player.gunnerWins()
+        player.activateGunnerWinsEffects()
         assert player.deck[0].effects[1].fireXMoreTimes == 1
 
     def test_anyWinnerEffectsTrigger(self):
@@ -258,8 +258,8 @@ class Test_Cards(unittest.TestCase):
         anyWinnerEffect = Effect(Timing.ANYWINNER, EffectType.POWERCOUNTER, Target.SELF, powerValue)
         player.team = [Card("test", 0, 0, [anyWinnerEffect], animations), Card("test", 0, powerValue, [], animations), None, None, None, None]
         player.currentRoll = 2
-        indexOfWinningGunner = player.gunnerWins()
-        player.activateGunnerWinsEffects(indexOfWinningGunner)
+        player.gunnerWins()
+        player.activateGunnerWinsEffects()
         assert player.team[0].powerCounters == powerValue
 
     def test_anyLoserEffectsTrigger(self):
@@ -269,8 +269,8 @@ class Test_Cards(unittest.TestCase):
         anyWinnerEffect = Effect(Timing.ANYLOSER, EffectType.POWERCOUNTER, Target.SELF, powerValue)
         player.team = [Card("test", 0, 0, [anyWinnerEffect], animations), Card("test", 0, powerValue, [], animations), None, None, None, None]
         player.currentRoll = 2
-        losingGunner = player.gunnerLoses()
-        player.activateGunnerLosesEffects(losingGunner)
+        player.gunnerLoses()
+        player.activateGunnerLosesEffects()
         assert player.team[0].powerCounters == powerValue
 
     def test_bothPlayersCycleOne(self):
@@ -419,10 +419,10 @@ class Test_Cards(unittest.TestCase):
         player2.currentRoll = 1
         player1.team = [Card("test", 0, 0, [sparkTombEffect], animations), None, None, None, None, None]
         player2.team = [testCard, None, None, None, None, None]
-        loser = player1.gunnerLoses()
-        winner = player2.gunnerWins()
-        player1.activateGunnerLosesEffects(loser)
-        player2.activateGunnerWinsEffects(winner)
+        player1.gunnerLoses()
+        player2.gunnerWins()
+        player1.activateGunnerLosesEffects()
+        player2.activateGunnerWinsEffects()
         assert len(player2.discard) == 1
         assert player2.discard[0] == testCard
         assert player1.fighterDestination == FighterDestination.DISCARD
@@ -435,8 +435,8 @@ class Test_Cards(unittest.TestCase):
         testCard = Card("test", 0, 0, [loseDeckEffect], animations)
         player1.currentRoll = 1
         player1.team = [testCard, None, None, None, None, None]
-        loser = player1.gunnerLoses()
-        player1.activateGunnerLosesEffects(loser)
+        player1.gunnerLoses()
+        player1.activateGunnerLosesEffects()
         assert len(player1.discard) == 0
         assert player1.fighterDestination == FighterDestination.DECK
         assert testCard in player1.deck
@@ -452,10 +452,9 @@ class Test_Cards(unittest.TestCase):
         testCard = Card("test", 0, 0, [], animations)
         player1.team = [transferCard, None, None, None, None, None]
         player1.deck = [testCard]
-        winner = player1.gunnerWins()
-        player1.activateGunnerWinsEffects(winner)
+        player1.gunnerWins()
+        player1.activateGunnerWinsEffects()
         assert testCard.powerCounters == numberPowerCounters
-        print(animations.animationsList)
         assert animations.codesAppearInOrder(["p,p,1,0", "p,pow," + str(numberPowerCounters) + ",1"])
 
     def test_onFriendlyPowerCounterEffectWorks(self):
@@ -516,7 +515,6 @@ class Test_Cards(unittest.TestCase):
         player1.drawAndPlayCard(2)
         player1.drawAndPlayCard(3)
         assert testCard.powerCounters == 2
-        print(player1.team[2].powerCounters)
         assert player1.team[1].powerCounters == 2
         assert player1.team[2].powerCounters == 1
 
@@ -543,7 +541,6 @@ class Test_Cards(unittest.TestCase):
         player1.discard = [Card("test", 0, 4, [], animations), testCard, Card("test", 0, 3, [], animations)]
         player1.deck = [initializeCard]
         player1.drawAndPlayCard(1)
-        player1.printDiscard()
         assert player1.team[0] == testCard
         assert animations.codesAppearInOrder(["p,pfd,1,1"])
 
@@ -560,8 +557,8 @@ class Test_Cards(unittest.TestCase):
         nonLeanorCard = Card("test", 0, 0, [], animations)
         player1.team = [testCard, nonLeanorCard, leanorCard, leanorCard2, None, None]
         player1.currentRoll = 4
-        winner = player1.gunnerWins()
-        player1.activateGunnerWinsEffects(winner)
+        player1.gunnerWins()
+        player1.activateGunnerWinsEffects()
         assert testCard.powerCounters == 1
         assert nonLeanorCard.powerCounters == 0
         assert leanorCard.powerCounters == 1
@@ -579,8 +576,8 @@ class Test_Cards(unittest.TestCase):
         nonLeanorCard = Card("test", 0, 0, [], animations)
         player1.team = [testCard, nonLeanorCard, leanorCard, leanorCard2, None, None]
         player1.currentRoll = 2
-        winner = player1.gunnerWins()
-        player1.activateGunnerWinsEffects(winner)
+        player1.gunnerWins()
+        player1.activateGunnerWinsEffects()
         assert testCard.powerCounters == 0
         assert leanorCard.powerCounters == 0
         assert leanorCard2.powerCounters == 0

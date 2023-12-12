@@ -52,11 +52,11 @@ class Card:
             case Condition.SELFHASPOWER:
                 return self.getTotalPower() >= effect.conditionValue
             case Condition.ACTIVECARDISLEANOR:
-                return player.activeCard.civilization == Civilization.LEANOR
+                return player.currentFighter.civilization == Civilization.LEANOR
             case Condition.ACTIVECARDISATHYR:
-                return player.activeCard.civilization == Civilization.ATHYR
+                return player.currentFighter.civilization == Civilization.ATHYR
             case Condition.ACTIVECARDISRANCE:
-                return player.activeCard.civilization == Civilization.RANCE
+                return player.currentFighter.civilization == Civilization.RANCE
             case Condition.ENEMYHASFIGHTERWITHPOWER:
                 return player.opponent.hasFighterWithPower(effect.conditionValue)
         return True

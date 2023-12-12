@@ -41,29 +41,28 @@ class DogfightSimulator:
             fighterTwoPower = fighterTwo.power + fighterTwo.powerCounters
             if fighterOnePower > fighterTwoPower:
                 #fighterOne wins
-                winningGunner = self.playerOne.gunnerWins()
-                losingGunner = self.playerTwo.gunnerLoses()
-                self.playerOne.activateGunnerWinsEffects(winningGunner)
-                self.playerTwo.activateGunnerLosesEffects(losingGunner)
+                self.playerOne.gunnerWins()
+                self.playerTwo.gunnerLoses()
+                self.playerOne.activateGunnerWinsEffects()
+                self.playerTwo.activateGunnerLosesEffects()
             elif fighterTwoPower > fighterOnePower:
                 #fighterTwo wins
-                losingGunner = self.playerOne.gunnerLoses()
-                winningGunner = self.playerTwo.gunnerWins()
-                self.playerOne.activateGunnerLosesEffects(losingGunner)
-                self.playerTwo.activateGunnerWinsEffects(winningGunner)
+                self.playerOne.gunnerLoses()
+                self.playerTwo.gunnerWins()
+                self.playerOne.activateGunnerLosesEffects()
+                self.playerTwo.activateGunnerWinsEffects()
                 #write the animation code
             else:
                 #fighters tie
-                losingGunner1 = self.playerOne.gunnerLoses()
-                losingGunner2 = self.playerTwo.gunnerLoses()
-                self.playerOne.activateGunnerLosesEffects(losingGunner1)
-                self.playerTwo.activateGunnerLosesEffects(losingGunner2)
+                self.playerOne.gunnerLoses()
+                self.playerTwo.gunnerLoses()
+                self.playerOne.activateGunnerLosesEffects()
+                self.playerTwo.activateGunnerLosesEffects()
             self.animations.append('b,gd,' + self.playerOne.getFighterDestination() + ',' + self.playerTwo.getFighterDestination())
-            print("fight->")
-            self.playerOne.printTeam()
-            self.playerOne.printDiscard()
-            self.playerTwo.printTeam()
-            self.playerTwo.printDiscard()
+            #self.playerOne.printTeam()
+            #self.playerOne.printDiscard()
+            #self.playerTwo.printTeam()
+            #self.playerTwo.printDiscard()
         #end while
         if self.playerOne.stillAlive():
             self.animations.append('p,1w,0,0')
