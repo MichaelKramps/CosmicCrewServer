@@ -192,6 +192,12 @@ class Player:
         self.fighterDestination = FighterDestination.DISCARD
         cardToDestroy.clear()
 
+    def hasFighterWithPower(self, powerToMatch):
+        for card in self.team:
+            if (card != None) and (card.getTotalPower() >= powerToMatch):
+                return True
+        return False
+
     def replaceFighterEffect(self, effect, cardToReplace):
         print("replacing fighter")
         if effect.target == Target.DISCARD:

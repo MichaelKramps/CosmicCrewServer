@@ -57,9 +57,12 @@ class Condition(Enum):
     ACTIVECARDISATHYR = 6
     ACTIVECARDISLEANOR = 7
     ACTIVECARDISRANCE = 8
+    ENEMYHASFIGHTERWITHPOWER = 9
 
 class IntValue(Enum):
     CURRENTPOWERCOUNTERS = 1
+    REMOVEALLPOWERCOUNTERS = 2
+    CYCLEDCARD = 3
     
 class Effect:
     def __init__(self, timing, effectType, target, intValue):
@@ -135,7 +138,7 @@ effects = {
     "loserCycleThree": Effect(Timing.LOSER, EffectType.CYCLE, Target.NONE, 3),
     "initializeOnePowerCounterAllAthyr": Effect(Timing.INITIALIZE, EffectType.POWERCOUNTER, Target.ALL, 1).addTargetFilter(TargetFilter.ATHYR),
     "initializeRemoveOnePowerCounterLeftmost": Effect(Timing.INITIALIZE, EffectType.POWERCOUNTER, Target.LEFTMOST, -1).addTargetFilter(TargetFilter.HASPOWERCOUNTER),
-    "bodySnatcherEffect": Effect(Timing.ONDRAW, EffectType.POWERCOUNTER, Target.SELF, Target.CYCLEDCARD).addNumberTimesToFire(1),
+    "bodySnatcherEffect": Effect(Timing.ONDRAW, EffectType.POWERCOUNTER, Target.SELF, IntValue.CYCLEDCARD).addNumberTimesToFire(1),
     "signingBonusScrapOne": Effect(Timing.SIGNINGBONUS, EffectType.SCRAP, Target.NONE, 1),
     "signingBonusScrapThree": Effect(Timing.SIGNINGBONUS, EffectType.SCRAP, Target.NONE, 3),
     "anyWinnerCycleOne": Effect(Timing.ANYWINNER, EffectType.CYCLE, Target.NONE, 1),
@@ -158,4 +161,7 @@ effects = {
     "winnerPowerCounterAll": Effect(Timing.WINNER, EffectType.POWERCOUNTER, Target.ALL, 1),
     "anyWinnerTwoPowerCountersSelf": Effect(Timing.ANYWINNER, EffectType.POWERCOUNTER, Target.SELF, 2),
     "anyLoserTwoPowerCountersSelf": Effect(Timing.ANYLOSER, EffectType.POWERCOUNTER, Target.SELF, 2),
+    "initializeTenPowerCountersIfOpponentHasTenPower": Effect(Timing.INITIALIZE, EffectType.POWERCOUNTER, Target.SELF, 10).addCondition(Condition.ENEMYHASFIGHTERWITHPOWER, 10),
+    "initializeOnePowerCounterAllFriendlyLeanor": Effect(Timing.INITIALIZE, EffectType.POWERCOUNTER, Target.ALL, 1).addTargetFilter(TargetFilter.LEANOR),
+    "initializeRemoveAllPowerCounters": Effect(Timing.INITIALIZE, EffectType.POWERCOUNTER, Target.ALL, IntValue.REMOVEALLPOWERCOUNTERS),
 }

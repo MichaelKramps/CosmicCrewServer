@@ -584,3 +584,50 @@ class Test_Cards(unittest.TestCase):
         assert testCard.powerCounters == 0
         assert leanorCard.powerCounters == 0
         assert leanorCard2.powerCounters == 0
+
+    def test_EnemyHasFighterWithPowerConditionWorks(self):
+        animations = Animations()
+        player1 = Player("0", "p", animations)
+        player2 = Player("0", "s", animations)
+        player1.addOpponent(player2)
+        numberPowerCounters = random.randint(1,10)
+        powerConditionEffect = Effect(Timing.INITIALIZE, EffectType.POWERCOUNTER, Target.SELF, numberPowerCounters).addCondition(Condition.ENEMYHASFIGHTERWITHPOWER, 10)
+        testCard = Card("test", 0, 0, [powerConditionEffect], animations)
+        player2.team = [None, Card("test", 0, 10, [], animations), None, None, None, None]
+        player1.deck = [testCard]
+        player1.drawAndPlayCard(1)
+        assert testCard.powerCounters == numberPowerCounters
+
+    def test_EnemyHasFighterWithPowerConditionWorksNegation(self):
+        animations = Animations()
+        player1 = Player("0", "p", animations)
+        player2 = Player("0", "s", animations)
+        player1.addOpponent(player2)
+        numberPowerCounters = random.randint(1,10)
+        powerConditionEffect = Effect(Timing.INITIALIZE, EffectType.POWERCOUNTER, Target.SELF, numberPowerCounters).addCondition(Condition.ENEMYHASFIGHTERWITHPOWER, 10)
+        testCard = Card("test", 0, 0, [powerConditionEffect], animations)
+        player2.team = [None, Card("test", 0, 9, [], animations), None, None, None, None]
+        player1.deck = [testCard]
+        player1.drawAndPlayCard(1)
+        assert testCard.powerCounters == 0
+
+    def test_removeAllTeamPowerCountersWorks(self):
+        animations = Animations()
+        player1 = Player("0", "p", animations)
+        removeAllEffect = Effect(Timing.INITIALIZE, EffectType.POWERCOUNTER, Target.ALL, IntValue.REMOVEALLPOWERCOUNTERS)
+        effectCard = Card("test", 0, 0, [removeAllEffect], animations)
+        testCard0 = Card("test", 0, 0, [], animations)
+        testCard1 = Card("test", 0, 0, [], animations)
+        testCard1.powerCounters = 1
+        testCard2 = Card("test", 0, 0, [], animations)
+        testCard2.powerCounters = 2
+        testCard3 = Card("test", 0, 0, [], animations)
+        testCard3.powerCounters = 3
+        player1.team = [testCard1, testCard2, testCard3, testCard0, None, None]
+        player1.deck = [effectCard]
+        player1.drawAndPlayCard(5)
+        assert effectCard.powerCounters == 0
+        assert testCard0.powerCounters == 0
+        assert testCard1.powerCounters == 0
+        assert testCard2.powerCounters == 0
+        assert testCard3.powerCounters == 0
