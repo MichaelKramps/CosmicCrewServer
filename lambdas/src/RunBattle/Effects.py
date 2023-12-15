@@ -40,6 +40,7 @@ class Target(Enum):
     DECK = 10
     DISCARD = 11
     REPLACEMENTFIGHTER = 12
+    CURRENTFIGHTER = 13
 
 class TargetFilter(Enum):
     NOFILTER = 1
@@ -64,7 +65,8 @@ class Condition(Enum):
 class IntValue(Enum):
     CURRENTPOWERCOUNTERS = 1
     REMOVEALLPOWERCOUNTERS = 2
-    CYCLEDCARD = 3
+    DOUBLEPOWERCOUNTERS = 3
+    CYCLEDCARD = 4
     
 class Effect:
     def __init__(self, timing, effectType, target, intValue):
@@ -166,8 +168,10 @@ effects = {
     "initializeTenPowerCountersIfOpponentHasTenPower": Effect(Timing.INITIALIZE, EffectType.POWERCOUNTER, Target.SELF, 10).addCondition(Condition.ENEMYHASFIGHTERWITHPOWER, 10),
     "initializeOnePowerCounterAllFriendlyLeanor": Effect(Timing.INITIALIZE, EffectType.POWERCOUNTER, Target.ALL, 1).addTargetFilter(TargetFilter.LEANOR),
     "initializeRemoveAllPowerCounters": Effect(Timing.INITIALIZE, EffectType.POWERCOUNTER, Target.ALL, IntValue.REMOVEALLPOWERCOUNTERS),
-    "loserReplace": Effect(Timing.LOSER, EffectType.REPLACEFIGHTER, Target.DECK, 0),
-    "loserReplaceFighterRandomDiscard": Effect(Timing.LOSER, EffectType.REPLACEFIGHTER, Target.DISCARD, 0).addTargetFilter(TargetFilter.RANDOM),
+    "loserReplace": Effect(Timing.LOSER, EffectType.REPLACEFIGHTER, Target.SELF, 0),
     "loserRemoveAllPowerCounters": Effect(Timing.LOSER, EffectType.POWERCOUNTER, Target.ALL, IntValue.REMOVEALLPOWERCOUNTERS),
     "afterLosingTwoPowerCountersReplacement": Effect(Timing.AFTERLOSING, EffectType.POWERCOUNTER, Target.REPLACEMENTFIGHTER, 2),
+    "loserDoublePowerCountersAll": Effect(Timing.LOSER, EffectType.POWERCOUNTER, Target.ALL, IntValue.DOUBLEPOWERCOUNTERS),
+    "hapthorEffect": Effect(Timing.ANYLOSER, EffectType.REPLACEFIGHTER, Target.CURRENTFIGHTER, 0),
+    "hapthorEffectSelf": Effect(Timing.ANYLOSER, EffectType.REPLACEFIGHTER, Target.SELF, 0),
 }

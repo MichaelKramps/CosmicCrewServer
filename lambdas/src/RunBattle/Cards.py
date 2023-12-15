@@ -24,6 +24,7 @@ class Card:
         self.effects = effects
         self.civilization = Civilization.NONE
         self.replacingWinner = False
+        self.isReplacement = False
         self.animations = animations
         
     def activateEffectsFor(self, timing, player):
@@ -156,6 +157,8 @@ class Card:
                 return self.powerCounters
             case IntValue.REMOVEALLPOWERCOUNTERS:
                 return 0 - card.powerCounters
+            case IntValue.DOUBLEPOWERCOUNTERS:
+                return card.powerCounters
             case IntValue.CYCLEDCARD:
                 return player.activeCard.power
         return effect.intValue
@@ -184,7 +187,14 @@ class Card:
         player.opponent.setFighterDestination(effect)
 
     def activateReplaceFighterEffect(self, effect, player):
-        player.replaceFighterEffect(effect, self)
+        fighterToReplace = self
+        match effect.target:
+            case Target.SELF:
+                fighterToReplace = self
+            case Target.CURRENTFIGHTER:
+                fighterToReplace = player.currentFighter
+        player.replaceFighterEffect(fighterToReplace)
+            
 
     def attemptOnFriendlyEffect(self, player, effect, teamSlot, powerCountersAdded):
         if (effect.timing != Timing.ONFRIENDLYPOWERCOUNTER and powerCountersAdded > 0): #prevents infinite power counter effect
@@ -208,6 +218,7 @@ class Card:
         self.powerCounters = 0
         self.teamSlot = 0
         self.replacingWinner = False
+        self.isReplacement = False
         for effect in self.effects:
             effect.resetEffect()
 
@@ -285,8 +296,8 @@ cardList = [
     {"name": "Disavowed Traitor", "id": 38, "power": 3, "effectNames": ["loserReplace"], "civilization": "rance"},
     {"name": "Weapon Grifter", "id": 39, "power": 8, "effectNames": ["loserReplace", "loserRemoveAllPowerCounters"], "civilization": "rance"},
     {"name": "Mechoward", "id": 40, "power": 1, "effectNames": ["loserReplace", "afterLosingTwoPowerCountersReplacement"], "civilization": "rance"},
-    #{"name": "Name", "id": 41, "power": 2, "effectNames": [], "civilization": "rance"},
-    #{"name": "Name", "id": 42, "power": 2, "effectNames": [], "civilization": "rance"},
+    {"name": "Tampering Coroner", "id": 41, "power": 3, "effectNames": ["loserDoublePowerCountersAll"], "civilization": "rance"},
+    {"name": "Hapthor, Everlasting", "id": 42, "power": 2, "effectNames": ["hapthorEffect", "hapthorEffectSelf"], "civilization": "rance"},
     #{"name": "Name", "id": 43, "power": 2, "effectNames": [], "civilization": "rance"},
     #{"name": "Name", "id": 44, "power": 2, "effectNames": [], "civilization": "rance"},
     #{"name": "Name", "id": 45, "power": 2, "effectNames": [], "civilization": "rance"},

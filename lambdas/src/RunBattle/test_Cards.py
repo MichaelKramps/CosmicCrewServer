@@ -518,32 +518,6 @@ class Test_Cards(unittest.TestCase):
         assert player1.team[1].powerCounters == 2
         assert player1.team[2].powerCounters == 1
 
-    def test_replaceFighterEffectWorks(self):
-        animations = Animations()
-        player1 = Player("0", "p", animations)
-        replaceEffect = Effect(Timing.INITIALIZE, EffectType.REPLACEFIGHTER, Target.DISCARD, 0).addTargetFilter(TargetFilter.LOWESTPOWER)
-        testCard = Card("test", 0, 0, [], animations)
-        initializeCard = Card("test", 0, 0, [replaceEffect], animations)
-        initializeCard.teamSlot = 1
-        player1.discard = [testCard, Card("test", 0, 1, [], animations)]
-        player1.deck = [initializeCard]
-        player1.drawAndPlayCard(1)
-        assert player1.team[0] == testCard
-        assert animations.codesAppearInOrder(["p,pfd,0,1"])
-
-    def test_replaceFighterEffectPicksTheCorrectFighterToReplace(self):
-        animations = Animations()
-        player1 = Player("0", "p", animations)
-        replaceEffect = Effect(Timing.INITIALIZE, EffectType.REPLACEFIGHTER, Target.DISCARD, 0).addTargetFilter(TargetFilter.LOWESTPOWER)
-        testCard = Card("test", 0, 2, [], animations)
-        initializeCard = Card("test", 0, 0, [replaceEffect], animations)
-        initializeCard.teamSlot = 1
-        player1.discard = [Card("test", 0, 4, [], animations), testCard, Card("test", 0, 3, [], animations)]
-        player1.deck = [initializeCard]
-        player1.drawAndPlayCard(1)
-        assert player1.team[0] == testCard
-        assert animations.codesAppearInOrder(["p,pfd,1,1"])
-
     def test_leanorWinsPowerUpLeanorFighters(self):
         animations = Animations()
         player1 = Player("0", "p", animations)
@@ -632,7 +606,7 @@ class Test_Cards(unittest.TestCase):
     def test_replaceEffectWorks(self):
         animations = Animations()
         player1 = Player("0", "p", animations)
-        replaceEffect = Effect(Timing.LOSER, EffectType.REPLACEFIGHTER, Target.DECK, 0)
+        replaceEffect = Effect(Timing.LOSER, EffectType.REPLACEFIGHTER, Target.SELF, 0)
         effectCard = Card("effectCard", 0, 0, [replaceEffect], animations)
         effectCard.teamSlot = 2
         testCard = Card("test", 0, 0, [], animations)
@@ -647,7 +621,7 @@ class Test_Cards(unittest.TestCase):
     def test_afterLosingTimingWorks(self):
         animations = Animations()
         player1 = Player("0", "p", animations)
-        replaceEffect = Effect(Timing.LOSER, EffectType.REPLACEFIGHTER, Target.DECK, 0)
+        replaceEffect = Effect(Timing.LOSER, EffectType.REPLACEFIGHTER, Target.SELF, 0)
         numberPowerCounters = random.randint(1,10)
         afterlosingEffect = Effect(Timing.AFTERLOSING, EffectType.POWERCOUNTER, Target.REPLACEMENTFIGHTER, numberPowerCounters)
         effectCard = Card("effectCard", 0, 0, [replaceEffect, afterlosingEffect], animations)
@@ -661,3 +635,47 @@ class Test_Cards(unittest.TestCase):
         assert player1.team[1] == testCard
         assert testCard.powerCounters == numberPowerCounters
         assert effectCard in player1.discard
+
+    def test_doublePowerCountersWorks(self):
+        animations = Animations()
+        player1 = Player("0", "p", animations)
+        doubleEffect = Effect(Timing.LOSER, EffectType.POWERCOUNTER, Target.ALL, IntValue.DOUBLEPOWERCOUNTERS)
+        effectCard = Card("effectCard", 0, 0, [doubleEffect], animations)
+        effectCard.teamSlot = 2
+        testCard0 = Card("test", 0, 0, [], animations)
+        testCard1 = Card("test", 0, 0, [], animations)
+        testCard1.powerCounters = 1
+        testCard2 = Card("test", 0, 0, [], animations)
+        testCard2.powerCounters = 2
+        testCard3 = Card("test", 0, 0, [], animations)
+        testCard3.powerCounters = 3
+        player1.team = [testCard0, effectCard, testCard1, testCard2, testCard3, None]
+        player1.currentRoll = 2
+        player1.gunnerLoses()
+        player1.activateGunnerLosesEffects()
+        assert testCard0.powerCounters == 0
+        assert testCard1.powerCounters == 2
+        assert testCard2.powerCounters == 4
+        assert testCard3.powerCounters == 6
+
+    def test_hapthorEffectsWork(self):
+        animations = Animations()
+        player1 = Player("0", "p", animations)
+        hapthorEffect1 = Effect(Timing.ANYLOSER, EffectType.REPLACEFIGHTER, Target.CURRENTFIGHTER, 0)
+        hapthorEffect2 = Effect(Timing.ANYLOSER, EffectType.REPLACEFIGHTER, Target.SELF, 0)
+        loserEffect = Effect(Timing.LOSER, EffectType.REPLACEFIGHTER, Target.SELF, 0)
+        hapthorCard = Card("hapthor", 0, 0, [hapthorEffect1, hapthorEffect2], animations)
+        hapthorCard.teamSlot = 2
+        replacementCard1 = Card("replacement1", 0, 0, [], animations)
+        replacementCard2 = Card("replacement2", 0, 0, [], animations)
+        replacementCard3 = Card("replacement3", 0, 0, [], animations)
+        loserCard = Card("loser", 0, 0, [loserEffect], animations)
+        loserCard.teamSlot = 1
+        player1.team = [loserCard, hapthorCard, None, None, None, None]
+        player1.deck = [replacementCard1, replacementCard2, replacementCard3]
+        player1.currentRoll = 1
+        player1.gunnerLoses()
+        player1.activateGunnerLosesEffects()
+        player1.printTeam()
+        assert player1.team[0] == replacementCard1
+        assert player1.team[1] == replacementCard2

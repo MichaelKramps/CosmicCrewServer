@@ -35,6 +35,9 @@ class Player:
         
     def rollDie(self):
         self.currentRoll = random.randint(1, 6)
+        for card in self.team:
+            if (card != None):
+                card.isReplacement = False
         return self.currentRoll
         
     def drawCard(self):
@@ -81,13 +84,15 @@ class Player:
             self.activeCard = None
         
     def drawAndPlayCard(self, slotToPlayCardIn):
-        self.drawCard()
-        self.playCard(slotToPlayCardIn)
+        if (self.team[slotToPlayCardIn - 1] == None):
+            self.drawCard()
+            self.playCard(slotToPlayCardIn)
 
     def replaceWinner(self, slotToPlayCardIn):
-        self.drawCard()
-        self.activeCard.replacingWinner = True
-        self.playCard(slotToPlayCardIn)
+        if (self.team[slotToPlayCardIn - 1] == None):
+            self.drawCard()
+            self.activeCard.replacingWinner = True
+            self.playCard(slotToPlayCardIn)
 
     def drawCardSetupStep(self):
         if (self.leftmostOpenTeamSlot() > 0):
@@ -195,30 +200,34 @@ class Player:
             if (card != None) and (card.getTotalPower() >= powerToMatch):
                 return True
         return False
+    
+    def replaceActiveFighterEffect(self, cardToReplace):
+        if (self.team[cardToReplace.teamSlot - 1] == None):
+            self.drawCard()
+            if self.activeCard != None:
+                self.activeCard.isReplacement = True
+                self.playCard(cardToReplace.teamSlot)
 
-    def replaceFighterEffect(self, effect, cardToReplace):
-        if effect.target == Target.DECK:
-            self.drawAndPlayCard(cardToReplace.teamSlot)
-        elif effect.target == Target.DISCARD:
-            if (len(self.discard) > 0):
-                 match effect.targetFilter:
-                    case TargetFilter.LOWESTPOWER:
-                        indexOfLowestPowerCard = 0
-                        for index in range(len(self.discard)):
-                            card = self.discard[index]
-                            if card.power < self.discard[indexOfLowestPowerCard].power:
-                                indexOfLowestPowerCard = index
-                        replacingCard = self.discard.pop(indexOfLowestPowerCard)
-                        replacingCard.teamSlot = cardToReplace.teamSlot
-                        self.team[cardToReplace.teamSlot - 1] = replacingCard
-                        self.animations.append(self.playerIdentifier + ",pfd," + str(indexOfLowestPowerCard) + "," + str(cardToReplace.teamSlot))
-                    case TargetFilter.RANDOM:
-                        randomIndexInDiscardPile = random.randint(0, len(self.discard) - 1)
-                        randomDiscardedCard = self.discard[randomIndexInDiscardPile]
-                        randomDiscardedCard.teamSlot = cardToReplace.teamSlot
-                        self.team[cardToReplace.teamSlot - 1] = randomDiscardedCard
-                        self.animations.append(self.playerIdentifier + ",pfd," + str(randomIndexInDiscardPile) + "," + str(cardToReplace.teamSlot))
-
+    def replaceFighterEffect(self, cardToReplace):
+        if (self.team[cardToReplace.teamSlot - 1] == None): #no card there yet
+            self.drawCard()
+            if self.activeCard != None:
+                self.activeCard.isReplacement = True
+                self.playCard(cardToReplace.teamSlot)
+        else: #card is already there
+            cardInSlot = self.team[cardToReplace.teamSlot - 1]
+            if (not cardInSlot.isReplacement):
+                self.sendInactiveFighterToBottomOfDeck(cardToReplace)
+                self.drawCard()
+                self.activeCard.isReplacement = True
+                self.playCard(cardToReplace.teamSlot)
+        
+                
+    def sendInactiveFighterToBottomOfDeck(self, cardToReplace):
+        self.deck.append(self.team[cardToReplace.teamSlot - 1])
+        self.team[cardToReplace.teamSlot - 1] = None
+        #animationCodes
+            
     def getFighterDestination(self):
         return str(int(self.fighterDestination))
         
