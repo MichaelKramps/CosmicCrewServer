@@ -150,7 +150,7 @@ class Player:
     def activateGunnerWinsEffects(self):
         self.activateEffectsForTeam(Timing.ANYWINNER)
         self.currentFighter.activateEffectsFor(Timing.WINNER, self)
-        if len(self.deck) > 0: #if card was in deck before gunner was put back in deck
+        if len(self.deck) > 0 and self.team[self.currentFighter.teamSlot - 1] == None: #if card was in deck before gunner was put back in deck and the slot is still available
             self.replaceWinner(self.currentFighter.teamSlot)
         self.currentFighter.activateEffectsFor(Timing.AFTERWINNING, self)
         self.currentFighter.clear()
@@ -165,6 +165,7 @@ class Player:
     def activateGunnerLosesEffects(self):
         self.activateEffectsForTeam(Timing.ANYLOSER)
         self.currentFighter.activateEffectsFor(Timing.LOSER, self)
+        self.currentFighter.activateEffectsFor(Timing.AFTERLOSING, self)
         self.currentFighter.clear()
         self.sendFighterToDestination(self.currentFighter)
         self.currentFighter = None
@@ -196,7 +197,9 @@ class Player:
         return False
 
     def replaceFighterEffect(self, effect, cardToReplace):
-        if effect.target == Target.DISCARD:
+        if effect.target == Target.DECK:
+            self.drawAndPlayCard(cardToReplace.teamSlot)
+        elif effect.target == Target.DISCARD:
             if (len(self.discard) > 0):
                  match effect.targetFilter:
                     case TargetFilter.LOWESTPOWER:
@@ -209,6 +212,12 @@ class Player:
                         replacingCard.teamSlot = cardToReplace.teamSlot
                         self.team[cardToReplace.teamSlot - 1] = replacingCard
                         self.animations.append(self.playerIdentifier + ",pfd," + str(indexOfLowestPowerCard) + "," + str(cardToReplace.teamSlot))
+                    case TargetFilter.RANDOM:
+                        randomIndexInDiscardPile = random.randint(0, len(self.discard) - 1)
+                        randomDiscardedCard = self.discard[randomIndexInDiscardPile]
+                        randomDiscardedCard.teamSlot = cardToReplace.teamSlot
+                        self.team[cardToReplace.teamSlot - 1] = randomDiscardedCard
+                        self.animations.append(self.playerIdentifier + ",pfd," + str(randomIndexInDiscardPile) + "," + str(cardToReplace.teamSlot))
 
     def getFighterDestination(self):
         return str(int(self.fighterDestination))
@@ -218,6 +227,13 @@ class Player:
             if fighter != None:
                 return True
         return False
+    
+    def pointsScored(self):
+        points = 0
+        for fighter in self.team:
+            if fighter != None:
+                points += 1
+        return points
         
     def printTeam(self):
         print("--- " + self.playerIdentifier + " team ---")

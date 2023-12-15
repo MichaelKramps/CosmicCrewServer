@@ -628,3 +628,36 @@ class Test_Cards(unittest.TestCase):
         assert testCard1.powerCounters == 0
         assert testCard2.powerCounters == 0
         assert testCard3.powerCounters == 0
+
+    def test_replaceEffectWorks(self):
+        animations = Animations()
+        player1 = Player("0", "p", animations)
+        replaceEffect = Effect(Timing.LOSER, EffectType.REPLACEFIGHTER, Target.DECK, 0)
+        effectCard = Card("effectCard", 0, 0, [replaceEffect], animations)
+        effectCard.teamSlot = 2
+        testCard = Card("test", 0, 0, [], animations)
+        player1.team = [None, effectCard, None, None, None, None]
+        player1.deck = [testCard]
+        player1.currentRoll = 2
+        player1.gunnerLoses()
+        player1.activateGunnerLosesEffects()
+        assert player1.team[1] == testCard
+        assert effectCard in player1.discard
+
+    def test_afterLosingTimingWorks(self):
+        animations = Animations()
+        player1 = Player("0", "p", animations)
+        replaceEffect = Effect(Timing.LOSER, EffectType.REPLACEFIGHTER, Target.DECK, 0)
+        numberPowerCounters = random.randint(1,10)
+        afterlosingEffect = Effect(Timing.AFTERLOSING, EffectType.POWERCOUNTER, Target.REPLACEMENTFIGHTER, numberPowerCounters)
+        effectCard = Card("effectCard", 0, 0, [replaceEffect, afterlosingEffect], animations)
+        effectCard.teamSlot = 2
+        testCard = Card("test", 0, 0, [], animations)
+        player1.team = [None, effectCard, None, None, None, None]
+        player1.deck = [testCard]
+        player1.currentRoll = 2
+        player1.gunnerLoses()
+        player1.activateGunnerLosesEffects()
+        assert player1.team[1] == testCard
+        assert testCard.powerCounters == numberPowerCounters
+        assert effectCard in player1.discard

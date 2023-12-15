@@ -89,41 +89,46 @@ class Card:
             case Target.SELF:
                 if (effect.intValue == IntValue.CYCLEDCARD):
                     powerCountersToAdd = self.determinePowerCountersToAdd(effect, self, player)
-                    self.powerCounters += powerCountersToAdd
-                    self.animations.addCodeFrom(player, effect, powerCountersToAdd, self.teamSlot)
-                    self.activateEffectsFor(Timing.POWERCHANGE, player)
-                    self.attemptOnFriendlyEffect(player, effect, self.teamSlot, powerCountersToAdd)
+                    if powerCountersToAdd != 0:
+                        self.powerCounters += powerCountersToAdd
+                        self.animations.addCodeFrom(player, effect, powerCountersToAdd, self.teamSlot)
+                        self.activateEffectsFor(Timing.POWERCHANGE, player)
+                        self.attemptOnFriendlyEffect(player, effect, self.teamSlot, powerCountersToAdd)
                 else:
                     powerCountersToAdd = self.determinePowerCountersToAdd(effect, self, player)
-                    self.powerCounters += powerCountersToAdd
-                    self.animations.addCodeFrom(player, effect, powerCountersToAdd, self.teamSlot)
-                    self.activateEffectsFor(Timing.POWERCHANGE, player)
-                    self.attemptOnFriendlyEffect(player, effect, self.teamSlot, powerCountersToAdd)
+                    if powerCountersToAdd != 0:
+                        self.powerCounters += powerCountersToAdd
+                        self.animations.addCodeFrom(player, effect, powerCountersToAdd, self.teamSlot)
+                        self.activateEffectsFor(Timing.POWERCHANGE, player)
+                        self.attemptOnFriendlyEffect(player, effect, self.teamSlot, powerCountersToAdd)
             case Target.ALL:
                 for card in player.team:
                     if (card != None and card.passesFilter(effect)):
                         powerCountersToAdd = self.determinePowerCountersToAdd(effect, card, player)
-                        card.powerCounters += powerCountersToAdd
-                        self.animations.addCodeFrom(player, effect, powerCountersToAdd, card.teamSlot)
-                        card.activateEffectsFor(Timing.POWERCHANGE, player)
-                        self.attemptOnFriendlyEffect(player, effect, card.teamSlot, powerCountersToAdd)
+                        if powerCountersToAdd != 0:
+                            card.powerCounters += powerCountersToAdd
+                            self.animations.addCodeFrom(player, effect, powerCountersToAdd, card.teamSlot)
+                            card.activateEffectsFor(Timing.POWERCHANGE, player)
+                            self.attemptOnFriendlyEffect(player, effect, card.teamSlot, powerCountersToAdd)
             case Target.LEFTMOST:
                 for card in player.team:
                     if (card != None and card.passesFilter(effect)):
                         powerCountersToAdd = self.determinePowerCountersToAdd(effect, card, player)
-                        card.powerCounters += powerCountersToAdd
-                        self.animations.addCodeFrom(player, effect, powerCountersToAdd, card.teamSlot)
-                        card.activateEffectsFor(Timing.POWERCHANGE, player)
-                        self.attemptOnFriendlyEffect(player, effect, card.teamSlot, powerCountersToAdd)
+                        if powerCountersToAdd != 0:
+                            card.powerCounters += powerCountersToAdd
+                            self.animations.addCodeFrom(player, effect, powerCountersToAdd, card.teamSlot)
+                            card.activateEffectsFor(Timing.POWERCHANGE, player)
+                            self.attemptOnFriendlyEffect(player, effect, card.teamSlot, powerCountersToAdd)
                         break
             case Target.RIGHTMOST:
                 for card in reversed(player.team):
                     if (card != None and card.passesFilter(effect)):
                         powerCountersToAdd = self.determinePowerCountersToAdd(effect, card, player)
-                        card.powerCounters += powerCountersToAdd
-                        self.animations.addCodeFrom(player, effect, powerCountersToAdd, card.teamSlot)
-                        card.activateEffectsFor(Timing.POWERCHANGE, player)
-                        self.attemptOnFriendlyEffect(player, effect, card.teamSlot, powerCountersToAdd)
+                        if powerCountersToAdd != 0:
+                            card.powerCounters += powerCountersToAdd
+                            self.animations.addCodeFrom(player, effect, powerCountersToAdd, card.teamSlot)
+                            card.activateEffectsFor(Timing.POWERCHANGE, player)
+                            self.attemptOnFriendlyEffect(player, effect, card.teamSlot, powerCountersToAdd)
                         break
             case Target.RANDOM:
                 randomRoll = random.randint(1, 6)
@@ -131,17 +136,19 @@ class Card:
                 if indexOfFighterToGiveEffect != None:
                     randomCard = player.team[indexOfFighterToGiveEffect]
                     powerCountersToAdd = self.determinePowerCountersToAdd(effect, randomCard, player)
-                    randomCard.powerCounters += powerCountersToAdd
-                    self.animations.addCodeFrom(player, effect, powerCountersToAdd, randomCard.teamSlot)
-                    randomCard.activateEffectsFor(Timing.POWERCHANGE, player)
-                    self.attemptOnFriendlyEffect(player, effect, randomCard.teamSlot, powerCountersToAdd)
+                    if powerCountersToAdd != 0:
+                        randomCard.powerCounters += powerCountersToAdd
+                        self.animations.addCodeFrom(player, effect, powerCountersToAdd, randomCard.teamSlot)
+                        randomCard.activateEffectsFor(Timing.POWERCHANGE, player)
+                        self.attemptOnFriendlyEffect(player, effect, randomCard.teamSlot, powerCountersToAdd)
             case Target.REPLACEMENTFIGHTER:
                 powerCountersToAdd = self.determinePowerCountersToAdd(effect, self, player)
                 replacementCard = player.team[self.teamSlot - 1]
-                replacementCard.powerCounters += powerCountersToAdd
-                self.animations.addCodeFrom(player, effect, powerCountersToAdd, replacementCard.teamSlot)
-                replacementCard.activateEffectsFor(Timing.POWERCHANGE, player)
-                self.attemptOnFriendlyEffect(player, effect, replacementCard.teamSlot, powerCountersToAdd)
+                if (replacementCard != None and powerCountersToAdd != 0):
+                    replacementCard.powerCounters += powerCountersToAdd
+                    self.animations.addCodeFrom(player, effect, powerCountersToAdd, replacementCard.teamSlot)
+                    replacementCard.activateEffectsFor(Timing.POWERCHANGE, player)
+                    self.attemptOnFriendlyEffect(player, effect, replacementCard.teamSlot, powerCountersToAdd)
 
     def determinePowerCountersToAdd(self, effect, card, player):
         match effect.intValue:
@@ -267,13 +274,25 @@ cardList = [
     {"name": "Maxime, the Gifter", "id": 27, "power": 6, "effectNames": ["loserPutBackInDeck"], "civilization": "leanor"},
     {"name": "Sniper Patton", "id": 28, "power": 2, "effectNames": ["transferPowerCountersToReplacement"], "civilization": "leanor"},
     {"name": "General Gonto", "id": 29, "power": 1, "effectNames": ["powerCounterSelfOnTeammatePowerCounter"], "civilization": "leanor"},
-    {"name": "Untrained Medic", "id": 30, "power": 3, "effectNames": ["loserReplaceFighterLowestInDiscard"], "civilization": "leanor"},
+    {"name": "Untrained Medic", "id": 30, "power": 3, "effectNames": ["anyLoserOnePowerCounterRandom"], "civilization": "leanor"},
     {"name": "Shak Shyarov", "id": 31, "power": 1, "effectNames": ["powerCounterAllLeanorWhenLeanorWins", "powerCounterAllLeanorWhenLeanorLoses"], "civilization": "leanor"},
     {"name": "Snake Eyes", "id": 32, "power": 2, "effectNames": ["initializeOnePowerCounterLeftmost", "initializeOnePowerCounterRightmost"], "civilization": "leanor"},
     {"name": "Alloysmith", "id": 33, "power": 3, "effectNames": ["winnerPowerCounterAll"], "civilization": "leanor"},
     {"name": "Vishy, the Valiant", "id": 34, "power": 2, "effectNames": ["anyWinnerTwoPowerCountersSelf", "anyLoserTwoPowerCountersSelf"], "civilization": "leanor"},
     {"name": "Flip Face", "id": 35, "power": 1, "effectNames": ["initializeTenPowerCountersIfOpponentHasTenPower"], "civilization": "leanor"},
     {"name": "Shooting Buddy", "id": 36, "power": 2, "effectNames": ["initializeOnePowerCounterAllFriendlyLeanor"], "civilization": "leanor"},
-    {"name": "Shield Disruptor", "id": 37, "power": 2, "effectNames": ["initializeRemoveAllPowerCounters"], "civilization": "leanor"},
-    #{"name": "Name", "id": 38, "power": 2, "effectNames": [], "civilization": "rance"},
+    {"name": "Shield Disruptor", "id": 37, "power": 10, "effectNames": ["initializeRemoveAllPowerCounters"], "civilization": "leanor"},
+    {"name": "Disavowed Traitor", "id": 38, "power": 3, "effectNames": ["loserReplace"], "civilization": "rance"},
+    {"name": "Weapon Grifter", "id": 39, "power": 8, "effectNames": ["loserReplace", "loserRemoveAllPowerCounters"], "civilization": "rance"},
+    {"name": "Mechoward", "id": 40, "power": 1, "effectNames": ["loserReplace", "afterLosingTwoPowerCountersReplacement"], "civilization": "rance"},
+    #{"name": "Name", "id": 41, "power": 2, "effectNames": [], "civilization": "rance"},
+    #{"name": "Name", "id": 42, "power": 2, "effectNames": [], "civilization": "rance"},
+    #{"name": "Name", "id": 43, "power": 2, "effectNames": [], "civilization": "rance"},
+    #{"name": "Name", "id": 44, "power": 2, "effectNames": [], "civilization": "rance"},
+    #{"name": "Name", "id": 45, "power": 2, "effectNames": [], "civilization": "rance"},
+    #{"name": "Name", "id": 46, "power": 2, "effectNames": [], "civilization": "rance"},
+    #{"name": "Name", "id": 47, "power": 2, "effectNames": [], "civilization": "rance"},
+    #{"name": "Name", "id": 48, "power": 2, "effectNames": [], "civilization": "rance"},
+    #{"name": "Name", "id": 49, "power": 2, "effectNames": [], "civilization": "rance"},
+    #{"name": "Name", "id": 50, "power": 2, "effectNames": [], "civilization": "rance"},
 ]

@@ -6,15 +6,16 @@ class Timing(Enum):
     WINNER = 2 #when this card wins
     LOSER = 3 #when this card loses
     AFTERWINNING = 4 #when this card wins, after it has been replaced by another gunner
-    ANYWINNER = 5 #when any friendly fighter wins
-    ANYLOSER = 6 #when any friendly fighter loses
-    SIGNINGBONUS = 7
-    ONDRAW = 8
-    WHENCYCLED = 9
-    ONOPPONENTDRAW = 10
+    AFTERLOSING = 5 #some effects replace the loser and will interact with the replacement
+    ANYWINNER = 6 #when any friendly fighter wins
+    ANYLOSER = 7 #when any friendly fighter loses
+    SIGNINGBONUS = 8
+    ONDRAW = 9
+    WHENCYCLED = 10
     POWERCHANGE = 11
     ONANYINITIALIZE = 12
     ONFRIENDLYPOWERCOUNTER = 13
+    ONOPPONENTDRAW = 14
     
 class EffectType(Enum):
     POWERCOUNTER = 1
@@ -47,6 +48,7 @@ class TargetFilter(Enum):
     RANCE = 4
     HASPOWERCOUNTER = 5
     LOWESTPOWER = 6
+    RANDOM = 7
 
 class Condition(Enum):
     NONE = 1
@@ -155,13 +157,17 @@ effects = {
     "loserPutBackInDeck": Effect(Timing.LOSER, EffectType.SETFIGHTERDESTINATION, Target.DECK, 0),
     "transferPowerCountersToReplacement": Effect(Timing.AFTERWINNING, EffectType.POWERCOUNTER, Target.REPLACEMENTFIGHTER, IntValue.CURRENTPOWERCOUNTERS),
     "powerCounterSelfOnTeammatePowerCounter": Effect(Timing.ONFRIENDLYPOWERCOUNTER, EffectType.POWERCOUNTER, Target.SELF, 1),
-    "loserReplaceFighterLowestInDiscard": Effect(Timing.LOSER, EffectType.REPLACEFIGHTER, Target.DISCARD, 0).addTargetFilter(TargetFilter.LOWESTPOWER),
     "powerCounterAllLeanorWhenLeanorWins": Effect(Timing.ANYWINNER, EffectType.POWERCOUNTER, Target.ALL, 1).addCondition(Condition.ACTIVECARDISLEANOR, 1).addTargetFilter(TargetFilter.LEANOR),
     "powerCounterAllLeanorWhenLeanorLoses": Effect(Timing.ANYLOSER, EffectType.POWERCOUNTER, Target.ALL, 1).addCondition(Condition.ACTIVECARDISLEANOR, 1).addTargetFilter(TargetFilter.LEANOR),
     "winnerPowerCounterAll": Effect(Timing.WINNER, EffectType.POWERCOUNTER, Target.ALL, 1),
     "anyWinnerTwoPowerCountersSelf": Effect(Timing.ANYWINNER, EffectType.POWERCOUNTER, Target.SELF, 2),
     "anyLoserTwoPowerCountersSelf": Effect(Timing.ANYLOSER, EffectType.POWERCOUNTER, Target.SELF, 2),
+    "anyLoserOnePowerCounterRandom": Effect(Timing.ANYLOSER, EffectType.POWERCOUNTER, Target.RANDOM, 1),
     "initializeTenPowerCountersIfOpponentHasTenPower": Effect(Timing.INITIALIZE, EffectType.POWERCOUNTER, Target.SELF, 10).addCondition(Condition.ENEMYHASFIGHTERWITHPOWER, 10),
     "initializeOnePowerCounterAllFriendlyLeanor": Effect(Timing.INITIALIZE, EffectType.POWERCOUNTER, Target.ALL, 1).addTargetFilter(TargetFilter.LEANOR),
     "initializeRemoveAllPowerCounters": Effect(Timing.INITIALIZE, EffectType.POWERCOUNTER, Target.ALL, IntValue.REMOVEALLPOWERCOUNTERS),
+    "loserReplace": Effect(Timing.LOSER, EffectType.REPLACEFIGHTER, Target.DECK, 0),
+    "loserReplaceFighterRandomDiscard": Effect(Timing.LOSER, EffectType.REPLACEFIGHTER, Target.DISCARD, 0).addTargetFilter(TargetFilter.RANDOM),
+    "loserRemoveAllPowerCounters": Effect(Timing.LOSER, EffectType.POWERCOUNTER, Target.ALL, IntValue.REMOVEALLPOWERCOUNTERS),
+    "afterLosingTwoPowerCountersReplacement": Effect(Timing.AFTERLOSING, EffectType.POWERCOUNTER, Target.REPLACEMENTFIGHTER, 2),
 }
