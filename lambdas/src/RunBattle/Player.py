@@ -210,7 +210,7 @@ class Player:
                 self.playCard(cardToReplace.teamSlot)
         else: #card is already there
             cardInSlot = self.team[cardToReplace.teamSlot - 1]
-            if (not cardInSlot.isReplacement):
+            if (not cardInSlot.isReplacement and len(self.deck) > 0):
                 self.sendInactiveFighterToBottomOfDeck(cardToReplace)
                 self.drawCard()
                 self.activeCard.isReplacement = True

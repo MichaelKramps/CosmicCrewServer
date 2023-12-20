@@ -662,9 +662,8 @@ class Test_Cards(unittest.TestCase):
         animations = Animations()
         player1 = Player("0", "p", animations)
         hapthorEffect1 = Effect(Timing.ANYLOSER, EffectType.REPLACEFIGHTER, Target.CURRENTFIGHTER, 0)
-        hapthorEffect2 = Effect(Timing.ANYLOSER, EffectType.REPLACEFIGHTER, Target.SELF, 0)
         loserEffect = Effect(Timing.LOSER, EffectType.REPLACEFIGHTER, Target.SELF, 0)
-        hapthorCard = Card("hapthor", 0, 0, [hapthorEffect1, hapthorEffect2], animations)
+        hapthorCard = Card("hapthor", 0, 0, [hapthorEffect1], animations)
         hapthorCard.teamSlot = 2
         replacementCard1 = Card("replacement1", 0, 0, [], animations)
         replacementCard2 = Card("replacement2", 0, 0, [], animations)
@@ -678,11 +677,8 @@ class Test_Cards(unittest.TestCase):
         player1.activateGunnerLosesEffects()
         player1.printTeam()
         assert player1.team[0] == replacementCard1
-        assert player1.team[1] == replacementCard2
+        assert player1.team[1] == hapthorCard
         assert player1.discard[0] == loserCard
-        assert player1.deck[1] == hapthorCard
-        print(animations.animationsList)
-        assert animations.codesAppearInOrder(["p,fbd,2,0"])
 
     def test_kamakazeEffectWork(self):
         animations = Animations()

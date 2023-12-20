@@ -303,7 +303,7 @@ cardList = [
     {"name": "Weapon Grifter", "id": 39, "power": 8, "effectNames": ["loserReplace", "loserRemoveAllPowerCounters"], "civilization": "rance"},
     {"name": "Mechoward", "id": 40, "power": 1, "effectNames": ["loserReplace", "afterLosingTwoPowerCountersReplacement"], "civilization": "rance"},
     {"name": "Tampering Coroner", "id": 41, "power": 3, "effectNames": ["loserDoublePowerCountersAll"], "civilization": "rance"},
-    {"name": "Hapthor, Everlasting", "id": 42, "power": 2, "effectNames": ["hapthorEffect", "hapthorEffectSelf"], "civilization": "rance"},
+    {"name": "Hapthor, Everlasting", "id": 42, "power": 0, "effectNames": ["hapthorEffect", "destroyIfPowerOne"], "civilization": "rance"},
     {"name": "Wheel Whacker", "id": 43, "power": 2, "effectNames": ["loserReplace", "afterLosingOnePowerCounterReplacement"], "civilization": "rance"},
     {"name": "Auto Equalizer", "id": 44, "power": 1, "effectNames": ["loserSixPowerCountersRandom"], "civilization": "rance"},
     {"name": "Kamakaze Tech", "id": 45, "power": 0, "effectNames": ["loserKamakazeEffect"], "civilization": "rance"},
