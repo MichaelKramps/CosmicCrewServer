@@ -49,8 +49,8 @@ class DogfightSimulator:
                 #fighterTwo wins
                 self.playerOne.gunnerLoses()
                 self.playerTwo.gunnerWins()
-                self.playerOne.activateGunnerLosesEffects()
                 self.playerTwo.activateGunnerWinsEffects()
+                self.playerOne.activateGunnerLosesEffects()
                 #write the animation code
             else:
                 #fighters tie
@@ -59,10 +59,6 @@ class DogfightSimulator:
                 self.playerOne.activateGunnerLosesEffects()
                 self.playerTwo.activateGunnerLosesEffects()
             self.animations.append('b,gd,' + self.playerOne.getFighterDestination() + ',' + self.playerTwo.getFighterDestination())
-            #self.playerOne.printTeam()
-            #self.playerOne.printDiscard()
-            #self.playerTwo.printTeam()
-            #self.playerTwo.printDiscard()
         #end while
         if self.playerOne.stillAlive():
             self.animations.append('p,1w,0,0')

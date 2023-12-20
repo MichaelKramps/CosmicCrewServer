@@ -188,11 +188,12 @@ class Player:
         elif (self.fighterDestination == FighterDestination.DISCARD):
             self.discard.append(fighterToSend)
     
-    def destroyCard(self, cardToDestroy):
+    def destroyCardFromEffect(self, cardToDestroy, effect):
         self.team[cardToDestroy.teamSlot - 1] = None
         self.discard.append(cardToDestroy)
         self.animations.append(self.playerIdentifier + ",des,0," + str(cardToDestroy.teamSlot))
-        self.fighterDestination = FighterDestination.DISCARD
+        if (effect.target == Target.SELF):
+            self.fighterDestination = FighterDestination.DISCARD
         cardToDestroy.clear()
 
     def hasFighterWithPower(self, powerToMatch):
@@ -200,13 +201,6 @@ class Player:
             if (card != None) and (card.getTotalPower() >= powerToMatch):
                 return True
         return False
-    
-    def replaceActiveFighterEffect(self, cardToReplace):
-        if (self.team[cardToReplace.teamSlot - 1] == None):
-            self.drawCard()
-            if self.activeCard != None:
-                self.activeCard.isReplacement = True
-                self.playCard(cardToReplace.teamSlot)
 
     def replaceFighterEffect(self, cardToReplace):
         if (self.team[cardToReplace.teamSlot - 1] == None): #no card there yet
@@ -226,7 +220,7 @@ class Player:
     def sendInactiveFighterToBottomOfDeck(self, cardToReplace):
         self.deck.append(self.team[cardToReplace.teamSlot - 1])
         self.team[cardToReplace.teamSlot - 1] = None
-        #animationCodes
+        self.animations.append(self.playerIdentifier + ",fbd," + str(cardToReplace.teamSlot) + ",0")
             
     def getFighterDestination(self):
         return str(int(self.fighterDestination))
@@ -236,6 +230,13 @@ class Player:
             if fighter != None:
                 return True
         return False
+    
+    def numberFightersRemaining(self):
+        fightersRemaining = 0
+        for fighter in self.team:
+            if fighter != None:
+                fightersRemaining += 1
+        return fightersRemaining
     
     def pointsScored(self):
         points = 0

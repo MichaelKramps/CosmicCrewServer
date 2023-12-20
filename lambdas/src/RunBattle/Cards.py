@@ -60,6 +60,8 @@ class Card:
                 return player.currentFighter.civilization == Civilization.RANCE
             case Condition.ENEMYHASFIGHTERWITHPOWER:
                 return player.opponent.hasFighterWithPower(effect.conditionValue)
+            case Condition.OPPONENTHASMOREFIGHTERS:
+                return player.numberFightersRemaining() < player.opponent.numberFightersRemaining()
         return True
             
                 
@@ -178,7 +180,11 @@ class Card:
     def activateDestroyCardEffect(self, effect, player):
         match effect.target:
             case Target.SELF:
-                player.destroyCard(self)
+                player.destroyCardFromEffect(self, effect)
+            case Target.RANDOMENEMYFIGHTER:
+                randomRoll = random.randint(1, 6)
+                indexOfFighterToGiveEffect = player.opponent.gunnerIndexFromSlotWithFilter(randomRoll, effect)
+                player.opponent.destroyCardFromEffect(player.opponent.team[indexOfFighterToGiveEffect], effect)
 
     def activateSetFighterDestinationEffect(self, effect, player):
         player.setFighterDestination(effect)
@@ -298,9 +304,9 @@ cardList = [
     {"name": "Mechoward", "id": 40, "power": 1, "effectNames": ["loserReplace", "afterLosingTwoPowerCountersReplacement"], "civilization": "rance"},
     {"name": "Tampering Coroner", "id": 41, "power": 3, "effectNames": ["loserDoublePowerCountersAll"], "civilization": "rance"},
     {"name": "Hapthor, Everlasting", "id": 42, "power": 2, "effectNames": ["hapthorEffect", "hapthorEffectSelf"], "civilization": "rance"},
-    #{"name": "Name", "id": 43, "power": 2, "effectNames": [], "civilization": "rance"},
-    #{"name": "Name", "id": 44, "power": 2, "effectNames": [], "civilization": "rance"},
-    #{"name": "Name", "id": 45, "power": 2, "effectNames": [], "civilization": "rance"},
+    {"name": "Wheel Whacker", "id": 43, "power": 2, "effectNames": ["loserReplace", "afterLosingOnePowerCounterReplacement"], "civilization": "rance"},
+    {"name": "Auto Equalizer", "id": 44, "power": 1, "effectNames": ["loserSixPowerCountersRandom"], "civilization": "rance"},
+    {"name": "Kamakaze Tech", "id": 45, "power": 0, "effectNames": ["loserKamakazeEffect"], "civilization": "rance"},
     #{"name": "Name", "id": 46, "power": 2, "effectNames": [], "civilization": "rance"},
     #{"name": "Name", "id": 47, "power": 2, "effectNames": [], "civilization": "rance"},
     #{"name": "Name", "id": 48, "power": 2, "effectNames": [], "civilization": "rance"},

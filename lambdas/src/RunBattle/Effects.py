@@ -41,6 +41,7 @@ class Target(Enum):
     DISCARD = 11
     REPLACEMENTFIGHTER = 12
     CURRENTFIGHTER = 13
+    RANDOMENEMYFIGHTER = 14
 
 class TargetFilter(Enum):
     NOFILTER = 1
@@ -61,6 +62,7 @@ class Condition(Enum):
     ACTIVECARDISLEANOR = 7
     ACTIVECARDISRANCE = 8
     ENEMYHASFIGHTERWITHPOWER = 9
+    OPPONENTHASMOREFIGHTERS = 10
 
 class IntValue(Enum):
     CURRENTPOWERCOUNTERS = 1
@@ -170,8 +172,11 @@ effects = {
     "initializeRemoveAllPowerCounters": Effect(Timing.INITIALIZE, EffectType.POWERCOUNTER, Target.ALL, IntValue.REMOVEALLPOWERCOUNTERS),
     "loserReplace": Effect(Timing.LOSER, EffectType.REPLACEFIGHTER, Target.SELF, 0),
     "loserRemoveAllPowerCounters": Effect(Timing.LOSER, EffectType.POWERCOUNTER, Target.ALL, IntValue.REMOVEALLPOWERCOUNTERS),
+    "afterLosingOnePowerCounterReplacement": Effect(Timing.AFTERLOSING, EffectType.POWERCOUNTER, Target.REPLACEMENTFIGHTER, 1),
     "afterLosingTwoPowerCountersReplacement": Effect(Timing.AFTERLOSING, EffectType.POWERCOUNTER, Target.REPLACEMENTFIGHTER, 2),
     "loserDoublePowerCountersAll": Effect(Timing.LOSER, EffectType.POWERCOUNTER, Target.ALL, IntValue.DOUBLEPOWERCOUNTERS),
     "hapthorEffect": Effect(Timing.ANYLOSER, EffectType.REPLACEFIGHTER, Target.CURRENTFIGHTER, 0),
     "hapthorEffectSelf": Effect(Timing.ANYLOSER, EffectType.REPLACEFIGHTER, Target.SELF, 0),
+    "loserSixPowerCountersRandom": Effect(Timing.LOSER, EffectType.POWERCOUNTER, Target.RANDOM, 6),
+    "loserKamakazeEffect": Effect(Timing.LOSER, EffectType.DESTROYCARD, Target.RANDOMENEMYFIGHTER, 0).addCondition(Condition.OPPONENTHASMOREFIGHTERS, 0),
 }

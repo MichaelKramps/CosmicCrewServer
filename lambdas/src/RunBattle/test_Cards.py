@@ -679,3 +679,49 @@ class Test_Cards(unittest.TestCase):
         player1.printTeam()
         assert player1.team[0] == replacementCard1
         assert player1.team[1] == replacementCard2
+        assert player1.discard[0] == loserCard
+        assert player1.deck[1] == hapthorCard
+        print(animations.animationsList)
+        assert animations.codesAppearInOrder(["p,fbd,2,0"])
+
+    def test_kamakazeEffectWork(self):
+        animations = Animations()
+        player1 = Player("0", "p", animations)
+        player2 = Player("0", "s", animations)
+        player1.addOpponent(player2)
+        player2.addOpponent(player1)
+        kamakazeEffect = Effect(Timing.INITIALIZE, EffectType.DESTROYCARD, Target.RANDOMENEMYFIGHTER, 0).addCondition(Condition.OPPONENTHASMOREFIGHTERS, 0)
+        kamakazeCard = Card("kamakaze", 0, 0, [kamakazeEffect], animations)
+        player1.team = [None, None, None, None, None, None]
+        testCard1 = Card("test1", 0, 0, [], animations)
+        testCard1.teamSlot = 1
+        testCard3 = Card("test3", 0, 0, [], animations)
+        testCard3.teamSlot = 3
+        testCard5 = Card("test5", 0, 0, [], animations)
+        testCard5.teamSlot = 5
+        player2.team = [testCard1, None, testCard3, None, testCard5, None]
+        player1.deck = [kamakazeCard]
+        player1.drawAndPlayCard(1)
+        assert player1.team[0] == kamakazeCard
+        assert player2.numberFightersRemaining() == 2
+
+    def test_kamakazeEffectNegation(self):
+        animations = Animations()
+        player1 = Player("0", "p", animations)
+        player2 = Player("0", "s", animations)
+        player1.addOpponent(player2)
+        player2.addOpponent(player1)
+        kamakazeEffect = Effect(Timing.INITIALIZE, EffectType.DESTROYCARD, Target.RANDOMENEMYFIGHTER, 0).addCondition(Condition.OPPONENTHASMOREFIGHTERS, 0)
+        kamakazeCard = Card("kamakaze", 0, 0, [kamakazeEffect], animations)
+        player1.team = [Card("test", 0, 0, [], animations), Card("test1", 0, 0, [], animations), None, None, None, None]
+        testCard1 = Card("test1", 0, 0, [], animations)
+        testCard1.teamSlot = 1
+        testCard3 = Card("test3", 0, 0, [], animations)
+        testCard3.teamSlot = 3
+        testCard5 = Card("test5", 0, 0, [], animations)
+        testCard5.teamSlot = 5
+        player2.team = [testCard1, None, testCard3, None, testCard5, None]
+        player1.deck = [kamakazeCard]
+        player1.drawAndPlayCard(3)
+        assert player1.team[2] == kamakazeCard
+        assert player2.numberFightersRemaining() == 3

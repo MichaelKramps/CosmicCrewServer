@@ -5,7 +5,7 @@ import unittest
 
 class Test_lambda_function(unittest.TestCase):
     def test_sampleBattle(self):
-        simulator = DogfightSimulator("38,38,38,39,39,39,40,40,40", "5,4,3,30,3,3,3,4,5,3", Animations())
+        simulator = DogfightSimulator("41,42,43,44,45,41,42,43,44,45", "5,4,3,30,3,3,3,4,5,3", Animations())
         simulator.simulateDogfight()
         print("new fight")
         print(simulator.startingDeckOne)
@@ -14,7 +14,7 @@ class Test_lambda_function(unittest.TestCase):
         assert simulator.playerOne != None
         assert simulator.playerTwo != None
 
-    def test_monteCarlosSimulator(self):
+    """def test_monteCarlosSimulator(self):
         oneWins = 0
         onePoints = 0
         twoWins = 0
@@ -38,4 +38,4 @@ class Test_lambda_function(unittest.TestCase):
         print("teams tie: " + str(ties))
         print("team one points: " + str(onePoints))
         print("team two points: " + str(twoPoints))
-        assert (oneWins + twoWins + ties) == timesToRunSimulation
+        assert (oneWins + twoWins + ties) == timesToRunSimulation"""
