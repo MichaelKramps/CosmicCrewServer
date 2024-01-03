@@ -69,6 +69,7 @@ class IntValue(Enum):
     REMOVEALLPOWERCOUNTERS = 2
     DOUBLEPOWERCOUNTERS = 3
     CYCLEDCARD = 4
+    POWEROFVICTOR = 5
     
 class Effect:
     def __init__(self, timing, effectType, target, intValue):
@@ -168,13 +169,23 @@ effects = {
     "anyWinnerTwoPowerCountersSelf": Effect(Timing.ANYWINNER, EffectType.POWERCOUNTER, Target.SELF, 2),
     "anyLoserTwoPowerCountersSelf": Effect(Timing.ANYLOSER, EffectType.POWERCOUNTER, Target.SELF, 2),
     "anyLoserOnePowerCounterRandom": Effect(Timing.ANYLOSER, EffectType.POWERCOUNTER, Target.RANDOM, 1),
+    "anyLoserOnePowerCounterLeftmost": Effect(Timing.ANYLOSER, EffectType.POWERCOUNTER, Target.LEFTMOST, 1),
+    "anyLoserOnePowerCounterRightmost": Effect(Timing.ANYLOSER, EffectType.POWERCOUNTER, Target.RIGHTMOST, 1),
+    "anyLoserThreePowerCountersSelf": Effect(Timing.ANYLOSER, EffectType.POWERCOUNTER, Target.SELF, 3),
+    "anyLoserFourPowerCountersRandom": Effect(Timing.ANYLOSER, EffectType.POWERCOUNTER, Target.RANDOM, 4),
     "initializeTenPowerCountersIfOpponentHasTenPower": Effect(Timing.INITIALIZE, EffectType.POWERCOUNTER, Target.SELF, 10).addCondition(Condition.ENEMYHASFIGHTERWITHPOWER, 10),
     "initializeOnePowerCounterAllFriendlyLeanor": Effect(Timing.INITIALIZE, EffectType.POWERCOUNTER, Target.ALL, 1).addTargetFilter(TargetFilter.LEANOR),
     "initializeRemoveAllPowerCounters": Effect(Timing.INITIALIZE, EffectType.POWERCOUNTER, Target.ALL, IntValue.REMOVEALLPOWERCOUNTERS),
     "loserReplace": Effect(Timing.LOSER, EffectType.REPLACEFIGHTER, Target.SELF, 0),
     "loserRemoveAllPowerCounters": Effect(Timing.LOSER, EffectType.POWERCOUNTER, Target.ALL, IntValue.REMOVEALLPOWERCOUNTERS),
+    "loserTwoPowerCountersLeftmost": Effect(Timing.LOSER, EffectType.POWERCOUNTER, Target.LEFTMOST, 2),
+    "loserTwoPowerCountersRightmost": Effect(Timing.LOSER, EffectType.POWERCOUNTER, Target.RIGHTMOST, 2),
+    "loserSixPowerCountersRightmost": Effect(Timing.LOSER, EffectType.POWERCOUNTER, Target.RIGHTMOST, 6),
+    "loserVictorPowerToRandom": Effect(Timing.LOSER, EffectType.POWERCOUNTER, Target.RANDOM, IntValue.POWEROFVICTOR),
+    "loserTwoPowerCountersAllRance": Effect(Timing.LOSER, EffectType.POWERCOUNTER, Target.ALL, 2).addTargetFilter(TargetFilter.RANCE),
     "afterLosingOnePowerCounterReplacement": Effect(Timing.AFTERLOSING, EffectType.POWERCOUNTER, Target.REPLACEMENTFIGHTER, 1),
     "afterLosingTwoPowerCountersReplacement": Effect(Timing.AFTERLOSING, EffectType.POWERCOUNTER, Target.REPLACEMENTFIGHTER, 2),
+    "afterWinningThreePowerCountersReplacement": Effect(Timing.AFTERWINNING, EffectType.POWERCOUNTER, Target.REPLACEMENTFIGHTER, 3),
     "loserDoublePowerCountersAll": Effect(Timing.LOSER, EffectType.POWERCOUNTER, Target.ALL, IntValue.DOUBLEPOWERCOUNTERS),
     "hapthorEffect": Effect(Timing.ANYLOSER, EffectType.REPLACEFIGHTER, Target.CURRENTFIGHTER, 0),
     "hapthorEffectSelf": Effect(Timing.ANYLOSER, EffectType.REPLACEFIGHTER, Target.SELF, 0),

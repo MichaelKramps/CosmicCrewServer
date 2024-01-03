@@ -163,6 +163,8 @@ class Card:
                 return card.powerCounters
             case IntValue.CYCLEDCARD:
                 return player.activeCard.power
+            case IntValue.POWEROFVICTOR:
+                return player.opponent.currentFighter.getTotalPower()
         return effect.intValue
                         
     def activateCycleEffect(self, effect, player):
@@ -307,9 +309,14 @@ cardList = [
     {"name": "Wheel Whacker", "id": 43, "power": 2, "effectNames": ["loserReplace", "afterLosingOnePowerCounterReplacement"], "civilization": "rance"},
     {"name": "Auto Equalizer", "id": 44, "power": 1, "effectNames": ["loserSixPowerCountersRandom"], "civilization": "rance"},
     {"name": "Kamakaze Tech", "id": 45, "power": 0, "effectNames": ["loserKamakazeEffect"], "civilization": "rance"},
-    #{"name": "Name", "id": 46, "power": 2, "effectNames": [], "civilization": "rance"},
-    #{"name": "Name", "id": 47, "power": 2, "effectNames": [], "civilization": "rance"},
-    #{"name": "Name", "id": 48, "power": 2, "effectNames": [], "civilization": "rance"},
-    #{"name": "Name", "id": 49, "power": 2, "effectNames": [], "civilization": "rance"},
-    #{"name": "Name", "id": 50, "power": 2, "effectNames": [], "civilization": "rance"},
+    {"name": "Minion Upgrader", "id": 46, "power": 3, "effectNames": ["anyLoserOnePowerCounterLeftmost", "anyLoserOnePowerCounterRightmost"], "civilization": "rance"},
+    {"name": "Explosive Ally", "id": 47, "power": 4, "effectNames": ["loserTwoPowerCountersLeftmost", "loserTwoPowerCountersRightmost"], "civilization": "rance"},
+    {"name": "Big Z Cannon", "id": 48, "power": 2, "effectNames": ["anyLoserThreePowerCountersSelf"], "civilization": "rance"},
+    {"name": "Shaw, the Helpful", "id": 49, "power": 6, "effectNames": ["loserSixPowerCountersRightmost"], "civilization": "rance"},
+    {"name": "Armor Burglar", "id": 50, "power": 4, "effectNames": ["anyLoserFourPowerCountersRandom"], "civilization": "rance"},
+    {"name": "Rance Faithful", "id": 51, "power": 2, "effectNames": [], "civilization": "rance"},
+    {"name": "Gun Thief", "id": 52, "power": 1, "effectNames": ["loserVictorPowerToRandom"], "civilization": "rance"},
+    {"name": "Trash Electromagnet", "id": 53, "power": 3, "effectNames": ["afterWinningThreePowerCountersReplacement"], "civilization": "rance"},
+    #{"name": "Name", "id": 54, "power": 2, "effectNames": [], "civilization": "rance"},
+    #{"name": "Name", "id": 55, "power": 2, "effectNames": [], "civilization": "rance"},
 ]

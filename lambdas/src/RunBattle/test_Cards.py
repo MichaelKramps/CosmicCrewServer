@@ -721,3 +721,38 @@ class Test_Cards(unittest.TestCase):
         player1.drawAndPlayCard(3)
         assert player1.team[2] == kamakazeCard
         assert player2.numberFightersRemaining() == 3
+
+    def test_powerOfFighterThatKilledThis(self):
+        animations = Animations()
+        player1 = Player("0", "p", animations)
+        player2 = Player("0", "s", animations)
+        player1.addOpponent(player2)
+        player2.addOpponent(player1)
+        victorEffect = Effect(Timing.LOSER, EffectType.POWERCOUNTER, Target.RANDOM, IntValue.POWEROFVICTOR)
+        victorCard = Card("victor", 0, 0, [victorEffect], animations)
+        victorCard.teamSlot = 1
+        testCard = Card("test", 0, 0, [], animations)
+        player1.team = [victorCard, testCard, None, None, None, None]
+        powerOfWinner = random.randint(1,10)
+        player2.team = [Card("test1", 0, powerOfWinner, [], animations), None, None, None, None, None]
+        player1.currentRoll = 1
+        player2.currentRoll = 1
+        player1.gunnerLoses()
+        player2.gunnerWins()
+        player1.activateGunnerLosesEffects()
+        assert player1.team[1].getTotalPower() == powerOfWinner
+
+    def test_winnerPowerCountersToReplacement(self):
+        animations = Animations()
+        player1 = Player("0", "p", animations)
+        numberPowerCounters = random.randint(1,10)
+        winnerEffect = Effect(Timing.AFTERWINNING, EffectType.POWERCOUNTER, Target.REPLACEMENTFIGHTER, numberPowerCounters)
+        winnerCard = Card("victor", 0, 0, [winnerEffect], animations)
+        winnerCard.teamSlot = 1
+        testCard = Card("test", 0, 0, [], animations)
+        player1.team = [winnerCard, None, None, None, None, None]
+        player1.deck = [testCard]
+        player1.currentRoll = 1
+        player1.gunnerWins()
+        player1.activateGunnerWinsEffects()
+        assert testCard.powerCounters == numberPowerCounters

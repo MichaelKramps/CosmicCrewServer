@@ -5,7 +5,7 @@ import unittest
 
 class Test_lambda_function(unittest.TestCase):
     def test_sampleBattle(self):
-        simulator = DogfightSimulator("41,42,43,44,45,41,42,43,44,45", "5,4,3,30,3,3,3,4,5,3", Animations())
+        simulator = DogfightSimulator("10,10,8,8,9,9,20,15,7,7", "34,31,36,30,28,25,2,2", Animations())
         simulator.simulateDogfight()
         print("new fight")
         print(simulator.startingDeckOne)
