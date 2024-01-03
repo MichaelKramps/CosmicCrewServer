@@ -5,7 +5,7 @@ import unittest
 
 class Test_lambda_function(unittest.TestCase):
     def test_sampleBattle(self):
-        simulator = DogfightSimulator("10,10,8,8,9,9,20,15,7,7", "34,31,36,30,28,25,2,2", Animations())
+        simulator = DogfightSimulator("37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54", "37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54", Animations())
         simulator.simulateDogfight()
         print("new fight")
         print(simulator.startingDeckOne)
@@ -22,7 +22,7 @@ class Test_lambda_function(unittest.TestCase):
         ties = 0
         timesToRunSimulation = 1000
         for x in range(0,timesToRunSimulation):
-            simulator = DogfightSimulator("38,38,39,39,40,40,41,41,42,42", "8,9,8,9,18,18,20,20,10,10", Animations())
+            simulator = DogfightSimulator("37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54", "37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54", Animations())
             simulator.simulateDogfight()
             lastAnimationCode = simulator.animations.animationsList.pop()
             if ("1w" in lastAnimationCode):

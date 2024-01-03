@@ -249,6 +249,7 @@ class Test_Cards(unittest.TestCase):
         player.currentRoll = 1
         player.gunnerWins()
         player.activateGunnerWinsEffects()
+        player.clearCurrentFighter()
         assert player.deck[0].effects[1].fireXMoreTimes == 1
 
     def test_anyWinnerEffectsTrigger(self):
@@ -756,3 +757,20 @@ class Test_Cards(unittest.TestCase):
         player1.gunnerWins()
         player1.activateGunnerWinsEffects()
         assert testCard.powerCounters == numberPowerCounters
+
+    def test_loserPowerCountersAllRance(self):
+        animations = Animations()
+        player1 = Player("0", "p", animations)
+        numberPowerCounters = random.randint(1,10)
+        loserEffect = Effect(Timing.LOSER, EffectType.POWERCOUNTER, Target.ALL, numberPowerCounters).addTargetFilter(TargetFilter.RANCE)
+        loserCard = Card("victor", 0, 0, [loserEffect], animations)
+        loserCard.teamSlot = 1
+        testCard = Card("test", 0, 0, [], animations)
+        ranceCard = Card("test", 0, 0, [], animations)
+        ranceCard.civilization = Civilization.RANCE
+        player1.team = [loserCard, testCard, ranceCard, None, None, None]
+        player1.currentRoll = 1
+        player1.gunnerLoses()
+        player1.activateGunnerLosesEffects()
+        assert testCard.powerCounters == 0
+        assert ranceCard.powerCounters == numberPowerCounters

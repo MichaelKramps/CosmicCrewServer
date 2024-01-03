@@ -202,6 +202,7 @@ class Test_Player(unittest.TestCase):
         player.team = [cardToTest, Card("test", 0, 0, [], animations), Card("test", 0, 0, [], animations), Card("test", 0, 0, [], animations), Card("test", 0, 0, [], animations), Card("test", 0, 0, [], animations)]
         player.gunnerWins()
         player.activateGunnerWinsEffects()
+        player.clearCurrentFighter()
         assert cardToTest.powerCounters == 0
 
     def test_gunnerWinsDoesntReplaceIfEmptyDeck(self):
@@ -248,6 +249,7 @@ class Test_Player(unittest.TestCase):
         player.team = [cardToTest, Card("test", 0, 0, [], animations), Card("test", 0, 0, [], animations), Card("test", 0, 0, [], animations), Card("test", 0, 0, [], animations), Card("test", 0, 0, [], animations)]
         player.gunnerLoses()
         player.activateGunnerLosesEffects()
+        player.clearCurrentFighter()
         assert cardToTest.powerCounters == 0
 
     def test_gunnerLosesAddsLosingGunnerToDiscard(self):

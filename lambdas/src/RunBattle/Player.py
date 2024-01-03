@@ -158,9 +158,7 @@ class Player:
         if len(self.deck) > 0 and self.team[self.currentFighter.teamSlot - 1] == None: #if card was in deck before gunner was put back in deck and the slot is still available
             self.replaceWinner(self.currentFighter.teamSlot)
         self.currentFighter.activateEffectsFor(Timing.AFTERWINNING, self)
-        self.currentFighter.clear()
         self.sendFighterToDestination(self.currentFighter)
-        self.currentFighter = None
             
     def gunnerLoses(self):
         self.currentFighter = self.gunnerFromRoll()
@@ -171,8 +169,10 @@ class Player:
         self.activateEffectsForTeam(Timing.ANYLOSER)
         self.currentFighter.activateEffectsFor(Timing.LOSER, self)
         self.currentFighter.activateEffectsFor(Timing.AFTERLOSING, self)
-        self.currentFighter.clear()
         self.sendFighterToDestination(self.currentFighter)
+
+    def clearCurrentFighter(self):
+        self.currentFighter.clear()
         self.currentFighter = None
 
     def setFighterDestination(self, effect):
