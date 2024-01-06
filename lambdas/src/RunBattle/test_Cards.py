@@ -676,7 +676,6 @@ class Test_Cards(unittest.TestCase):
         player1.currentRoll = 1
         player1.gunnerLoses()
         player1.activateGunnerLosesEffects()
-        player1.printTeam()
         assert player1.team[0] == replacementCard1
         assert player1.team[1] == hapthorCard
         assert player1.discard[0] == loserCard
@@ -741,7 +740,7 @@ class Test_Cards(unittest.TestCase):
         player1.gunnerLoses()
         player2.gunnerWins()
         player1.activateGunnerLosesEffects()
-        assert player1.team[1].getTotalPower() == powerOfWinner
+        assert player1.team[1].getTotalPower(player1) == powerOfWinner
 
     def test_winnerPowerCountersToReplacement(self):
         animations = Animations()
@@ -774,3 +773,103 @@ class Test_Cards(unittest.TestCase):
         player1.activateGunnerLosesEffects()
         assert testCard.powerCounters == 0
         assert ranceCard.powerCounters == numberPowerCounters
+
+    def test_tiesEveryFightEffectPowerLessThan(self):
+        animations = Animations()
+        player1 = Player("0", "p", animations)
+        player2 = Player("0", "s", animations)
+        player1.addOpponent(player2)
+        player2.addOpponent(player1)
+        tiesEffect = Effect(Timing.NONE, EffectType.ALWAYSTIES, Target.SELF, 0)
+        tiesCard = Card("ties", 0, 0, [tiesEffect], animations)
+        player1.team = [tiesCard, None, None, None, None, None]
+        randomPower = random.randint(1,10)
+        randomPowerCounters = random.randint(1,10)
+        testCard = Card("test1", 0, randomPower, [], animations)
+        testCard.powerCounters = randomPowerCounters
+        player2.team = [testCard, None, None, None, None, None]
+        player1.currentRoll = 1
+        player2.currentRoll = 1
+        player1.activateGunnerFightsEffects()
+        player2.activateGunnerFightsEffects()
+        assert player1.gunnerFromRoll().getTotalPower(player1) == player2.gunnerFromRoll().getTotalPower(player2)
+
+    def test_tiesEveryFightEffectPowerMoreThan(self):
+        animations = Animations()
+        player1 = Player("0", "p", animations)
+        player2 = Player("0", "s", animations)
+        player1.addOpponent(player2)
+        player2.addOpponent(player1)
+        tiesEffect = Effect(Timing.NONE, EffectType.ALWAYSTIES, Target.SELF, 0)
+        tiesCard = Card("ties", 0, 21, [tiesEffect], animations)
+        player1.team = [tiesCard, None, None, None, None, None]
+        randomPower = random.randint(1,10)
+        randomPowerCounters = random.randint(1,10)
+        testCard = Card("test1", 0, randomPower, [], animations)
+        testCard.powerCounters = randomPowerCounters
+        player2.team = [testCard, None, None, None, None, None]
+        player1.currentRoll = 1
+        player2.currentRoll = 1
+        player1.activateGunnerFightsEffects()
+        player2.activateGunnerFightsEffects()
+        assert player1.gunnerFromRoll().getTotalPower(player1) == player2.gunnerFromRoll().getTotalPower(player2)
+
+    def test_tiesEveryFightEffectTiesAgainstAnotherOne(self):
+        animations = Animations()
+        player1 = Player("0", "p", animations)
+        player2 = Player("0", "s", animations)
+        player1.addOpponent(player2)
+        player2.addOpponent(player1)
+        tiesEffect = Effect(Timing.NONE, EffectType.ALWAYSTIES, Target.SELF, 0)
+        tiesCard = Card("ties", 0, 0, [tiesEffect], animations)
+        player1.team = [tiesCard, None, None, None, None, None]
+        randomPower = random.randint(1,10)
+        randomPowerCounters = random.randint(1,10)
+        anotherTiesCard = Card("test1", 0, randomPower, [tiesEffect], animations)
+        anotherTiesCard.powerCounters = randomPowerCounters
+        player2.team = [anotherTiesCard, None, None, None, None, None]
+        player1.currentRoll = 1
+        player2.currentRoll = 1
+        player1.activateGunnerFightsEffects()
+        player2.activateGunnerFightsEffects()
+        print(player1.gunnerFromRoll().getTotalPower(player1))
+        print(player2.gunnerFromRoll().getTotalPower(player2))
+        assert player1.gunnerFromRoll().getTotalPower(player1) == player2.gunnerFromRoll().getTotalPower(player2)
+
+    def test_gainsPowerCountersEqualToTeamSlot(self):
+        animations = Animations()
+        player1 = Player("0", "p", animations)
+        powerCounterEffect = Effect(Timing.INITIALIZE, EffectType.POWERCOUNTER, Target.SELF, IntValue.TEAMSLOT)
+        testCard = Card("victor", 0, 0, [powerCounterEffect], animations)
+        randomSlot = random.randint(1,10)
+        testCard.teamSlot = randomSlot
+        testCard.activateEffectsFor(Timing.INITIALIZE, player1)
+        assert testCard.powerCounters == randomSlot
+
+    def test_gainsPowerCountersEqualToTeamSlot(self):
+        animations = Animations()
+        player1 = Player("0", "p", animations)
+        noPowerCountersEffect = Effect(Timing.NONE, EffectType.CANTHAVEPOWERCOUNTERS, Target.SELF, 0)
+        powerCounterEffect = Effect(Timing.INITIALIZE, EffectType.POWERCOUNTER, Target.SELF, 2)
+        testCard = Card("victor", 0, 0, [powerCounterEffect, noPowerCountersEffect], animations)
+        testCard.activateEffectsFor(Timing.INITIALIZE, player1)
+        assert testCard.powerCounters == 0
+
+    def test_whenFriendlyGunnerIsPlayedGiveItAPowerCounter(self):
+        animations = Animations()
+        player1 = Player("0", "p", animations)
+        givePowerEffect = Effect(Timing.ONFRIENDLYGUNNERPLAYED, EffectType.POWERCOUNTER, Target.ACTIVECARD, 1)
+        powerCard = Card("power", 0, 0, [givePowerEffect], animations)
+        testCard1 = Card("test1", 0, 0, [], animations)
+        testCard2 = Card("test2", 0, 0, [], animations)
+        testCard3 = Card("test3", 0, 0, [], animations)
+        player1.team = [None, None, None, None, None, None]
+        player1.deck = [powerCard, testCard1, testCard2, testCard3]
+        player1.drawAndPlayCard(1)
+        player1.drawAndPlayCard(2)
+        player1.drawAndPlayCard(3)
+        player1.drawAndPlayCard(4)
+        assert powerCard.powerCounters == 0
+        assert testCard1.powerCounters == 1
+        assert testCard2.powerCounters == 1
+        assert testCard3.powerCounters == 1

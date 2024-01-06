@@ -37,8 +37,10 @@ class DogfightSimulator:
             self.animations.append('b,r,' + str(rollOne) + ',' + str(rollTwo))
             fighterOne = self.playerOne.gunnerFromRoll()
             fighterTwo = self.playerTwo.gunnerFromRoll()
-            fighterOnePower = fighterOne.power + fighterOne.powerCounters
-            fighterTwoPower = fighterTwo.power + fighterTwo.powerCounters
+            self.playerOne.activateGunnerFightsEffects()
+            self.playerTwo.activateGunnerFightsEffects()
+            fighterOnePower = fighterOne.getTotalPower(self.playerOne)
+            fighterTwoPower = fighterTwo.getTotalPower(self.playerTwo)
             if fighterOnePower > fighterTwoPower:
                 #fighterOne wins
                 self.playerOne.gunnerWins()

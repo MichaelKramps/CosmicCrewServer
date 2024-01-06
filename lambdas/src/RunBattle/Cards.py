@@ -51,7 +51,7 @@ class Card:
             case Condition.REPLACINGWINNER:
                 return self.replacingWinner
             case Condition.SELFHASPOWER:
-                return self.getTotalPower() >= effect.conditionValue
+                return self.getTotalPower(player) >= effect.conditionValue
             case Condition.ACTIVECARDISLEANOR:
                 return player.currentFighter.civilization == Civilization.LEANOR
             case Condition.ACTIVECARDISATHYR:
@@ -88,70 +88,47 @@ class Card:
             
                 
     def activatePowerCounterEffect(self, effect, player):
+        targetCards = self.determineTargetCards(effect, player)
+        for card in targetCards:
+            if (card != None and card.passesFilter(effect)):
+                powerCountersToAdd = self.determinePowerCountersToAdd(effect, card, player)
+                if powerCountersToAdd != 0:
+                    card.powerCounters += powerCountersToAdd
+                    self.animations.addCodeFrom(player, effect, powerCountersToAdd, card.teamSlot)
+                    card.activateEffectsFor(Timing.POWERCHANGE, player)
+                    self.attemptOnFriendlyEffect(player, effect, card.teamSlot, powerCountersToAdd)
+
+    def determineTargetCards(self, effect, player):
+        targetCards = []
         match effect.target:
             case Target.SELF:
-                if (effect.intValue == IntValue.CYCLEDCARD):
-                    powerCountersToAdd = self.determinePowerCountersToAdd(effect, self, player)
-                    if powerCountersToAdd != 0:
-                        self.powerCounters += powerCountersToAdd
-                        self.animations.addCodeFrom(player, effect, powerCountersToAdd, self.teamSlot)
-                        self.activateEffectsFor(Timing.POWERCHANGE, player)
-                        self.attemptOnFriendlyEffect(player, effect, self.teamSlot, powerCountersToAdd)
-                else:
-                    powerCountersToAdd = self.determinePowerCountersToAdd(effect, self, player)
-                    if powerCountersToAdd != 0:
-                        self.powerCounters += powerCountersToAdd
-                        self.animations.addCodeFrom(player, effect, powerCountersToAdd, self.teamSlot)
-                        self.activateEffectsFor(Timing.POWERCHANGE, player)
-                        self.attemptOnFriendlyEffect(player, effect, self.teamSlot, powerCountersToAdd)
+                targetCards.append(self)
             case Target.ALL:
                 for card in player.team:
-                    if (card != None and card.passesFilter(effect)):
-                        powerCountersToAdd = self.determinePowerCountersToAdd(effect, card, player)
-                        if powerCountersToAdd != 0:
-                            card.powerCounters += powerCountersToAdd
-                            self.animations.addCodeFrom(player, effect, powerCountersToAdd, card.teamSlot)
-                            card.activateEffectsFor(Timing.POWERCHANGE, player)
-                            self.attemptOnFriendlyEffect(player, effect, card.teamSlot, powerCountersToAdd)
+                    if (card != None):
+                        targetCards.append(card)
             case Target.LEFTMOST:
                 for card in player.team:
                     if (card != None and card.passesFilter(effect)):
-                        powerCountersToAdd = self.determinePowerCountersToAdd(effect, card, player)
-                        if powerCountersToAdd != 0:
-                            card.powerCounters += powerCountersToAdd
-                            self.animations.addCodeFrom(player, effect, powerCountersToAdd, card.teamSlot)
-                            card.activateEffectsFor(Timing.POWERCHANGE, player)
-                            self.attemptOnFriendlyEffect(player, effect, card.teamSlot, powerCountersToAdd)
+                        targetCards.append(card)
                         break
             case Target.RIGHTMOST:
                 for card in reversed(player.team):
                     if (card != None and card.passesFilter(effect)):
-                        powerCountersToAdd = self.determinePowerCountersToAdd(effect, card, player)
-                        if powerCountersToAdd != 0:
-                            card.powerCounters += powerCountersToAdd
-                            self.animations.addCodeFrom(player, effect, powerCountersToAdd, card.teamSlot)
-                            card.activateEffectsFor(Timing.POWERCHANGE, player)
-                            self.attemptOnFriendlyEffect(player, effect, card.teamSlot, powerCountersToAdd)
+                        targetCards.append(card)
                         break
             case Target.RANDOM:
                 randomRoll = random.randint(1, 6)
                 indexOfFighterToGiveEffect = player.gunnerIndexFromSlotWithFilter(randomRoll, effect)
                 if indexOfFighterToGiveEffect != None:
-                    randomCard = player.team[indexOfFighterToGiveEffect]
-                    powerCountersToAdd = self.determinePowerCountersToAdd(effect, randomCard, player)
-                    if powerCountersToAdd != 0:
-                        randomCard.powerCounters += powerCountersToAdd
-                        self.animations.addCodeFrom(player, effect, powerCountersToAdd, randomCard.teamSlot)
-                        randomCard.activateEffectsFor(Timing.POWERCHANGE, player)
-                        self.attemptOnFriendlyEffect(player, effect, randomCard.teamSlot, powerCountersToAdd)
+                    targetCards.append(player.team[indexOfFighterToGiveEffect])
             case Target.REPLACEMENTFIGHTER:
-                powerCountersToAdd = self.determinePowerCountersToAdd(effect, self, player)
-                replacementCard = player.team[self.teamSlot - 1]
-                if (replacementCard != None and powerCountersToAdd != 0):
-                    replacementCard.powerCounters += powerCountersToAdd
-                    self.animations.addCodeFrom(player, effect, powerCountersToAdd, replacementCard.teamSlot)
-                    replacementCard.activateEffectsFor(Timing.POWERCHANGE, player)
-                    self.attemptOnFriendlyEffect(player, effect, replacementCard.teamSlot, powerCountersToAdd)
+                targetCards.append(player.team[self.teamSlot - 1])
+            case Target.ACTIVECARD:
+                targetCards.append(player.activeCard)
+        return targetCards
+        
+
 
     def determinePowerCountersToAdd(self, effect, card, player):
         match effect.intValue:
@@ -164,7 +141,9 @@ class Card:
             case IntValue.CYCLEDCARD:
                 return player.activeCard.power
             case IntValue.POWEROFVICTOR:
-                return player.opponent.currentFighter.getTotalPower()
+                return player.opponent.currentFighter.getTotalPower(player.opponent)
+            case IntValue.TEAMSLOT:
+                return self.teamSlot
         return effect.intValue
                         
     def activateCycleEffect(self, effect, player):
@@ -209,6 +188,8 @@ class Card:
             player.activateEffectsForTeammates(Timing.ONFRIENDLYPOWERCOUNTER, teamSlot)
 
     def passesFilter(self, effect):
+        if (self.cantHavePowerCounters() and effect.effectType == EffectType.POWERCOUNTER):
+            return False
         match effect.targetFilter:
             case TargetFilter.NOFILTER:
                 return True
@@ -221,6 +202,12 @@ class Card:
             case TargetFilter.HASPOWERCOUNTER:
                 return self.powerCounters > 0
         return True
+    
+    def cantHavePowerCounters(self):
+        for effect in self.effects:
+            if effect.effectType == EffectType.CANTHAVEPOWERCOUNTERS:
+                return True
+        return False
                 
     def clear(self):
         self.powerCounters = 0
@@ -238,8 +225,17 @@ class Card:
         self.civilization = civilization
         return self
     
-    def getTotalPower(self):
+    def getTotalPower(self, player):
+        if self.tiesEveryFight():
+            self.power = player.opponent.currentFighter.power
+            self.powerCounters = player.opponent.currentFighter.powerCounters
         return self.power + self.powerCounters
+    
+    def tiesEveryFight(self):
+        for effect in self.effects:
+            if effect.effectType == EffectType.ALWAYSTIES:
+                return True
+        return False
 
     @staticmethod
     def withId(id, animations):
@@ -279,8 +275,8 @@ cardList = [
     {"name": "Long Barreller", "id": 13, "power": 2, "effectNames": ["initializeOnePowerCounterAllAthyr"], "civilization": "athyr"},
     {"name": "Fixer Upper", "id": 14, "power": 7, "effectNames": ["initializeRemoveOnePowerCounterLeftmost"], "civilization": "athyr"},
     {"name": "Body Snatcher", "id": 15, "power": 2, "effectNames": ["initializeCycleOne", "bodySnatcherEffect"], "civilization": "athyr"},
-    {"name": "Garbage Collector", "id": 16, "power": 4, "effectNames": ["signingBonusScrapOne"], "civilization": "athyr"},
-    {"name": "Scrathyr", "id": 17, "power": 2, "effectNames": ["signingBonusScrapThree"], "civilization": "athyr"},
+    {"name": "Garbage Collector", "id": 16, "power": 4, "effectNames": [], "civilization": "athyr"},
+    {"name": "Scrathyr", "id": 17, "power": 2, "effectNames": [], "civilization": "athyr"},
     {"name": "Shop Owner", "id": 18, "power": 2, "effectNames": ["anyWinnerCycleOne", "anyLoserCycleOne"], "civilization": "athyr"},
     {"name": "Tandem Biker", "id": 19, "power": 5, "effectNames": ["initializeBothCycleOne"], "civilization": "athyr"},
     {"name": "Jonas, Revived", "id": 20, "power": 3, "effectNames": ["onOpponentDrawPowerCounterLeftmost", "onOpponentDrawPowerCounterRightmost"], "civilization": "athyr"},
@@ -318,5 +314,20 @@ cardList = [
     {"name": "Gun Thief", "id": 52, "power": 1, "effectNames": ["loserVictorPowerToRandom"], "civilization": "rance"},
     {"name": "Trash Electromagnet", "id": 53, "power": 3, "effectNames": ["afterWinningThreePowerCountersReplacement"], "civilization": "rance"},
     {"name": "Eddie, the Boxer", "id": 54, "power": 3, "effectNames": ["anyLoserOnePowerCounterAll"], "civilization": "rance"},
-    #{"name": "Name", "id": 55, "power": 2, "effectNames": [], "civilization": "rance"},
+    {"name": "Shiny Mirror", "id": 55, "power": 1, "effectNames": ["initializePowerCountersEqualToTeamSlot"], "civilization": "mercenary"},
+    {"name": "Jack, the Dueler", "id": 56, "power": 1, "effectNames": ["alwaysTiesFight"], "civilization": "mercenary"},
+    {"name": "Kronovi, the Original", "id": 57, "power": 10, "effectNames": ["cannotHavePowerCounters"], "civilization": "mercenary"},
+    {"name": "Arms Dealer", "id": 58, "power": 2, "effectNames": ["onFriendlyGunnerPlayedOnePowerCounterActiveCard"], "civilization": "mercenary"},
+    {"name": "Chronic, the Replacer", "id": 59, "power": 7, "effectNames": [], "civilization": "mercenary"},
+    {"name": "Noly, the Vanquished", "id": 60, "power": 2, "effectNames": [], "civilization": "mercenary"},
+    {"name": "Throwaway Infantry", "id": 61, "power": 1, "effectNames": ["loserScrapSelf"], "civilization": "mercenary"},
+    {"name": "Reusable Memory", "id": 62, "power": 4, "effectNames": [], "civilization": "mercenary"},
+    {"name": "Pair Commando", "id": 63, "power": 3, "effectNames": [], "civilization": "mercenary"},
+    {"name": "Missing Merc", "id": 64, "power": 4, "effectNames": ["loserScrapSelf"], "civilization": "mercenary"},
+    {"name": "One-time Legionnaire", "id": 65, "power": 11, "effectNames": ["winnerScrapSelf"], "civilization": "mercenary"},
+    {"name": "Zen, the Chosen", "id": 66, "power": 4, "effectNames": [], "civilization": "mercenary"},
+    {"name": "Grizzled Mercenary", "id": 67, "power": 6, "effectNames": [], "civilization": "mercenary"},
+    {"name": "Dual Shooter", "id": 68, "power": 2, "effectNames": [], "civilization": "mercenary"},
+    {"name": "Speedy Soldier", "id": 69, "power": 3, "effectNames": [], "civilization": "mercenary"},
+    {"name": "Sprayton Shozz", "id": 70, "power": 5, "effectNames": [], "civilization": "mercenary"},
 ]

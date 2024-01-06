@@ -53,7 +53,7 @@ class Player:
 
     def activateEffectsForTeam(self, timing):
         for card in self.team:
-            if (card != None):
+            if (card != None and card != self.activeCard):
                 card.activateEffectsFor(timing, self)
 
     def activateEffectsForTeammates(self, timing, teamSlotToAvoid):
@@ -80,6 +80,7 @@ class Player:
             self.team[slotToPlayCardIn - 1] = self.activeCard
             self.activeCard.teamSlot = slotToPlayCardIn
             self.animations.append(self.playerIdentifier + ",p," + str(slotToPlayCardIn) + ",0")
+            self.activateEffectsForTeam(Timing.ONFRIENDLYGUNNERPLAYED)
             self.activeCard.activateEffectsFor(Timing.INITIALIZE, self)
             self.activeCard = None
         
@@ -146,6 +147,10 @@ class Player:
             if (self.team[index] == None):
                 return index + 1
         return 0
+    
+    def activateGunnerFightsEffects(self):
+        self.currentFighter = self.gunnerFromRoll()
+        self.currentFighter.activateEffectsFor(Timing.GUNNERFIGHTS, self)
         
     def gunnerWins(self):
         self.currentFighter = self.gunnerFromRoll()
@@ -198,7 +203,7 @@ class Player:
 
     def hasFighterWithPower(self, powerToMatch):
         for card in self.team:
-            if (card != None) and (card.getTotalPower() >= powerToMatch):
+            if (card != None) and (card.getTotalPower(self) >= powerToMatch):
                 return True
         return False
 

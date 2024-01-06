@@ -9,13 +9,15 @@ class Timing(Enum):
     AFTERLOSING = 5 #some effects replace the loser and will interact with the replacement
     ANYWINNER = 6 #when any friendly fighter wins
     ANYLOSER = 7 #when any friendly fighter loses
-    SIGNINGBONUS = 8
-    ONDRAW = 9
-    WHENCYCLED = 10
-    POWERCHANGE = 11
-    ONANYINITIALIZE = 12
-    ONFRIENDLYPOWERCOUNTER = 13
-    ONOPPONENTDRAW = 14
+    ONDRAW = 8
+    WHENCYCLED = 9
+    POWERCHANGE = 10
+    ONANYINITIALIZE = 11
+    ONFRIENDLYPOWERCOUNTER = 12
+    ONOPPONENTDRAW = 13
+    GUNNERFIGHTS = 14
+    ONFRIENDLYGUNNERPLAYED = 15
+    NONE = 16
     
 class EffectType(Enum):
     POWERCOUNTER = 1
@@ -26,6 +28,8 @@ class EffectType(Enum):
     SETFIGHTERDESTINATION = 6
     SETOPPOSINGFIGHTERDESTINATION = 7
     REPLACEFIGHTER = 8
+    ALWAYSTIES = 9
+    CANTHAVEPOWERCOUNTERS = 10
     
 class Target(Enum):
     SELF = 1
@@ -42,6 +46,7 @@ class Target(Enum):
     REPLACEMENTFIGHTER = 12
     CURRENTFIGHTER = 13
     RANDOMENEMYFIGHTER = 14
+    ACTIVECARD = 15
 
 class TargetFilter(Enum):
     NOFILTER = 1
@@ -70,6 +75,7 @@ class IntValue(Enum):
     DOUBLEPOWERCOUNTERS = 3
     CYCLEDCARD = 4
     POWEROFVICTOR = 5
+    TEAMSLOT = 6
     
 class Effect:
     def __init__(self, timing, effectType, target, intValue):
@@ -146,8 +152,6 @@ effects = {
     "initializeOnePowerCounterAllAthyr": Effect(Timing.INITIALIZE, EffectType.POWERCOUNTER, Target.ALL, 1).addTargetFilter(TargetFilter.ATHYR),
     "initializeRemoveOnePowerCounterLeftmost": Effect(Timing.INITIALIZE, EffectType.POWERCOUNTER, Target.LEFTMOST, -1).addTargetFilter(TargetFilter.HASPOWERCOUNTER),
     "bodySnatcherEffect": Effect(Timing.ONDRAW, EffectType.POWERCOUNTER, Target.SELF, IntValue.CYCLEDCARD).addNumberTimesToFire(1),
-    "signingBonusScrapOne": Effect(Timing.SIGNINGBONUS, EffectType.SCRAP, Target.NONE, 1),
-    "signingBonusScrapThree": Effect(Timing.SIGNINGBONUS, EffectType.SCRAP, Target.NONE, 3),
     "anyWinnerCycleOne": Effect(Timing.ANYWINNER, EffectType.CYCLE, Target.NONE, 1),
     "anyLoserCycleOne": Effect(Timing.ANYLOSER, EffectType.CYCLE, Target.NONE, 1),
     "initializeBothCycleOne": Effect(Timing.INITIALIZE, EffectType.CYCLE, Target.BOTHPLAYERS, 1),
@@ -156,6 +160,7 @@ effects = {
     "initializeFourPowerCountersSelfIfFourFighters": Effect(Timing.INITIALIZE, EffectType.POWERCOUNTER, Target.SELF, 4).addCondition(Condition.TEAMHASATLEASTXGUNNERS, 4),
     "initializeTwoPowerCountersRandomLeanor": Effect(Timing.INITIALIZE, EffectType.POWERCOUNTER, Target.RANDOM, 2).addTargetFilter(TargetFilter.LEANOR),
     "initializeReplaceWinnerTwoPowerCountersAll": Effect(Timing.INITIALIZE, EffectType.POWERCOUNTER, Target.ALL, 2).addCondition(Condition.REPLACINGWINNER, 0),
+    "initializePowerCountersEqualToTeamSlot": Effect(Timing.INITIALIZE, EffectType.POWERCOUNTER, Target.SELF, IntValue.TEAMSLOT),
     "destroyIfPowerOne": Effect(Timing.POWERCHANGE, EffectType.DESTROYCARD, Target.SELF, 0).addCondition(Condition.SELFHASPOWER, 1),
     "destroyIfPowerTen": Effect(Timing.POWERCHANGE, EffectType.DESTROYCARD, Target.SELF, 0).addCondition(Condition.SELFHASPOWER, 10),
     "onAnyInitializeOnePowerCounterSelf": Effect(Timing.ONANYINITIALIZE, EffectType.POWERCOUNTER, Target.SELF, 1),
@@ -194,4 +199,9 @@ effects = {
     "hapthorEffectSelf": Effect(Timing.ANYLOSER, EffectType.REPLACEFIGHTER, Target.SELF, 0),
     "loserSixPowerCountersRandom": Effect(Timing.LOSER, EffectType.POWERCOUNTER, Target.RANDOM, 6),
     "loserKamakazeEffect": Effect(Timing.LOSER, EffectType.DESTROYCARD, Target.RANDOMENEMYFIGHTER, 0).addCondition(Condition.OPPONENTHASMOREFIGHTERS, 0),
+    "alwaysTiesFight": Effect(Timing.NONE, EffectType.ALWAYSTIES, Target.SELF, 0),
+    "cannotHavePowerCounters": Effect(Timing.NONE, EffectType.CANTHAVEPOWERCOUNTERS, Target.SELF, 0),
+    "onFriendlyGunnerPlayedOnePowerCounterActiveCard": Effect(Timing.ONFRIENDLYGUNNERPLAYED, EffectType.POWERCOUNTER, Target.ACTIVECARD, 1),
+    "loserScrapSelf": Effect(Timing.LOSER, EffectType.SCRAP, Target.SELF, 0),
+    "winnerScrapSelf": Effect(Timing.WINNER, EffectType.SCRAP, Target.SELF, 0),
 }

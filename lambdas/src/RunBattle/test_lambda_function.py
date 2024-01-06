@@ -5,7 +5,7 @@ import unittest
 
 class Test_lambda_function(unittest.TestCase):
     def test_sampleBattle(self):
-        simulator = DogfightSimulator("37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54", "37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54", Animations())
+        simulator = DogfightSimulator("55,56,57,58,55,56,57,58,51,52,53,54", "55,56,57,58,55,56,57,58,51,52,53,54", Animations())
         simulator.simulateDogfight()
         print("new fight")
         print(simulator.startingDeckOne)
@@ -14,7 +14,7 @@ class Test_lambda_function(unittest.TestCase):
         assert simulator.playerOne != None
         assert simulator.playerTwo != None
 
-    """def test_monteCarlosSimulator(self):
+    def test_monteCarlosSimulator(self):
         oneWins = 0
         onePoints = 0
         twoWins = 0
@@ -22,7 +22,7 @@ class Test_lambda_function(unittest.TestCase):
         ties = 0
         timesToRunSimulation = 1000
         for x in range(0,timesToRunSimulation):
-            simulator = DogfightSimulator("37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54", "37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54", Animations())
+            simulator = DogfightSimulator("55,56,57,58,55,56,57,58,51,52,53,54", "55,56,57,58,55,56,57,58,51,52,53,54", Animations())
             simulator.simulateDogfight()
             lastAnimationCode = simulator.animations.animationsList.pop()
             if ("1w" in lastAnimationCode):
@@ -38,4 +38,4 @@ class Test_lambda_function(unittest.TestCase):
         print("teams tie: " + str(ties))
         print("team one points: " + str(onePoints))
         print("team two points: " + str(twoPoints))
-        assert (oneWins + twoWins + ties) == timesToRunSimulation"""
+        assert (oneWins + twoWins + ties) == timesToRunSimulation
