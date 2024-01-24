@@ -63,11 +63,14 @@ class Condition(Enum):
     TEAMHASATLEASTXGUNNERS = 3
     REPLACINGWINNER = 4
     SELFHASPOWER = 5
-    ACTIVECARDISATHYR = 6
-    ACTIVECARDISLEANOR = 7
-    ACTIVECARDISRANCE = 8
-    ENEMYHASFIGHTERWITHPOWER = 9
-    OPPONENTHASMOREFIGHTERS = 10
+    ACTIVECARDISLEANOR = 6
+    ACTIVECARDISRANCE = 7
+    ACTIVECARDISATHYR = 8
+    PLAYERHASLEANORCREWMEMBER = 9
+    PLAYERHASRANCECREWMEMBER = 10
+    PLAYERHASATHYRCREWMEMBER = 11
+    ENEMYHASFIGHTERWITHPOWER = 12
+    OPPONENTHASMOREFIGHTERS = 13
 
 class IntValue(Enum):
     CURRENTPOWERCOUNTERS = 1
@@ -147,6 +150,7 @@ effects = {
     "onDrawOnePowerCounterSelf": Effect(Timing.ONDRAW, EffectType.POWERCOUNTER, Target.SELF, 1),
     "onDrawOnePowerCounterLeftmost": Effect(Timing.ONDRAW, EffectType.POWERCOUNTER, Target.LEFTMOST, 1),
     "whenCycledPlayCard": Effect(Timing.WHENCYCLED, EffectType.PLAYCARD, Target.SELF, 1),
+    "whenCycledThreePowerCountersLeftmost": Effect(Timing.WHENCYCLED, EffectType.POWERCOUNTER, Target.LEFTMOST, 3),
     "onDrawOnePowerCounterAllIfCardIsOnePower": Effect(Timing.ONDRAW, EffectType.POWERCOUNTER, Target.ALL, 1).addCondition(Condition.ACTIVECARDHASPOWER, 1),
     "loserCycleThree": Effect(Timing.LOSER, EffectType.CYCLE, Target.NONE, 3),
     "initializeOnePowerCounterAllAthyr": Effect(Timing.INITIALIZE, EffectType.POWERCOUNTER, Target.ALL, 1).addTargetFilter(TargetFilter.ATHYR),
@@ -204,4 +208,5 @@ effects = {
     "onFriendlyGunnerPlayedOnePowerCounterActiveCard": Effect(Timing.ONFRIENDLYGUNNERPLAYED, EffectType.POWERCOUNTER, Target.ACTIVECARD, 1),
     "loserScrapSelf": Effect(Timing.LOSER, EffectType.SCRAP, Target.SELF, 0),
     "winnerScrapSelf": Effect(Timing.WINNER, EffectType.SCRAP, Target.SELF, 0),
+    "initializeTwoPowerCountersSelfIfPlayerHasAthyr": Effect(Timing.INITIALIZE, EffectType.POWERCOUNTER, Target.SELF, 2).addCondition(Condition.PLAYERHASATHYRCREWMEMBER, 1),
 }

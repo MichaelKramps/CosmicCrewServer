@@ -4,6 +4,7 @@ from Effects import Timing
 from Effects import EffectType
 from Effects import Target
 from Effects import TargetFilter
+from Effects import Condition
 from Effects import effects
 from Cards import Card
 from Cards import Civilization
@@ -338,3 +339,23 @@ class Test_Player(unittest.TestCase):
         assert player.team[0].powerCounters == 1
         assert player.team[1].powerCounters == 0
         assert player.team[5].powerCounters == 0
+
+    def test_playerHasCrewMemberWithCivilization(self):
+        animations = Animations()
+        player = Player("1", "p", animations)
+        effectToTest = Effect(Timing.INITIALIZE, EffectType.POWERCOUNTER, Target.SELF, 6).addCondition(Condition.PLAYERHASATHYRCREWMEMBER, 1)
+        cardToTest = Card("test", 0, 0, [effectToTest], animations).addCivilization(Civilization.ATHYR)
+        player.team = [Card("test", 0, 0, [], animations).addCivilization(Civilization.ATHYR), None, None, None, None, None]
+        player.deck = [cardToTest]
+        player.drawAndPlayCard(2)
+        assert cardToTest.powerCounters == 6
+
+    def test_playerHasCrewMemberWithCivilizationNegate(self):
+        animations = Animations()
+        player = Player("1", "p", animations)
+        effectToTest = Effect(Timing.INITIALIZE, EffectType.POWERCOUNTER, Target.SELF, 6).addCondition(Condition.PLAYERHASATHYRCREWMEMBER, 1)
+        cardToTest = Card("test", 0, 0, [effectToTest], animations).addCivilization(Civilization.ATHYR)
+        player.team = [Card("test", 0, 0, [], animations), None, None, None, None, None]
+        player.deck = [cardToTest]
+        player.drawAndPlayCard(2)
+        assert cardToTest.powerCounters == 0

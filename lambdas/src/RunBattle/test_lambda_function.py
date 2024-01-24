@@ -2,10 +2,11 @@ from lambda_function import lambda_handler
 from DogfightSimulator import DogfightSimulator
 from Animations import Animations
 import unittest
+import random
 
 class Test_lambda_function(unittest.TestCase):
     def test_sampleBattle(self):
-        simulator = DogfightSimulator("55,56,57,58,55,56,57,58,51,52,53,54", "55,56,57,58,55,56,57,58,51,52,53,54", Animations())
+        simulator = DogfightSimulator(self.randomDeckString(), self.randomDeckString(), Animations())
         simulator.simulateDogfight()
         print("new fight")
         print(simulator.startingDeckOne)
@@ -22,7 +23,7 @@ class Test_lambda_function(unittest.TestCase):
         ties = 0
         timesToRunSimulation = 1000
         for x in range(0,timesToRunSimulation):
-            simulator = DogfightSimulator("55,56,57,58,55,56,57,58,51,52,53,54", "55,56,57,58,55,56,57,58,51,52,53,54", Animations())
+            simulator = DogfightSimulator(self.randomDeckString(), self.randomDeckString(), Animations())
             simulator.simulateDogfight()
             lastAnimationCode = simulator.animations.animationsList.pop()
             if ("1w" in lastAnimationCode):
@@ -39,3 +40,12 @@ class Test_lambda_function(unittest.TestCase):
         print("team one points: " + str(onePoints))
         print("team two points: " + str(twoPoints))
         assert (oneWins + twoWins + ties) == timesToRunSimulation
+
+    def randomDeckString(self):
+        deckString = ""
+        for card in range(0,12):
+            if card != 0:
+                deckString += ","
+            thisCardId = random.randint(0,70)
+            deckString += str(thisCardId)
+        return deckString

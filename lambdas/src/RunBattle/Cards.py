@@ -50,14 +50,20 @@ class Card:
                 return fightersOnTeam >= effect.conditionValue
             case Condition.REPLACINGWINNER:
                 return self.replacingWinner
-            case Condition.SELFHASPOWER:
-                return self.getTotalPower(player) >= effect.conditionValue
             case Condition.ACTIVECARDISLEANOR:
                 return player.currentFighter.civilization == Civilization.LEANOR
             case Condition.ACTIVECARDISATHYR:
                 return player.currentFighter.civilization == Civilization.ATHYR
             case Condition.ACTIVECARDISRANCE:
                 return player.currentFighter.civilization == Civilization.RANCE
+            case Condition.PLAYERHASLEANORCREWMEMBER:
+                return player.hasCrewMemberWithCivilization(Civilization.LEANOR, effect)
+            case Condition.PLAYERHASRANCECREWMEMBER:
+                return player.hasCrewMemberWithCivilization(Civilization.RANCE, effect)
+            case Condition.PLAYERHASATHYRCREWMEMBER:
+                return player.hasCrewMemberWithCivilization(Civilization.ATHYR, effect)
+            case Condition.SELFHASPOWER:
+                return self.getTotalPower(player) >= effect.conditionValue
             case Condition.ENEMYHASFIGHTERWITHPOWER:
                 return player.opponent.hasFighterWithPower(effect.conditionValue)
             case Condition.OPPONENTHASMOREFIGHTERS:
@@ -226,7 +232,7 @@ class Card:
         return self
     
     def getTotalPower(self, player):
-        if self.tiesEveryFight():
+        if self.tiesEveryFight() and hasattr(player, "currentFighter"):
             self.power = player.opponent.currentFighter.power
             self.powerCounters = player.opponent.currentFighter.powerCounters
         return self.power + self.powerCounters
@@ -263,8 +269,8 @@ cardList = [
     {"name": "Teenage Gunner", "id": 1, "power": 2, "effectNames": [], "civilization": "none"},
     {"name": "Adult Gunner", "id": 2, "power": 3, "effectNames": [], "civilization": "none"},
     {"name": "CPU Teller", "id": 3, "power": 4, "effectNames": ["initializeOnePowerCounterSelf"], "civilization": "athyr"},
-    {"name": "CPU Lender", "id": 4, "power": 3, "effectNames": ["initializeTwoPowerCounterSelf"], "civilization": "athyr"},
-    {"name": "CPU Banker", "id": 5, "power": 2, "effectNames": ["initializeThreePowerCounterSelf"], "civilization": "athyr"},
+    {"name": "CPU Lender", "id": 4, "power": 3, "effectNames": ["initializeTwoPowerCountersSelfIfPlayerHasAthyr"], "civilization": "athyr"},
+    {"name": "CPU Banker", "id": 5, "power": 2, "effectNames": ["whenCycledThreePowerCountersLeftmost"], "civilization": "athyr"},
     {"name": "Support Specialist", "id": 6,"power":  1, "effectNames": ["initializeOnePowerCounterAll"], "civilization": "none"},
     {"name": "Athyr Biker", "id": 7, "power": 3, "effectNames": ["initializeCycleOne"], "civilization": "athyr"},
     {"name": "Kip Ardor", "id": 8, "power": 1, "effectNames": ["onDrawOnePowerCounterSelf"], "civilization": "athyr"},

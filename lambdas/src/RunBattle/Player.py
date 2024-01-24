@@ -206,6 +206,14 @@ class Player:
             if (card != None) and (card.getTotalPower(self) >= powerToMatch):
                 return True
         return False
+    
+    def hasCrewMemberWithCivilization(self, civilization, effect):
+        matchingCrewCount = 0
+        for card in self.team:
+            if (card != None) and (card.civilization == civilization):
+                print(card.civilization)
+                matchingCrewCount += 1
+        return matchingCrewCount > effect.conditionValue
 
     def replaceFighterEffect(self, cardToReplace):
         if (self.team[cardToReplace.teamSlot - 1] == None): #no card there yet
